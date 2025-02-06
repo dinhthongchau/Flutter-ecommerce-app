@@ -6,7 +6,7 @@ import 'widgets/screens/list_products/list_products_screen.dart';
 import 'widgets/screens/cart/cart_screen.dart';
 import 'widgets/screens/checkout/checkout_screen.dart';
 import 'widgets/screens/detail/detail_screen.dart';
-
+//routes.dart
 
 Route<dynamic> mainRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -18,11 +18,9 @@ Route<dynamic> mainRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) =>
           BlocProvider.value(
             value: cubit_product,
-            child: Scaffold(
-              appBar: AppBar(title: Text("Detail screen"),),
-                body: DetailScreen()
+            child:  DetailScreen()
             ),
-          ));
+      );
     case CartScreen.route:
       return MaterialPageRoute(builder: (context) => CartScreen());
     case CheckoutScreen.route:

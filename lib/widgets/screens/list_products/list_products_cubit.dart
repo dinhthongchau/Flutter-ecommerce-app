@@ -16,7 +16,7 @@ class ListProductsCubit extends Cubit<ListProductsState> {
     try{
         List<ProductModel> product = await api.getAllProducts();
         emit(state.copyWith(loadStatus: LoadStatus.Done, product: product));
-        print("Products fetched: ${product.length}");
+        //print("Products fetched: ${product.length}");
     }
     catch(e){
       emit(state.copyWith(loadStatus: LoadStatus.Error));

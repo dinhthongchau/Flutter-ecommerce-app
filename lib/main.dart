@@ -13,6 +13,8 @@ import 'widgets/screens/list_products/list_products_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: "lib/assets/.env");
+  Log log = LogImplement();
+  Bloc.observer = MyBlocObserver(log);
   runApp(Repository());
 }
 

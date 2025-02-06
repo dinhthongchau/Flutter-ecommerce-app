@@ -14,8 +14,8 @@ class ApiServer implements Api{
     try{
         final response = await dio.get('$baseUrl/products?limit=100');
         final List<dynamic> data=response.data['data']['products'];
-        print("Fetching API: $baseUrl/products?limit=100");
-        print("Response Data: ${response.data}");
+        //print("Fetching API: $baseUrl/products?limit=100");
+        //print("Response Data: ${response.data}");
         return data.map((json) => ProductModel.fromJson(json)).toList();
 
     }
