@@ -88,7 +88,8 @@ class ListProductPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ListProductsCubit, ListProductsState>(
       builder: (context, state) {
-        //var cubit = context.read<ListProductsCubit>();
+        var cubit_product = context.read<ListProductsCubit>();
+
         return Container(
           child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -104,8 +105,9 @@ class ListProductPage extends StatelessWidget {
                 print("Image URL: ${state.product[index].product_image[0]}");
                 return GestureDetector(
                   onTap: () {
+                    cubit_product.setSelectedIndex(index);
                     Navigator.of(context).pushNamed(DetailScreen.route,arguments: {
-                      'cubit_product': context.read<ListProductsCubit>()
+                      'cubit_product': cubit_product
                     });
                   },
                   child: Card(

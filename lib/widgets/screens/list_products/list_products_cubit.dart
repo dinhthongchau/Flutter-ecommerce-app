@@ -22,4 +22,8 @@ class ListProductsCubit extends Cubit<ListProductsState> {
       emit(state.copyWith(loadStatus: LoadStatus.Error));
     }
   }
+
+  void setSelectedIndex(int index) {
+    emit(state.copyWith(selectedItem: index));
+  }
 }
