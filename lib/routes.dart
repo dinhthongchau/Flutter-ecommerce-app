@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project_one/models/product_model.dart';
+import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
 import 'widgets/screens/list_products/list_products_screen.dart';
 
@@ -24,7 +26,9 @@ Route<dynamic> mainRoute(RouteSettings settings) {
     case CartScreen.route:
       return MaterialPageRoute(builder: (context) => CartScreen());
     case CheckoutScreen.route:
-      return MaterialPageRoute(builder: (context) => CheckoutScreen());
+      List<ProductModel> selectedProduct = (settings.arguments as Map<String,
+          dynamic>)['selectedProduct'] as List<ProductModel>;
+      return MaterialPageRoute(builder: (context) => CheckoutScreen(products: selectedProduct,));
       ;
     default:
       return MaterialPageRoute(builder: (context) => ListProductsScreen());
