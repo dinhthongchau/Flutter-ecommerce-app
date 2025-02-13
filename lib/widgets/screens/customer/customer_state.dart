@@ -1,11 +1,11 @@
-part of 'create_customer_cubit.dart';
+part of 'customer_cubit.dart';
 
 
-class CreateCustomerState {
+class CustomerState {
   final List<CustomerModel> customer;
   final LoadStatus loadStatus;
   final int idCustomer;
-  const CreateCustomerState.init(
+  const CustomerState.init(
       {
         this.customer = const [],
         this.loadStatus = LoadStatus.Init,
@@ -14,7 +14,7 @@ class CreateCustomerState {
       );
 //<editor-fold desc="Data Methods">
 
-  const CreateCustomerState(
+  const CustomerState(
       {
         required this.customer ,
         required this.loadStatus ,
@@ -24,7 +24,7 @@ class CreateCustomerState {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CreateCustomerState &&
+      (other is CustomerState &&
           runtimeType == other.runtimeType &&
           customer == other.customer &&
           loadStatus == other.loadStatus &&
@@ -36,19 +36,19 @@ class CreateCustomerState {
 
   @override
   String toString() {
-    return 'CreateCustomerState{' +
+    return 'CustomerState{' +
         ' customer: $customer,' +
         ' loadStatus: $loadStatus,' +
         ' idCustomer: $idCustomer,' +
         '}';
   }
 
-  CreateCustomerState copyWith({
+  CustomerState copyWith({
     List<CustomerModel>? customer,
     LoadStatus? loadStatus,
     int? idCustomer,
   }) {
-    return CreateCustomerState(
+    return CustomerState(
       customer: customer ?? this.customer,
       loadStatus: loadStatus ?? this.loadStatus,
       idCustomer: idCustomer ?? this.idCustomer,
@@ -63,8 +63,8 @@ class CreateCustomerState {
     };
   }
 
-  factory CreateCustomerState.fromMap(Map<String, dynamic> map) {
-    return CreateCustomerState(
+  factory CustomerState.fromMap(Map<String, dynamic> map) {
+    return CustomerState(
       customer: map['customer'] as List<CustomerModel>,
       loadStatus: map['loadStatus'] as LoadStatus,
       idCustomer: map['idCustomer'] as int,

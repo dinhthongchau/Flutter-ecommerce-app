@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/repositories/api.dart';
+import 'package:project_one/widgets/screens/cart/cart_screen.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
 
 import '../../../common/enum/load_status.dart';
@@ -9,6 +10,7 @@ import '../../common_widgets/notice_snackbar.dart';
 import 'list_products_cubit.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class ListProductsScreen extends StatelessWidget {
   static const String route = "ListProductsScreen";
 
@@ -38,7 +40,10 @@ class Page extends StatelessWidget {
             Expanded(
                 flex: 1,
                 child: IconButton(
-                    onPressed: () {}, icon: Icon(Icons.shopping_cart))),
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(CartScreen.route);
+                    },
+                    icon: Icon(Icons.shopping_cart))),
             Expanded(
                 flex: 1,
                 child: TextButton(
@@ -106,9 +111,8 @@ class ListProductPage extends StatelessWidget {
                 return GestureDetector(
                   onTap: () {
                     cubit_product.setSelectedIndex(index);
-                    Navigator.of(context).pushNamed(DetailScreen.route,arguments: {
-                      'cubit_product': cubit_product
-                    });
+                    Navigator.of(context).pushNamed(DetailScreen.route,
+                        arguments: {'cubit_product': cubit_product});
                   },
                   child: Card(
                     child: Column(

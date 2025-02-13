@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:project_one/models/customer_model.dart';
@@ -6,16 +8,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/enum/load_status.dart';
 import '../../../repositories/api.dart';
 
-part 'create_customer_state.dart';
+part 'customer_state.dart';
 
-class CreateCustomerCubit extends Cubit<CreateCustomerState> {
+class CustomerCubit extends Cubit<CustomerState> {
   final Api _api;
-  CreateCustomerCubit(this._api) : super(CreateCustomerState.init());
+  CustomerCubit(this._api) : super(CustomerState.init());
   Future<void> loadCustomer() async {
     emit(state.copyWith(loadStatus: LoadStatus.Loading));
     try{
+      // Lưu customer vào SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-        List<String> customerData = prefs.getStringList('customer');
+        String? customerData = prefs.getString('customer');
+        print("Customer Data from SharedPreferences: $customerData");
+
+        if (customerData !=null ){
+          Map<String,dynamic> jsonMap = jsonDecode(customerData);
+          final CustomerModel customer = CustomerModel.fromJson(jsonMap);
+          emit(state.copyWith(
+            idCustomer: customer.customerId,
+            loadStatus: LoadStatus.Done,
+            customer: [customer]
+          ));
+
+        }
+        else {
+          emit(state.copyWith(loadStatus: LoadStatus.Init));
+        }
     }
     catch(E){
       emit(state.copyWith(loadStatus: LoadStatus.Error));
@@ -46,10 +64,13 @@ class CreateCustomerCubit extends Cubit<CreateCustomerState> {
           loadStatus: LoadStatus.Done,
           idCustomer: customerId ?? 0,
           customer: [
-            ...state.customer,
             newCustomer
           ], // Cập nhật danh sách khách hàng
         ));
+        // Lưu customer vào SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        final String customerJson = jsonEncode(newCustomer.toJson());
+        await prefs.setString('customer', customerJson);
       } else {
         throw Exception("Invalid API Response");
       }

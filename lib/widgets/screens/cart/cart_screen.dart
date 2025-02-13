@@ -197,6 +197,7 @@ class CartItemListTile extends StatelessWidget {
                       "đ${NumberFormat('#,###', 'vi').format(itemsInCart.product_price)}",
                       style: TextStyle(color: Colors.redAccent, fontSize: 15),
                     ),
+                    Text("Quantity: ${state.quantities[itemsInCart.product_id] ?? 1}")
                   ],
                 ),
               ),

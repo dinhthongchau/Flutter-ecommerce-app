@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/common/enum/load_status.dart';
 import 'package:project_one/repositories/api.dart';
-import 'package:project_one/widgets/screens/cart/create_customer_cubit.dart';
+import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_screen.dart';
 
 import '../../../common/code/random.dart';
@@ -35,7 +35,7 @@ class Page extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: const Text("Create Customer Screen"),),
         body: BlocProvider(
-          create: (context) => CreateCustomerCubit(context.read<Api>()),
+          create: (context) => CustomerCubit(context.read<Api>())..loadCustomer(),
           child: Body(),
         )
     );
@@ -57,7 +57,7 @@ class Body extends StatelessWidget {
     late LoadStatus loadStatus;
 
 
-    return BlocBuilder<CreateCustomerCubit, CreateCustomerState>(
+    return BlocBuilder<CustomerCubit, CustomerState>(
       builder: (context, state) {
         return Column(
           children: [
@@ -94,7 +94,7 @@ class Body extends StatelessWidget {
                   );
 
 
-                  await context.read<CreateCustomerCubit>().createCustomer(customer);
+                  await context.read<CustomerCubit>().createCustomer(customer);
                   Navigator.pop(context, customer);
                 }, child: Text("Create Customer")),
             if (state.loadStatus == LoadStatus.Done) ...[
