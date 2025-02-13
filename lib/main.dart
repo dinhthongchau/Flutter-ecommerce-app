@@ -4,10 +4,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/main_cubit.dart';
 import 'package:project_one/repositories/log.dart';
 import 'package:project_one/routes.dart';
+import 'package:project_one/widgets/screens/cart/cart_screen.dart';
+import 'package:project_one/widgets/screens/checkout/checkout_screen.dart';
 
 import 'repositories/api.dart';
 import 'repositories/api_server.dart';
 import 'repositories/log_implements.dart';
+import 'widgets/screens/cart/create_customer_screen.dart';
+import 'widgets/screens/cart/test_create_order_screen.dart';
 import 'widgets/screens/list_products/list_products_screen.dart';
 
 Future<void> main() async {
