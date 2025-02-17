@@ -1,22 +1,23 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/models/customer_model.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:project_one/repositories/api.dart';
+import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
+import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../common/enum/load_status.dart';
 import '../../../models/order_model.dart';
 import '../customer/create_customer_screen.dart';
 
 //checkout_screen.dart
 class CheckoutScreen extends StatefulWidget {
   static const String route = "CheckoutScreen";
-  final List<ProductModel> products;
 
-  const CheckoutScreen({super.key, required this.products});
+  const CheckoutScreen({super.key});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -35,67 +36,80 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Check out")),
-      body: BlocProvider(
-        create: (context) =>
-            CustomerCubit(context.read<Api>())..loadCustomer(),
-        child: Body(
-          products: widget.products,
-        ),
-      ),
+      body: Body(),
     );
   }
 }
 
 class Body extends StatelessWidget {
-  final List<ProductModel> products;
-
-  const Body({super.key, required this.products});
+  const Body({super.key});
 
   @override
   Widget build(BuildContext context) {
     final TextEditingController _noteController = TextEditingController();
-    final TextEditingController _paymentMethodController =
-        TextEditingController();
-    Future<void> _submitOrder() async {
-      final api = context.read<Api>();
-      final customer = context.read<CustomerCubit>().state.customer.first;
-      final order = OrderModel(
-        customerId: customer.customerId,
-        orderTotal: 200,
-        orderPaymentMethod: _paymentMethodController.text,
-        orderStatus: "OK",
-        orderNote: _noteController.text,
-      );
-      try {
-        final response = await api.createOrder(order);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Order Created: ${response['data']['order']}')),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Failed to create order")));
-      }
-    }
 
     return BlocBuilder<CustomerCubit, CustomerState>(
       builder: (context, state) {
+        if (state.loadStatus == LoadStatus.Loading) {
+          return const Center(
+              child:
+                  CircularProgressIndicator()); // Show loading spinner while submitting
+        } else if (state.loadStatus == LoadStatus.Error) {
+          // Hiển thị thông báo đơn hàng thành công và cho phép đặt hàng mới
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Order successfully submitted!"),
+              ElevatedButton(
+                onPressed: () {
+                  // Reset các trường dữ liệu để đặt hàng mới
+                  _noteController.clear();
+                  // Thực hiện lại giao diện đặt hàng mới
+                  context.read<CheckoutCubit>().emit(state.copyWith(
+                      loadStatus: LoadStatus.Init) as CheckoutState);
+                },
+                child: const Text("Place New Order"),
+              ),
+            ],
+          );
+        } else if (state.loadStatus == LoadStatus.Error) {
+          return const Center(
+              child: Text("An error occurred while submitting the order."));
+        }
         final customer =
             state.customer.isNotEmpty ? state.customer.first : null;
-        return SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              CustomerContainer(customer: customer),
-              ProductOrderContainer(products: products),
-              NoteContainer(noteController: _noteController),
-              PaymentMethodContainer(
-                  paymentMethodController: _paymentMethodController),
-              ElevatedButton(
-                  onPressed: _submitOrder, child: const Text('Order Now'))
-            ],
-          ),
+        return BlocBuilder<CartCubit, CartState>(
+          builder: (context, state) {
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  CustomerContainer(customer: customer),
+                  ProductOrderContainer(),
+                  NoteContainer(noteController: _noteController),
+                  PaymentMethodContainer(),
+                  DetailPaymentContainer(),
+                  ElevatedButton(
+                      onPressed: () {
+                        final orderNote = context.read<CheckoutCubit>().generateOrderNote(
+                            state.selectedProducts,  // Danh sách sản phẩm đã chọn
+                            state.selectedQuantities, // Số lượng tương ứng
+                            _noteController.text
+                        );
+                        final order = OrderModel(
+                          customerId: customer?.customerId ?? 0,
+                          orderTotal: double.parse(state.totalPayment.toString()),
+                          orderPaymentMethod:context.read<CheckoutCubit>().state.selectedMethod,
+                          orderStatus: "OK2",
+                          orderNote: orderNote,
+                        );
+                        context.read<CheckoutCubit>().submitOrder(order);
+                      },
+                      child: const Text('Order Now'))
+                ],
+              ),
+            );
+          },
         );
       },
     );
@@ -105,22 +119,47 @@ class Body extends StatelessWidget {
 class PaymentMethodContainer extends StatelessWidget {
   const PaymentMethodContainer({
     super.key,
-    required TextEditingController paymentMethodController,
-  }) : _paymentMethodController = paymentMethodController;
+  }) ;
 
-  final TextEditingController _paymentMethodController;
+
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<CheckoutCubit, CheckoutState>(
+  builder: (context, state) {
     return Container(
       color: Colors.grey,
       width: double.infinity,
-      height: 100,
-      child: TextField(
-        controller: _paymentMethodController,
-        decoration: const InputDecoration(labelText: 'Payment Method'),
-      ),
+      height: 150,
+     child: Column(
+       children: [
+         const Text("Select Payment Method"),
+         RadioListTile<String>(
+              title: const Text("Cash on Delivery"),
+             value: "Cash on Delivery",
+             groupValue: state.selectedMethod,
+             onChanged: (String? value){
+                if(value != null){
+                  context.read<CheckoutCubit>().selectPaymentMethod(value);
+                }
+             }
+             ),
+         RadioListTile<String>(
+             title: const Text("Banking"),
+             value: "Banking",
+             groupValue: state.selectedMethod,
+             onChanged: (String? value){
+               if(value != null){
+                 context.read<CheckoutCubit>().selectPaymentMethod(value);
+               }
+             }
+         ),
+
+       ],
+     )
     );
+  },
+);
   }
 }
 
@@ -149,26 +188,64 @@ class NoteContainer extends StatelessWidget {
 class ProductOrderContainer extends StatelessWidget {
   const ProductOrderContainer({
     super.key,
-    required this.products,
   });
-
-  final List<ProductModel> products;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final product = products[index];
-          return ListTile(
-            title: Text(product.product_name),
-          );
-        },
-      ),
+    return BlocBuilder<CartCubit, CartState>(
+      builder: (context, state) {
+        String? baseUrl = dotenv.env['API_BASE_URL_NoApi_NoV1'];
+        //print(state.selectedProducts);
+        return SizedBox(
+          height: 300,
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: state.selectedProducts.length,
+            itemBuilder: (context, index) {
+              final product = state.selectedProducts[index];
+              final quantity = state.selectedQuantities[product.product_id] ?? 1;
+              // return ListTile(
+              //   title: Text(product.product_name),
+              //   subtitle: Text("Quantity : $quantity"),
+              //   trailing: Text(product.product_color),
+              // );
+              return Row(
+                children: [
+                  Image.network(
+                    "$baseUrl${product.product_image[0]}",
+                    width: 80, // Điều chỉnh kích thước phù hợp
+                    height: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.error, size: 80, color: Colors.red); // Xử lý khi ảnh lỗi
+                    },
+                  ),
+                  const SizedBox(width: 10,),
+                  Column(
+
+                    children: [
+                      Text("${product.product_name}"),
+                      Text("${product.product_color}"),
+                      Row(
+                        mainAxisAlignment:MainAxisAlignment.spaceBetween ,
+                        children: [
+                          Text("${product.product_price}"),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text("$quantity"),
+
+                        ],
+                      )
+                    ],
+                  )
+                ],
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -214,6 +291,52 @@ class CustomerContainer extends StatelessWidget {
           ]
         ],
       ),
+    );
+  }
+}
+
+class DetailPaymentContainer extends StatelessWidget {
+  const DetailPaymentContainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CartCubit, CartState>(
+      builder: (context, state) {
+        return Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Tong tien hang"),
+                SizedBox(
+                  width: 20,
+                ),
+                Text(state.totalPayment.toString())
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Tong tien phi van chuyen"),
+                SizedBox(
+                  width: 20,
+                ),
+                Text("0")
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Tong thanh toan"),
+                SizedBox(
+                  width: 50,
+                ),
+                Text(state.totalPayment.toString())
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

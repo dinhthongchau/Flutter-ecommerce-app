@@ -82,7 +82,7 @@ class Body extends StatelessWidget {
                 onPressed: () async {
 
                   int randomId = generateRandomId();
-                  print(randomId);
+                  //print(randomId);
                   final customer = CustomerModel(
                     customerId: randomId,
                     customerName: _nameController.text,

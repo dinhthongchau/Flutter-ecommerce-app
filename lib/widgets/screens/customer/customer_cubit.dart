@@ -19,7 +19,7 @@ class CustomerCubit extends Cubit<CustomerState> {
       // Lưu customer vào SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         String? customerData = prefs.getString('customer');
-        print("Customer Data from SharedPreferences: $customerData");
+        //print("Customer Data from SharedPreferences: $customerData");
 
         if (customerData !=null ){
           Map<String,dynamic> jsonMap = jsonDecode(customerData);
@@ -44,13 +44,13 @@ class CustomerCubit extends Cubit<CustomerState> {
 
     try {
       final response = await _api.createCustomer(customer);
-      print("API Response1: $response");
+      //print("API Response1: $response");
       if (response != null &&
           response['data'] != null &&
           response['data']['customer'] != null) {
         final int customerId = int.tryParse(response['data']['customer']['customer_id'].toString()) ?? 0;
 
-        print("customerId: $customerId");
+        //print("customerId: $customerId");
 
         final newCustomer = CustomerModel(
           customerId: customerId  ?? 0,

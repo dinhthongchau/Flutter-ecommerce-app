@@ -20,11 +20,18 @@ class ProductModel{
     required this.product_description,
     required this.product_image,
   });
+
   //json to object
   factory ProductModel.fromJson(Map<String,dynamic> json) => _$ProductModelFromJson(json);
 
   //object to json
   Map<String,dynamic> toJson() =>  _$ProductModelToJson(this);
+
+  // Override toString() để hiển thị dữ liệu chi tiết hơn khi debug
+  @override
+  String toString() {
+    return 'ProductModel{id: $product_id, name: $product_name, price: $product_price, color: $product_color}';
+  }
 
 
 }

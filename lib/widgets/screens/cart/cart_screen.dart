@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../checkout/checkout_screen.dart';
 import 'cart_cubit.dart';
+
 //cart_screen.dart
 class CartScreen extends StatelessWidget {
   static const String route = "CartScreen";
@@ -96,9 +97,16 @@ class bottomNavigatonBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: ItemSelectedInformation(),
+          flex: 4,
+          child: SelectAll(),
+        ),
+
+        Expanded(
+          flex: 3,
+          child: TotalCalculator(),
         ),
         Expanded(
+          flex: 3,
           child: CheckOutButton(),
         ),
       ],
@@ -106,12 +114,44 @@ class bottomNavigatonBar extends StatelessWidget {
   }
 }
 
-class ItemSelectedInformation extends StatelessWidget {
-  const ItemSelectedInformation({super.key});
+class TotalCalculator extends StatelessWidget {
+  const TotalCalculator({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Text("Info");
+    return BlocBuilder<CartCubit, CartState>(
+      builder: (context, state) {
+        return Text(
+          "Total Payment: đ${state.totalPayment}",
+          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        );
+      },
+    );
+  }
+}
+
+class SelectAll extends StatelessWidget {
+  const SelectAll({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CartCubit, CartState>(
+      builder: (context, state) {
+        bool allSelected = state.cartItems.every((item) => state.selectedItem.contains(item.product_id)); // Check if all items are selected
+        return Row(
+          children: [
+            Checkbox(
+
+              value: allSelected,
+              onChanged: (value) {
+                context.read<CartCubit>().toggleSelectAll();
+              },
+            ),
+            const Text("Select all")
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -123,11 +163,23 @@ class CheckOutButton extends StatelessWidget {
     return BlocBuilder<CartCubit, CartState>(
 
       builder: (context, state) {
-        final selectedProduct = state.cartItems.where((item) => state.selectedItem.contains(item.product_id)).toList();
+        final selectedProduct = state.cartItems.where((item) =>
+            state.selectedItem.contains(item.product_id)).toList();
+        final selectedQuantities = selectedProduct.asMap().map((index,
+            product) =>
+            MapEntry(
+                product.product_id, state.quantities[product.product_id] ?? 1));
+        final totalPayment = state.totalPayment;
+
         return TextButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(CheckoutScreen.route,arguments:{
-                'selectedProduct': selectedProduct
+              if (  state.selectedProducts.isEmpty){
+                return;
+              }
+              Navigator.of(context).pushNamed(CheckoutScreen.route, arguments: {
+                'selectedProduct': selectedProduct,
+                'selectedQuantities': selectedQuantities,
+                'totalPayment': totalPayment
               });
             },
             child: Text("CheckoutPage"));
@@ -150,7 +202,9 @@ class CartItemListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
+
       builder: (context, state) {
+        var cubit_cart = context.read<CartCubit>();
         bool isSelected = state.selectedItem.contains(itemsInCart.product_id);
 
         return Container(
@@ -162,9 +216,7 @@ class CartItemListTile extends StatelessWidget {
               Checkbox(
                 value: isSelected,
                 onChanged: (value) {
-                  context
-                      .read<CartCubit>()
-                      .toggleSelectItem(itemsInCart.product_id);
+                  cubit_cart.toggleSelectItem(itemsInCart.product_id);
                 },
               ),
 
@@ -175,7 +227,7 @@ class CartItemListTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image:
-                        NetworkImage("$baseUrl${itemsInCart.product_image[0]}"),
+                    NetworkImage("$baseUrl${itemsInCart.product_image[0]}"),
                     fit: BoxFit.cover,
                   ),
                   borderRadius: BorderRadius.circular(8),
@@ -194,10 +246,13 @@ class CartItemListTile extends StatelessWidget {
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     Text(itemsInCart.product_color),
                     Text(
-                      "đ${NumberFormat('#,###', 'vi').format(itemsInCart.product_price)}",
+                      "đ${NumberFormat('#,###', 'vi').format(
+                          itemsInCart.product_price)}",
                       style: TextStyle(color: Colors.redAccent, fontSize: 15),
                     ),
-                    Text("Quantity: ${state.quantities[itemsInCart.product_id] ?? 1}")
+                    Text(
+                        "Quantity: ${state.quantities[itemsInCart.product_id] ??
+                            1}")
                   ],
                 ),
               ),
@@ -205,7 +260,7 @@ class CartItemListTile extends StatelessWidget {
               // Nút xóa
               IconButton(
                 onPressed: () {
-                  context.read<CartCubit>().removeItem(itemsInCart.product_id);
+                  cubit_cart.removeItem(itemsInCart.product_id);
                 },
                 icon: Icon(Icons.delete, color: Colors.red),
               ),

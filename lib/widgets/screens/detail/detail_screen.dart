@@ -206,7 +206,7 @@ class AddToCartButton extends StatelessWidget {
         .read<ListProductsCubit>()
         .state
         .product[context.read<ListProductsCubit>().state.selectedItem];
-    print("Hello $product");
+    //print("Hello $product");
     return Container(
       height: 50,
       color: Colors.green,

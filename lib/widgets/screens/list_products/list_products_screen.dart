@@ -105,9 +105,8 @@ class ListProductPage extends StatelessWidget {
               ),
               itemCount: state.product.length,
               itemBuilder: (context, index) {
-                print(
-                    "Image URL: $baseUrl${state.product[index].product_image[0]}");
-                print("Image URL: ${state.product[index].product_image[0]}");
+                //print( "Image URL: $baseUrl${state.product[index].product_image[0]}");
+                //print("Image URL: ${state.product[index].product_image[0]}");
                 return GestureDetector(
                   onTap: () {
                     cubit_product.setSelectedIndex(index);
