@@ -100,7 +100,6 @@ class bottomNavigatonBar extends StatelessWidget {
           flex: 4,
           child: SelectAll(),
         ),
-
         Expanded(
           flex: 3,
           child: TotalCalculator(),
@@ -137,11 +136,11 @@ class SelectAll extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
-        bool allSelected = state.cartItems.every((item) => state.selectedItem.contains(item.product_id)); // Check if all items are selected
+        bool allSelected = state.cartItems.every((item) => state.selectedItem
+            .contains(item.product_id)); // Check if all items are selected
         return Row(
           children: [
             Checkbox(
-
               value: allSelected,
               onChanged: (value) {
                 context.read<CartCubit>().toggleSelectAll();
@@ -161,19 +160,18 @@ class CheckOutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
-
       builder: (context, state) {
-        final selectedProduct = state.cartItems.where((item) =>
-            state.selectedItem.contains(item.product_id)).toList();
-        final selectedQuantities = selectedProduct.asMap().map((index,
-            product) =>
-            MapEntry(
+        final selectedProduct = state.cartItems
+            .where((item) => state.selectedItem.contains(item.product_id))
+            .toList();
+        final selectedQuantities = selectedProduct.asMap().map(
+            (index, product) => MapEntry(
                 product.product_id, state.quantities[product.product_id] ?? 1));
         final totalPayment = state.totalPayment;
 
         return TextButton(
             onPressed: () {
-              if (  state.selectedProducts.isEmpty){
+              if (state.selectedProducts.isEmpty) {
                 return;
               }
               Navigator.of(context).pushNamed(CheckoutScreen.route, arguments: {
@@ -202,13 +200,12 @@ class CartItemListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
-
       builder: (context, state) {
         var cubit_cart = context.read<CartCubit>();
         bool isSelected = state.selectedItem.contains(itemsInCart.product_id);
 
         return Container(
-          height: 100,
+          height: 120,
           //padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Row(
             children: [
@@ -227,13 +224,13 @@ class CartItemListTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image:
-                    NetworkImage("$baseUrl${itemsInCart.product_image[0]}"),
+                        NetworkImage("$baseUrl${itemsInCart.product_image[0]}"),
                     fit: BoxFit.cover,
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              SizedBox(width: 16),
+              SizedBox(width: 12),
 
               // Thông tin sản phẩm
               Expanded(
@@ -246,13 +243,29 @@ class CartItemListTile extends StatelessWidget {
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     Text(itemsInCart.product_color),
                     Text(
-                      "đ${NumberFormat('#,###', 'vi').format(
-                          itemsInCart.product_price)}",
+                      "đ${NumberFormat('#,###', 'vi').format(itemsInCart.product_price)}",
                       style: TextStyle(color: Colors.redAccent, fontSize: 15),
                     ),
-                    Text(
-                        "Quantity: ${state.quantities[itemsInCart.product_id] ??
-                            1}")
+                    Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              context
+                                  .read<CartCubit>()
+                                  .decrementQuantity(itemsInCart.product_id);
+                            },
+                            icon: Icon(Icons.remove)),
+                        Text(
+                            " ${state.quantities[itemsInCart.product_id] ?? 1}"),
+                        IconButton(
+                            onPressed: () {
+                              context
+                                  .read<CartCubit>()
+                                  .incrementQuantity(itemsInCart.product_id);
+                            },
+                            icon: Icon(Icons.add)),
+                      ],
+                    ),
                   ],
                 ),
               ),
