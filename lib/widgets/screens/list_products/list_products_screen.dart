@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -107,6 +108,7 @@ class ListProductPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 //print( "Image URL: $baseUrl${state.product[index].product_image[0]}");
                 //print("Image URL: ${state.product[index].product_image[0]}");
+                print("Image URL: $baseUrl${state.product[index].product_image[0]}");
                 return GestureDetector(
                   onTap: () {
                     cubit_product.setSelectedIndex(index);
@@ -116,12 +118,15 @@ class ListProductPage extends StatelessWidget {
                   child: Card(
                     child: Column(
                       children: [
-                        Image.network(
-                          "$baseUrl${state.product[index].product_image[0]}",
-                          height: 150,
-                          width: double.infinity,
-                          fit: BoxFit.contain,
-                        ),
+                    CachedNetworkImage(
+
+                    imageUrl: "$baseUrl${state.product[index].product_image[0]}",
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.contain,
+                      placeholder: (context, url) => new CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
                         Container(
                           padding: EdgeInsets.all(20),
                           child: Column(

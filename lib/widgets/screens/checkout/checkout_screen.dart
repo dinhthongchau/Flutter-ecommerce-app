@@ -216,6 +216,7 @@ class ProductOrderContainer extends StatelessWidget {
               // );
               return Row(
                 children: [
+
                   Image.network(
                     "$baseUrl${product.product_image[0]}",
                     width: 80,

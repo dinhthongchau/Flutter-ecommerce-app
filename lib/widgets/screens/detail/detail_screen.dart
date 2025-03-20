@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -76,21 +77,19 @@ class _DetailScreenState extends State<DetailScreen> {
                                   duration: Duration(milliseconds: 300),
                                   curve: Curves.easeInOut); //hieu ung click
                             },
-                            child: Container(
-                              width: 80,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: _currentIndex == index
-                                          ? Colors.deepOrange
-                                          : Colors.transparent,
-                                      width: 2),
-                                  image: DecorationImage(
-                                      image: NetworkImage(
-                                          "$baseUrl${product.product_image[index]}"),
-                                      fit: BoxFit.cover)),
-                            ));
+                          child: CachedNetworkImage(
+                            imageUrl: "$baseUrl${product.product_image[index]}",
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) {
+                              print("Error loading $url: $error");
+                              return Icon(Icons.error);
+                            },
+                          ),
+                        );
                       },
-                      itemCount: product.product_image.length,
                     ),
                   ),
                   Container(
