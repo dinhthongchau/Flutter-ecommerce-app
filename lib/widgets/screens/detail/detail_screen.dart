@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/cart/cart_screen.dart';
+import 'package:project_one/widgets/screens/checkout/checkout_screen.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -62,21 +63,30 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
           ),
           body: SingleChildScrollView(
-            child: Container(
-              child: Column(
-                children: [
-                  _buildSizedBoxForImages(product, baseUrl),
-                  SizedBox(
-                    height: 80,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                            onTap: () {
-                              _pageController.animateToPage(index,
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut); //hieu ung click
-                            },
+            child: Column(
+              children: [
+                _buildSizedBoxForImages(product, baseUrl),
+                SizedBox(
+                  height: 80,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: product.product_image.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                          onTap: () {
+                            _pageController.animateToPage(index,
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeInOut); //hieu ung click
+                          },
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: _currentIndex == index ? Colors.deepOrange : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
                           child: CachedNetworkImage(
                             imageUrl: "$baseUrl${product.product_image[index]}",
                             width: 80,
@@ -88,34 +98,34 @@ class _DetailScreenState extends State<DetailScreen> {
                               return Icon(Icons.error);
                             },
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
-                  Container(
-                    alignment: Alignment.bottomLeft,
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "đ${NumberFormat('#,###', 'vi').format(product.product_price)} ",
-                          style:
-                              TextStyle(color: Colors.redAccent, fontSize: 25),
-                        ),
-                        Text(product.product_name),
-                        // Text(product.product_price),
+                ),
+                Container(
+                  alignment: Alignment.bottomLeft,
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "đ${NumberFormat('#,###', 'vi').format(product.product_price)} ",
+                        style:
+                            TextStyle(color: Colors.redAccent, fontSize: 25),
+                      ),
+                      Text(product.product_name),
+                      // Text(product.product_price),
 
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Text("Description : "),
-                        Text(product.product_description),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text("Description : "),
+                      Text(product.product_description),
+                    ],
+                  ),
+                )
+              ],
             ),
           ),
         );
@@ -184,12 +194,27 @@ class BuyNowButton extends StatelessWidget {
     return Container(
       height: 50,
       color: Colors.deepOrange,
-      child: TextButton(
-          onPressed: () {},
+      child: BlocBuilder<ListProductsCubit, ListProductsState>(
+  builder: (context, state) {
+
+    final selectedProduct = context.read<ListProductsCubit>().state.product[
+    context.read<ListProductsCubit>().state.selectedItem
+    ];
+    return TextButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed(CheckoutScreen.route, arguments:
+            {
+              'selectedProduct': [selectedProduct],
+              'selectedQuantities': {selectedProduct.product_id: 1},
+              'totalPayment': selectedProduct.product_price,
+            });
+          },
           child: Text(
             "Buy Now",
             style: TextStyle(color: Colors.white),
-          )),
+          ));
+  },
+),
     );
   }
 }
