@@ -15,10 +15,7 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CartCubit(),
-      child: Page(),
-    );
+    return Page();
   }
 }
 

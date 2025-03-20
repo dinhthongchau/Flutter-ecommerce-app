@@ -246,4 +246,5 @@ class CartCubit extends Cubit<CartState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('cart', []);
   }
+
 }

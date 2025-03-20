@@ -13,6 +13,7 @@ import 'package:project_one/widgets/screens/list_products/list_products_cubit.da
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common_widgets/bold_text.dart';
+import '../../common_widgets/cart_button.dart';
 import '../../common_widgets/notice_snackbar.dart';
 
 //thêm nút điều hướng tría phải và mô ta tỉnh bay dep hon . (not now)
@@ -48,12 +49,12 @@ class _DetailScreenState extends State<DetailScreen> {
           appBar: AppBar(
             title: Row(
               children: [
-                Expanded(flex:8,  child: Center(child: CustomBoldText(text: "List Product"))),
-                IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(CartScreen.route);
-                    },
-                    icon: Icon(Icons.shopping_cart))
+                Expanded(
+                    flex: 8,
+                    child: Center(child: CustomBoldText(text: "List Product"))),
+
+                Expanded(flex: 2,child: CartButton()),
+
               ],
             ),
             leading: IconButton(
@@ -74,17 +75,19 @@ class _DetailScreenState extends State<DetailScreen> {
                     itemCount: product.product_image.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
-                          onTap: () {
-                            _pageController.animateToPage(index,
-                                duration: Duration(milliseconds: 300),
-                                curve: Curves.easeInOut); //hieu ung click
-                          },
+                        onTap: () {
+                          _pageController.animateToPage(index,
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut); //hieu ung click
+                        },
                         child: Container(
                           width: 80,
                           height: 80,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: _currentIndex == index ? Colors.deepOrange : Colors.transparent,
+                              color: _currentIndex == index
+                                  ? Colors.deepOrange
+                                  : Colors.transparent,
                               width: 2,
                             ),
                           ),
@@ -93,7 +96,8 @@ class _DetailScreenState extends State<DetailScreen> {
                             width: 80,
                             height: 80,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                            placeholder: (context, url) =>
+                                Center(child: CircularProgressIndicator()),
                             errorWidget: (context, url, error) {
                               print("Error loading $url: $error");
                               return Icon(Icons.error);
@@ -112,8 +116,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       Text(
                         "đ${NumberFormat('#,###', 'vi').format(product.product_price)} ",
-                        style:
-                            TextStyle(color: Colors.redAccent, fontSize: 25),
+                        style: TextStyle(color: Colors.redAccent, fontSize: 25),
                       ),
                       Text(product.product_name),
                       // Text(product.product_price),
@@ -148,7 +151,6 @@ class _DetailScreenState extends State<DetailScreen> {
             });
           },
           itemBuilder: (context, index) {
-
             return Container(
               decoration: BoxDecoration(
                   image: DecorationImage(
@@ -198,34 +200,32 @@ class BuyNowButton extends StatelessWidget {
       height: 50,
       color: Colors.deepOrange,
       child: BlocBuilder<ListProductsCubit, ListProductsState>(
-  builder: (context, state) {
-
-    final selectedProduct = context.read<ListProductsCubit>().state.product[
-    context.read<ListProductsCubit>().state.selectedItem
-    ];
-    return TextButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed(CheckoutScreen.route, arguments:
-            {
-              'selectedProduct': [selectedProduct],
-              'selectedQuantities': {selectedProduct.product_id: 1},
-              'totalPayment': selectedProduct.product_price,
-            });
-          },
-          child: Text(
-            "Buy Now",
-            style: TextStyle(color: Colors.white),
-          ));
-  },
-),
+        builder: (context, state) {
+          final selectedProduct = context
+              .read<ListProductsCubit>()
+              .state
+              .product[context.read<ListProductsCubit>().state.selectedItem];
+          return TextButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed(CheckoutScreen.route, arguments: {
+                  'selectedProduct': [selectedProduct],
+                  'selectedQuantities': {selectedProduct.product_id: 1},
+                  'totalPayment': selectedProduct.product_price,
+                });
+              },
+              child: Text(
+                "Buy Now",
+                style: TextStyle(color: Colors.white),
+              ));
+        },
+      ),
     );
   }
 }
 
 class AddToCartButton extends StatelessWidget {
-  const AddToCartButton({
-    super.key,
-  });
+  const AddToCartButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -234,54 +234,48 @@ class AddToCartButton extends StatelessWidget {
         .state
         .product[context.read<ListProductsCubit>().state.selectedItem];
 
-    //print("Hello $product");
     return Container(
       height: 50,
       color: Colors.green,
-      child: BlocProvider(
-        create: (context) => CartCubit()..loadCart(),
-        child: BlocBuilder<CartCubit, CartState>(
-          builder: (context, state) {
-            return TextButton(
-              onPressed: () {
-                final cartCubit = context.read<CartCubit>();
-                final product = context.read<ListProductsCubit>().state.product[
-                context.read<ListProductsCubit>().state.selectedItem
-                ];
-
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => BlocProvider.value(
-                    value: cartCubit,
-                    child: BottomSheetWidget(product: product),
+      child: BlocBuilder<CartCubit, CartState>( // Dùng instance từ main.dart
+        builder: (context, state) {
+          return TextButton(
+            onPressed: () {
+              final cartCubit = context.read<CartCubit>();
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => BlocProvider.value(
+                  value: cartCubit, // Truyền instance từ main.dart
+                  child: BottomSheetWidget(product: product),
+                ),
+              );
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  child: Icon(
+                    Icons.add_shopping_cart,
+                    color: Colors.white,
                   ),
-                );
-              },
-
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Icon(
-                      Icons.add_shopping_cart,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Expanded(
-                      child: Text(
+                ),
+                Expanded(
+                  child: Text(
                     "Add to Cart",
                     style: TextStyle(color: Colors.white),
-                  ))
-                ],
-              ),
-            );
-          },
-        ),
+                  ),
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 }
+
 class BottomSheetWidget extends StatelessWidget {
   final ProductModel product;
+
   const BottomSheetWidget({Key? key, required this.product}) : super(key: key);
 
   @override
@@ -289,45 +283,43 @@ class BottomSheetWidget extends StatelessWidget {
     final cartCubit = context.read<CartCubit>();
 
     return BlocBuilder<CartCubit, CartState>(
-  builder: (context, state) {
-    return Container(
-      height: 200,
-      child: Column(
-        children: [
-          Column(
+      builder: (context, state) {
+        return Container(
+          height: 200,
+          child: Column(
             children: [
-              Row(
+              Column(
                 children: [
-                  IconButton(
-                      onPressed: () {
-                        cartCubit.decrementQuantityInDetailScreen();
-                      },
-                      icon: Icon(Icons.remove)),
-                  Text("${context.read<CartCubit>().quantity}"),
-
-                  IconButton(
-                      onPressed: () {
-                        cartCubit.incrementQuantityInDetailScreen();
-                      },
-                      icon: Icon(Icons.add)),
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            cartCubit.decrementQuantityInDetailScreen();
+                          },
+                          icon: Icon(Icons.remove)),
+                      Text("${context.read<CartCubit>().quantity}"),
+                      IconButton(
+                          onPressed: () {
+                            cartCubit.incrementQuantityInDetailScreen();
+                          },
+                          icon: Icon(Icons.add)),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Map<int, int> qualities = {
+                        product.product_id: cartCubit.quantity
+                      };
+                      cartCubit.addToCart(context, product, qualities);
+                    },
+                    child: Text("Add to Cart"),
+                  ),
                 ],
-              ),
-              ElevatedButton(
-                onPressed: () {
-
-                  Map<int, int> qualities = {
-                    product.product_id: cartCubit.quantity
-                  };
-                  cartCubit.addToCart(context, product, qualities);
-                },
-                child: Text("Add to Cart"),
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
-  },
-);
   }
 }

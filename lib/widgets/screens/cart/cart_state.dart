@@ -9,6 +9,8 @@ part of 'cart_cubit.dart';
   final Map<int, int> selectedQuantities;
   final int totalPayment;
   final bool allSelected;
+
+
   const CartState.init({
     this.cartItems= const [],
     this.selectedItem = const [],

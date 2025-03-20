@@ -8,6 +8,7 @@ import 'package:project_one/widgets/screens/cart/cart_screen.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
 import 'package:project_one/widgets/screens/menu/menu_screen.dart';
 import '../../../common/enum/load_status.dart';
+import '../../common_widgets/cart_button.dart';
 import '../../common_widgets/notice_snackbar.dart';
 import 'list_products_cubit.dart';
 import 'package:intl/intl.dart';
@@ -48,11 +49,8 @@ class Page extends StatelessWidget {
 
             Expanded(
                 flex: 2,
-                child: IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(CartScreen.route);
-                    },
-                    icon: Icon(Icons.shopping_cart))),
+                child: CartButton(),
+            ),
           ],
         ),
       ),
