@@ -45,7 +45,7 @@ class _DetailScreenState extends State<DetailScreen> {
         var product = state.product[state.selectedItem];
         //print("Image detail is $baseUrl${product.product_image[2]}");
         return Scaffold(
-          bottomNavigationBar: bottomNavigatonBar(),
+          bottomNavigationBar: BottomNavigationBar(),
           appBar: AppBar(
             title: Row(
               children: [
@@ -175,8 +175,8 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 }
 
-class bottomNavigatonBar extends StatelessWidget {
-  const bottomNavigatonBar({super.key});
+class BottomNavigationBar extends StatelessWidget {
+  const BottomNavigationBar({super.key});
 
   @override
   Widget build(BuildContext context) {

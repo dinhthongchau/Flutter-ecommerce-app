@@ -28,9 +28,21 @@ class Page extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<CartCubit>().loadCart();
     return Scaffold(
-      bottomNavigationBar: bottomNavigatonBar(),
+      bottomNavigationBar: BottomNavigationBar(),
       appBar: AppBar(
-        title: Center(child: CustomBoldText(text: "Cart")),
+        title: BlocBuilder<CartCubit, CartState>(
+          builder: (context, state) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomBoldText(
+                    text: "Cart(${state.selectedProducts.length})"),
+                SizedBox(width: 40,)
+              ],
+
+            );
+          },
+        ),
       ),
       body: Body(),
     );
@@ -84,27 +96,31 @@ class ListItemsInCart extends StatelessWidget {
   }
 }
 
-class bottomNavigatonBar extends StatelessWidget {
-  const bottomNavigatonBar({super.key});
+class BottomNavigationBar extends StatelessWidget {
+  const BottomNavigationBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          flex: 4,
-          child: SelectAll(),
-        ),
-        Expanded(
-          flex: 3,
-          child: TotalCalculator(),
-        ),
-        Expanded(
-          flex: 3,
-          child: CheckOutButton(),
-        ),
-      ],
+    return SizedBox(
+      height: 100,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Divider(),
+          Expanded(
+            flex: 2,
+            child: SelectAll(),
+          ),
+          Expanded(
+            flex: 4,
+            child: TotalCalculator(),
+          ),
+          Expanded(
+            flex: 4,
+            child: CheckOutButton(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -116,9 +132,23 @@ class TotalCalculator extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
-        return Text(
-          "Total Payment: đ${state.totalPayment}",
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+        final formatCurrency = NumberFormat.decimalPattern('vi_VN');
+        String formattedTotal = formatCurrency.format(state.totalPayment);
+
+        return Row(
+          children: [
+            Text(
+              "Total Payment: ",
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              "đ$formattedTotal",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange),
+            )
+          ],
         );
       },
     );
@@ -137,12 +167,14 @@ class SelectAll extends StatelessWidget {
         return Row(
           children: [
             Checkbox(
+              activeColor: Colors.deepOrange,
+              checkColor: Colors.white,
               value: allSelected,
               onChanged: (value) {
                 context.read<CartCubit>().toggleSelectAll();
               },
             ),
-            const Text("Select all")
+            const Text("All")
           ],
         );
       },
@@ -165,7 +197,7 @@ class CheckOutButton extends StatelessWidget {
                 product.product_id, state.quantities[product.product_id] ?? 1));
         final totalPayment = state.totalPayment;
 
-        return TextButton(
+        return ElevatedButton(
             onPressed: () {
               if (state.selectedProducts.isEmpty) {
                 return;
@@ -176,7 +208,14 @@ class CheckOutButton extends StatelessWidget {
                 'totalPayment': totalPayment
               });
             },
-            child: Text("CheckoutPage"));
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepOrange,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8))),
+            child: Text(
+              "Buy now (${context.read<CartCubit>().state.selectedProducts.length})",
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ));
       },
     );
   }
@@ -201,12 +240,14 @@ class CartItemListTile extends StatelessWidget {
         bool isSelected = state.selectedItem.contains(itemsInCart.product_id);
 
         return Container(
-          height: 120,
+          height: 150,
           //padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Row(
             children: [
               // Checkbox ở bên trái
               Checkbox(
+                activeColor: Colors.deepOrange,
+                checkColor: Colors.white,
                 value: isSelected,
                 onChanged: (value) {
                   cubit_cart.toggleSelectItem(itemsInCart.product_id);
@@ -234,34 +275,77 @@ class CartItemListTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    SizedBox(
+                      height: 20,
+                    ),
                     Text(itemsInCart.product_name,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
-                    Text(itemsInCart.product_color),
+                    Card(
+                        color: Colors.white54,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(itemsInCart.product_color),
+                        )),
                     Text(
                       "đ${NumberFormat('#,###', 'vi').format(itemsInCart.product_price)}",
                       style: TextStyle(color: Colors.redAccent, fontSize: 15),
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey, width: 1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 2),
+                      // Giảm padding sát nhất
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
                               context
                                   .read<CartCubit>()
                                   .decrementQuantity(itemsInCart.product_id);
                             },
-                            icon: Icon(Icons.remove)),
-                        Text(
-                            " ${state.quantities[itemsInCart.product_id] ?? 1}"),
-                        IconButton(
-                            onPressed: () {
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child:
+                                  Center(child: Icon(Icons.remove, size: 14)),
+                            ),
+                          ),
+                          SizedBox(
+                              width: 1,
+                              height: 14,
+                              child: ColoredBox(color: Colors.grey)),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Text(
+                              "${state.quantities[itemsInCart.product_id] ?? 1}",
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                              width: 1,
+                              height: 14,
+                              child: ColoredBox(color: Colors.grey)),
+                          GestureDetector(
+                            onTap: () {
                               context
                                   .read<CartCubit>()
                                   .incrementQuantity(itemsInCart.product_id);
                             },
-                            icon: Icon(Icons.add)),
-                      ],
-                    ),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Center(child: Icon(Icons.add, size: 14)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
