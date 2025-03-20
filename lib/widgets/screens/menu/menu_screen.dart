@@ -1,0 +1,41 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project_one/widgets/screens/settings/settings_screen.dart';
+
+import '../../../main_cubit.dart';
+
+class MenuScreen extends StatelessWidget {
+  static const String route = "MenuScreen";
+
+  const MenuScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+
+        child: Column(
+          children: [
+            ListTile(title: Center(child: Text("Menu Screen")),),
+
+            ListTile(
+              tileColor: Colors.deepOrangeAccent,
+
+
+              title: Row(
+                children: [
+                  Text("Settings"),
+                  Icon(Icons.settings)
+                ],
+              ),
+
+              onTap: () {
+                Navigator.of(context).pushNamed(SettingsScreen.route);
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
