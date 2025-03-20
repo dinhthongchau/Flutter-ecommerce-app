@@ -285,34 +285,53 @@ class BottomSheetWidget extends StatelessWidget {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
         return Container(
-          height: 200,
+          height: 150,
           child: Column(
+            mainAxisSize: MainAxisSize.min, // Giúp column chỉ chiếm không gian cần thiết
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Column(
+
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            cartCubit.decrementQuantityInDetailScreen();
-                          },
-                          icon: Icon(Icons.remove)),
-                      Text("${context.read<CartCubit>().quantity}"),
-                      IconButton(
-                          onPressed: () {
-                            cartCubit.incrementQuantityInDetailScreen();
-                          },
-                          icon: Icon(Icons.add)),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Quanlity"),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  cartCubit.decrementQuantityInDetailScreen();
+                                },
+                                icon: Icon(Icons.remove)),
+                            Text("${context.read<CartCubit>().quantity}"),
+                            IconButton(
+                                onPressed: () {
+                                  cartCubit.incrementQuantityInDetailScreen();
+                                },
+                                icon: Icon(Icons.add)),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Map<int, int> qualities = {
-                        product.product_id: cartCubit.quantity
-                      };
-                      cartCubit.addToCart(context, product, qualities);
-                    },
-                    child: Text("Add to Cart"),
+                  SizedBox(
+                    width: 400,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Map<int, int> qualities = {
+                          product.product_id: cartCubit.quantity
+                        };
+                        cartCubit.addToCart(context, product, qualities);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange
+                      ),
+                      child: Text("Add to Cart",style: TextStyle(color: Colors.white),),
+                    ),
                   ),
                 ],
               ),
