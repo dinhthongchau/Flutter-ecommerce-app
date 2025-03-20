@@ -118,13 +118,18 @@ class _DetailScreenState extends State<DetailScreen> {
                         "đ${NumberFormat('#,###', 'vi').format(product.product_price)} ",
                         style: TextStyle(color: Colors.redAccent, fontSize: 25),
                       ),
-                      Text(product.product_name),
+                      Text(product.product_name,style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
                       // Text(product.product_price),
 
                       SizedBox(
                         height: 20,
                       ),
-                      Text("Description : "),
+
+                      CustomBoldText(text: "Description : ",style: TextStyle(fontSize: 20),),
+                      Divider(height: 2,),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Text(product.product_description),
                     ],
                   ),
