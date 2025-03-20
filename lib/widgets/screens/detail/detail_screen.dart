@@ -134,6 +134,7 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   SizedBox _buildSizedBoxForImages(ProductModel product, String? baseUrl) {
+    var numberCurrentIndex = _currentIndex + 1;
     return SizedBox(
       height: 450,
       child: Stack(children: [
@@ -146,6 +147,7 @@ class _DetailScreenState extends State<DetailScreen> {
             });
           },
           itemBuilder: (context, index) {
+
             return Container(
               decoration: BoxDecoration(
                   image: DecorationImage(
@@ -156,9 +158,9 @@ class _DetailScreenState extends State<DetailScreen> {
           },
         ),
         Positioned(
-          child: Text("$_currentIndex/${product.product_image.length}"),
           bottom: 20,
           right: 10,
+          child: Text("$numberCurrentIndex/${product.product_image.length}"),
         ),
       ]),
     );
