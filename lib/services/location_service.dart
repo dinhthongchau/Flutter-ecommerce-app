@@ -1,4 +1,4 @@
-// lib2/services/location_service.dart
+// lib/services/location_service.dart
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../models/location_model.dart';

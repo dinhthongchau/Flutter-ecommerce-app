@@ -1,4 +1,4 @@
-// lib2/widgets/screens/customer/create_customer_screen.dart
+// lib/widgets/screens/customer/create_customer_screen.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
