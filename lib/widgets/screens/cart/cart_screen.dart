@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:project_one/models/product_model.dart';
+import '../../common_widgets/bold_text.dart';
 import '../checkout/checkout_screen.dart';
 import 'cart_cubit.dart';
 
@@ -32,7 +33,7 @@ class Page extends StatelessWidget {
     return Scaffold(
       bottomNavigationBar: bottomNavigatonBar(),
       appBar: AppBar(
-        title: Text("Cart Screen"),
+        title: Center(child: CustomBoldText(text: "Cart")),
       ),
       body: Body(),
     );

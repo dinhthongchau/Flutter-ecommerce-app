@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/enum/load_status.dart';
 import '../../../models/order_model.dart';
+import '../../common_widgets/bold_text.dart';
 import '../customer/create_customer_screen.dart';
 
 //checkout_screen.dart
@@ -36,7 +37,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Check out")),
+      appBar: AppBar(title: Center(child: const CustomBoldText(text: "Check out"))),
       body: Body(),
     );
   }

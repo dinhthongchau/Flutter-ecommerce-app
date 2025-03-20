@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/widgets/screens/settings/settings_screen.dart';
 
 import '../../../main_cubit.dart';
+import '../../common_widgets/bold_text.dart';
 
 class MenuScreen extends StatelessWidget {
   static const String route = "MenuScreen";
@@ -16,7 +17,7 @@ class MenuScreen extends StatelessWidget {
 
         child: Column(
           children: [
-            ListTile(title: Center(child: Text("Menu Screen")),),
+            ListTile(title: Center(child: CustomBoldText(text: "Menu")),),
 
             ListTile(
               tileColor: Colors.deepOrangeAccent,

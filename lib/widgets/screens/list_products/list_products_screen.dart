@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/repositories/api.dart';
+import 'package:project_one/widgets/common_widgets/bold_text.dart';
 import 'package:project_one/widgets/screens/cart/cart_screen.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
 import 'package:project_one/widgets/screens/menu/menu_screen.dart';
-
 import '../../../common/enum/load_status.dart';
-import '../../../main_cubit.dart';
 import '../../common_widgets/notice_snackbar.dart';
 import 'list_products_cubit.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 class ListProductsScreen extends StatelessWidget {
   static const String route = "ListProductsScreen";
@@ -41,10 +40,14 @@ class Page extends StatelessWidget {
         title: Row(
         mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Expanded(
+                flex: 8,
+                child: Center(child: CustomBoldText(text: "List Product"))
+            ),
 
 
             Expanded(
-                flex: 1,
+                flex: 2,
                 child: IconButton(
                     onPressed: () {
                       Navigator.of(context).pushNamed(CartScreen.route);

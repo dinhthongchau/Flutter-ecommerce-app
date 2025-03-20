@@ -12,6 +12,7 @@ import 'package:project_one/widgets/screens/checkout/checkout_screen.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../common_widgets/bold_text.dart';
 import '../../common_widgets/notice_snackbar.dart';
 
 //thêm nút điều hướng tría phải và mô ta tỉnh bay dep hon . (not now)
@@ -47,12 +48,12 @@ class _DetailScreenState extends State<DetailScreen> {
           appBar: AppBar(
             title: Row(
               children: [
-                Text("Detail Screen"),
-                TextButton(
+                Expanded(flex:8,  child: Center(child: CustomBoldText(text: "List Product"))),
+                IconButton(
                     onPressed: () {
                       Navigator.of(context).pushNamed(CartScreen.route);
                     },
-                    child: Text("Cart"))
+                    icon: Icon(Icons.shopping_cart))
               ],
             ),
             leading: IconButton(
