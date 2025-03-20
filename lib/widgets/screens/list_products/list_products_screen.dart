@@ -7,6 +7,7 @@ import 'package:project_one/widgets/screens/cart/cart_screen.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
 
 import '../../../common/enum/load_status.dart';
+import '../../../main_cubit.dart';
 import '../../common_widgets/notice_snackbar.dart';
 import 'list_products_cubit.dart';
 import 'package:intl/intl.dart';
@@ -31,13 +32,30 @@ class Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: Text("Drawer"),
-      ),
       appBar: AppBar(
         title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(flex: 2, child: Text("List Products")),
+            Expanded( child: Text("Dark mode ")),
+            BlocBuilder<MainCubit, MainState>(
+              builder: (context, state) {
+                var isLightTheme = state.isLightTheme;
+                return Expanded(
+
+                    child:
+                          Switch(
+                            value: isLightTheme,
+                              activeColor: Colors.black,
+
+
+                            onChanged: (value){
+                          isLightTheme = value;
+                          context.read<MainCubit>().setTheme(isLightTheme);
+
+                        }));
+              },
+            ),
+
             Expanded(
                 flex: 1,
                 child: IconButton(
@@ -45,14 +63,6 @@ class Page extends StatelessWidget {
                       Navigator.of(context).pushNamed(CartScreen.route);
                     },
                     icon: Icon(Icons.shopping_cart))),
-            Expanded(
-                flex: 1,
-                child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Login",
-                      style: TextStyle(backgroundColor: Colors.orangeAccent),
-                    )))
           ],
         ),
       ),
@@ -106,9 +116,6 @@ class ListProductPage extends StatelessWidget {
               ),
               itemCount: state.product.length,
               itemBuilder: (context, index) {
-                //print( "Image URL: $baseUrl${state.product[index].product_image[0]}");
-                //print("Image URL: ${state.product[index].product_image[0]}");
-                print("Image URL: $baseUrl${state.product[index].product_image[0]}");
                 return GestureDetector(
                   onTap: () {
                     cubit_product.setSelectedIndex(index);
@@ -118,15 +125,17 @@ class ListProductPage extends StatelessWidget {
                   child: Card(
                     child: Column(
                       children: [
-                    CachedNetworkImage(
-
-                    imageUrl: "$baseUrl${state.product[index].product_image[0]}",
-                      height: 150,
-                      width: double.infinity,
-                      fit: BoxFit.contain,
-                      placeholder: (context, url) => new CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                    ),
+                        CachedNetworkImage(
+                          imageUrl:
+                              "$baseUrl${state.product[index].product_image[0]}",
+                          height: 150,
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                          placeholder: (context, url) =>
+                              new CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        ),
                         Container(
                           padding: EdgeInsets.all(20),
                           child: Column(

@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:project_one/common/enum/drawer_item.dart';
+
 
 import 'repositories/log.dart';
 
@@ -7,6 +7,10 @@ part 'main_state.dart';
 
 class MainCubit extends Cubit<MainState> {
   MainCubit() : super(const MainState.init());
+
+  void setTheme(bool isLightTheme) {
+    emit(state.copyWith(isLightTheme: isLightTheme));
+  }
 }
 //log
 

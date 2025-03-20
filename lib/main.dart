@@ -42,7 +42,9 @@ class Provider extends StatelessWidget {
     return RepositoryProvider<Api>(
       create: (context) => ApiServer(context.read<Log>()),
       child: BlocProvider(
-        create: (context) => CustomerCubit(context.read<Api>())..loadCustomer(),
+        create: (context) =>
+        CustomerCubit(context.read<Api>())
+          ..loadCustomer(),
         child: App(),
       ),
     );
@@ -58,9 +60,18 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => MainCubit(),
-        child: SafeArea(child: MaterialApp(
-          onGenerateRoute: mainRoute,
-          initialRoute: ListProductsScreen.route,
+        child: SafeArea(child: BlocBuilder<MainCubit, MainState>(
+          builder: (context, state) {
+            return MaterialApp(
+
+              darkTheme: ThemeData.dark(),
+              theme: ThemeData.light(),
+              themeMode: state.isLightTheme ? ThemeMode.light : ThemeMode.dark,
+              debugShowCheckedModeBanner: false,
+              onGenerateRoute: mainRoute,
+              initialRoute: ListProductsScreen.route,
+            );
+          },
         )));
   }
 }
