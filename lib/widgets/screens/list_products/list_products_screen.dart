@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/repositories/api.dart';
 import 'package:project_one/widgets/screens/cart/cart_screen.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
+import 'package:project_one/widgets/screens/menu/menu_screen.dart';
 
 import '../../../common/enum/load_status.dart';
 import '../../../main_cubit.dart';
@@ -32,29 +33,15 @@ class Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: MenuScreen(),
+      ),
       appBar: AppBar(
+
         title: Row(
         mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded( child: Text("Dark mode ")),
-            BlocBuilder<MainCubit, MainState>(
-              builder: (context, state) {
-                var isLightTheme = state.isLightTheme;
-                return Expanded(
 
-                    child:
-                          Switch(
-                            value: isLightTheme,
-                              activeColor: Colors.black,
-
-
-                            onChanged: (value){
-                          isLightTheme = value;
-                          context.read<MainCubit>().setTheme(isLightTheme);
-
-                        }));
-              },
-            ),
 
             Expanded(
                 flex: 1,

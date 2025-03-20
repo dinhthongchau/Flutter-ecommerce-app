@@ -4,6 +4,8 @@ import 'package:project_one/models/product_model.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
+import 'package:project_one/widgets/screens/menu/menu_screen.dart';
+import 'package:project_one/widgets/screens/settings/settings_screen.dart';
 import 'repositories/api.dart';
 import 'widgets/screens/customer/create_customer_screen.dart';
 import 'widgets/screens/customer/customer_cubit.dart';
@@ -55,6 +57,10 @@ Route<dynamic> mainRoute(RouteSettings settings) {
                 value: context.read<CustomerCubit>(),
                 child: CreateCustomerScreen(),
               ));
+    case MenuScreen.route:
+      return MaterialPageRoute(builder: (context) => MenuScreen());
+    case SettingsScreen.route:
+      return MaterialPageRoute(builder: (context) => SettingsScreen());
     default:
       return MaterialPageRoute(builder: (context) => ListProductsScreen());
   }
