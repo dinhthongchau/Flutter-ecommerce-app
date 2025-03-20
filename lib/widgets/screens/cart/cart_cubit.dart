@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:project_one/widgets/common_widgets/notice_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,8 +63,25 @@ class CartCubit extends Cubit<CartState> {
           allSelected: false)); // Emit empty state on error
     }
   }
+  int quantity =1;
 
-  Future<void> addToCart(BuildContext context, ProductModel product) async {
+
+  void incrementQuantityInDetailScreen(){
+
+    quantity ++;
+    //Sao chép toàn bộ dữ liệu hiện có trong state.quantities
+    emit(state.copyWith(quantities: {...state.quantities, -1: quantity}));
+
+  }
+  void decrementQuantityInDetailScreen(){
+    if ( quantity > 1){
+      quantity --;
+      emit(state.copyWith(quantities: {...state.quantities, -1: quantity}));
+    }
+
+
+  }
+  Future<void> addToCart(BuildContext context, ProductModel product,  Map<int, int> quantities) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       List<String>? cartData = prefs.getStringList('cart') ?? [];
@@ -74,16 +90,17 @@ class CartCubit extends Cubit<CartState> {
           cartData.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
 
       bool productExist = false;
+      quantities[product.product_id] = quantity;
       for (var item in cartItems) {
         if (item['product_id'] == product.product_id) {
-          item['quantity'] = (item['quantity'] ?? 1) + 1;
+          item['quantity'] = (item['quantity'] ?? 1) + quantity;
           productExist = true;
           break;
         }
       }
       if (!productExist) {
         Map<String, dynamic> newItem = product.toJson();
-        newItem['quantity'] = 1;
+        newItem['quantity'] = quantities[product.product_id] ?? 1;
         cartItems.add(newItem);
       }
 
@@ -142,13 +159,12 @@ class CartCubit extends Cubit<CartState> {
   void toggleSelectAll() {
     bool newSelectAllState = !(state.allSelected);
     List<ProductModel> updatedItems = List.from(state.cartItems);
-    List<ProductModel> selectedProducts = [];
     Map<int, int> selectedQuantities = {};
     List<int> selectedItem =
         state.cartItems.map((item) => item.product_id).toList();
     int totalPayment = -1;
     if (newSelectAllState) {
-      final selectedProducts = List<ProductModel>.from(state.cartItems) ?? [];
+      final selectedProducts = List<ProductModel>.from(state.cartItems) ;
       final selectedQuantities = Map<int, int>.from(state.quantities);
       totalPayment = selectedProducts.fold(0, (sum, item) {
         int quantity = selectedQuantities[item.product_id] ?? 1;
@@ -157,7 +173,6 @@ class CartCubit extends Cubit<CartState> {
     } else {
 
       selectedItem = [];
-      selectedProducts = [];
       selectedQuantities = {};
       totalPayment = 0;
     }
@@ -225,5 +240,10 @@ class CartCubit extends Cubit<CartState> {
       return jsonEncode(itemJson);
     }).toList();
     await prefs.setStringList('cart', updatedCartData); // Lưu lại giỏ hàng
+  }
+
+  Future<void> clearProductInCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('cart', []);
   }
 }

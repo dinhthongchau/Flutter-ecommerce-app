@@ -7,6 +7,7 @@ import 'package:project_one/repositories/api.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
+import 'package:project_one/widgets/screens/list_products/list_products_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/enum/load_status.dart';
@@ -48,71 +49,74 @@ class Body extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController _noteController = TextEditingController();
 
+    return BlocBuilder<CheckoutCubit, CheckoutState>(
+  builder: (contextCheckout, stateCheckout) {
     return BlocBuilder<CustomerCubit, CustomerState>(
       builder: (context, state) {
         if (state.loadStatus == LoadStatus.Loading) {
           return const Center(
-              child:
-                  CircularProgressIndicator()); // Show loading spinner while submitting
-        } else if (state.loadStatus == LoadStatus.Error) {
-          // Hiển thị thông báo đơn hàng thành công và cho phép đặt hàng mới
+              child: CircularProgressIndicator()); // Show loading spinner while submitting
+        } else if (stateCheckout.loadStatus == LoadStatus.Done) {
+          context.read<CustomerCubit>().clearOrder();
+          context.read<CartCubit>().clearProductInCart();
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text("Order successfully submitted!"),
               ElevatedButton(
                 onPressed: () {
-                  // Reset các trường dữ liệu để đặt hàng mới
-                  _noteController.clear();
-                  // Thực hiện lại giao diện đặt hàng mới
-                  context.read<CheckoutCubit>().emit(state.copyWith(
-                      loadStatus: LoadStatus.Init) as CheckoutState);
+                  Navigator.of(context).pushNamed(ListProductsScreen.route);
                 },
                 child: const Text("Place New Order"),
               ),
             ],
           );
-        } else if (state.loadStatus == LoadStatus.Error) {
-          return const Center(
-              child: Text("An error occurred while submitting the order."));
         }
-        final customer =
-            state.customer.isNotEmpty ? state.customer.first : null;
-        return BlocBuilder<CartCubit, CartState>(
-          builder: (context, state) {
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  CustomerContainer(customer: customer),
-                  ProductOrderContainer(),
-                  NoteContainer(noteController: _noteController),
-                  PaymentMethodContainer(),
-                  DetailPaymentContainer(),
-                  ElevatedButton(
-                      onPressed: () {
-                        final orderNote = context.read<CheckoutCubit>().generateOrderNote(
-                            state.selectedProducts,  // Danh sách sản phẩm đã chọn
-                            state.selectedQuantities, // Số lượng tương ứng
-                            _noteController.text
-                        );
-                        final order = OrderModel(
-                          customerId: customer?.customerId ?? 0,
-                          orderTotal: double.parse(state.totalPayment.toString()),
-                          orderPaymentMethod:context.read<CheckoutCubit>().state.selectedMethod,
-                          orderStatus: "OK2",
-                          orderNote: orderNote,
-                        );
-                        context.read<CheckoutCubit>().submitOrder(order);
-                      },
-                      child: const Text('Order Now'))
-                ],
-              ),
-            );
-          },
-        );
+        else if (stateCheckout.loadStatus == LoadStatus.Error) {
+          return const Center( child: Text("An error occurred while submitting the order."));
+        }
+        else  {
+          final customer =
+          state.customer.isNotEmpty ? state.customer.first : null;
+          return BlocBuilder<CartCubit, CartState>(
+            builder: (context, state) {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    CustomerContainer(),
+                    ProductOrderContainer(),
+                    NoteContainer(noteController: _noteController),
+                    PaymentMethodContainer(),
+                    DetailPaymentContainer(),
+                    ElevatedButton(
+                        onPressed: () {
+                          final orderNote = context.read<CheckoutCubit>().generateOrderNote(
+                              state.selectedProducts,  // Danh sách sản phẩm đã chọn
+                              state.selectedQuantities, // Số lượng tương ứng
+                              _noteController.text
+                          );
+                          final order = OrderModel(
+                            customerId: customer?.customerId ?? 0,
+                            orderTotal: double.parse(state.totalPayment.toString()),
+                            orderPaymentMethod:context.read<CheckoutCubit>().state.selectedMethod,
+                            orderStatus: "OK2",
+                            orderNote: orderNote,
+                          );
+                          context.read<CheckoutCubit>().submitOrder(order);
+                        },
+                        child: const Text('Order Now'))
+                  ],
+                ),
+              );
+            },
+          );
+        }
+
       },
     );
+  },
+);
   }
 }
 
@@ -214,7 +218,7 @@ class ProductOrderContainer extends StatelessWidget {
                 children: [
                   Image.network(
                     "$baseUrl${product.product_image[0]}",
-                    width: 80, // Điều chỉnh kích thước phù hợp
+                    width: 80,
                     height: 80,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
@@ -225,8 +229,8 @@ class ProductOrderContainer extends StatelessWidget {
                   Column(
 
                     children: [
-                      Text("${product.product_name}"),
-                      Text("${product.product_color}"),
+                      Text(product.product_name),
+                      Text(product.product_color),
                       Row(
                         mainAxisAlignment:MainAxisAlignment.spaceBetween ,
                         children: [
@@ -253,13 +257,14 @@ class ProductOrderContainer extends StatelessWidget {
 class CustomerContainer extends StatelessWidget {
   const CustomerContainer({
     super.key,
-    required this.customer,
   });
-
-  final CustomerModel? customer;
+  
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<CustomerCubit, CustomerState>(
+  builder: (context, state) {
+    final customer = state.customer.isNotEmpty ? state.customer.first : null;
     return Container(
       color: Colors.green,
       height: 200,
@@ -273,6 +278,11 @@ class CustomerContainer extends StatelessWidget {
             Text("Email: ${customer!.customerEmail}"),
             Text("Phone: ${customer!.customerPhone}"),
             Text("Address: ${customer!.customerAddress}"),
+            ElevatedButton(
+              onPressed: ()  {context.read<CustomerCubit>().removeCustomer();
+              },
+              child: Text("Remove Customer"),
+            ),
           ] else ...[
             ElevatedButton(
               onPressed: () async {
@@ -283,7 +293,8 @@ class CustomerContainer extends StatelessWidget {
                   ),
                 );
                 if (result != null) {
-                  context.read<CustomerCubit>().createCustomer(result);
+                  await context.read<CustomerCubit>().createCustomer(result);
+                  await context.read<CustomerCubit>().loadCustomer();
                 }
               },
               child: Text("Create Customer"),
@@ -292,6 +303,8 @@ class CustomerContainer extends StatelessWidget {
         ],
       ),
     );
+  },
+);
   }
 }
 

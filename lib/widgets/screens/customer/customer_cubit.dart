@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:project_one/models/customer_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +42,12 @@ class CustomerCubit extends Cubit<CustomerState> {
   }
   Future<void> createCustomer(CustomerModel customer) async {
     emit(state.copyWith(loadStatus: LoadStatus.Loading));
-
+    // Cập nhật trạng thái thành Done với dữ liệu cục bộ
+    emit(state.copyWith(
+      loadStatus: LoadStatus.Done,
+      idCustomer: customer.customerId,
+      customer: [customer],
+    ));
     try {
       final response = await _api.createCustomer(customer);
       //print("API Response1: $response");
@@ -77,9 +83,45 @@ class CustomerCubit extends Cubit<CustomerState> {
     }
 
     catch (e, stackTrace) {
-      print("Error: $e");
+      print("Error in CustomerCubit: $e");
       print("StackTrace: $stackTrace");
       emit(state.copyWith(loadStatus: LoadStatus.Error));
     }
   }
+
+  Future<void> updateCustomer(CustomerModel updatedCustomer) async {
+    emit(state.copyWith(loadStatus: LoadStatus.Loading));
+    try{
+     final response =  await _api.createCustomer(updatedCustomer);
+     if ( response != null){
+       emit(state.copyWith(loadStatus: LoadStatus.Done));
+     }
+     else{
+       emit(state.copyWith(loadStatus: LoadStatus.Error));
+     }
+
+
+    }
+    catch(e){
+      print("Error updating customer: $e");
+      emit(state.copyWith(loadStatus: LoadStatus.Error));
+    }
+  }
+
+  void clearOrder(){
+    try{
+      emit(state.copyWith(loadStatus: LoadStatus.Init));
+    }
+    catch(e){
+      print(e);
+    }
+
+  }
+  Future<void> removeCustomer() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('customer');
+    emit(state.copyWith(customer: [], idCustomer: 0, loadStatus: LoadStatus.Init));
+  }
+
+
 }

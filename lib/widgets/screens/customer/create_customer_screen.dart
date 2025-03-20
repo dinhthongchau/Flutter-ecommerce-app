@@ -34,27 +34,45 @@ class Page extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text("Create Customer Screen"),),
-        body: BlocProvider(
-          create: (context) => CustomerCubit(context.read<Api>())..loadCustomer(),
-          child: Body(),
-        )
+        body: Body()
     );
   }
 }
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
   const Body({
     super.key,
   });
 
+  @override
+  State<Body> createState() => _BodyState();
 
+}
+
+class _BodyState extends State<Body> {
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  late TextEditingController _addressController;
+  @override
+  void initState() {
+    super.initState();
+    final state = context.read<CustomerCubit>().state;
+
+    // Kiểm tra nếu danh sách khách hàng có dữ liệu
+    final customer = state.customer.isNotEmpty ? state.customer.first : null;
+
+    // Khởi tạo TextEditingController với dữ liệu của khách hàng
+    _nameController = TextEditingController(text: customer?.customerName ?? '');
+    _emailController = TextEditingController(text: customer?.customerEmail ?? '');
+    _phoneController = TextEditingController(text: customer?.customerPhone ?? '');
+    _addressController = TextEditingController(text: customer?.customerAddress ?? '');
+  }
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _nameController = TextEditingController();
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _phoneController = TextEditingController();
-    final TextEditingController _addressController = TextEditingController();
-    late LoadStatus loadStatus;
+
+
+
 
 
     return BlocBuilder<CustomerCubit, CustomerState>(

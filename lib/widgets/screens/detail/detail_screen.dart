@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -124,35 +126,33 @@ class _DetailScreenState extends State<DetailScreen> {
 
   SizedBox _buildSizedBoxForImages(ProductModel product, String? baseUrl) {
     return SizedBox(
-                  height: 450,
-                  child: Stack(children: [
-                    PageView.builder(
-                      controller: _pageController,
-                      itemCount: product.product_image.length,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentIndex = index;
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        return Container(
-                          decoration: BoxDecoration(
-
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                      "$baseUrl${product.product_image[index]}"),
-                                  fit: BoxFit.contain)),
-                        );
-                      },
-                    ),
-                    Positioned(
-                      child: Text(
-                          "$_currentIndex/${product.product_image.length}"),
-                      bottom: 20,
-                      right: 10,
-                    ),
-                  ]),
-                );
+      height: 450,
+      child: Stack(children: [
+        PageView.builder(
+          controller: _pageController,
+          itemCount: product.product_image.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return Container(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage(
+                          "$baseUrl${product.product_image[index]}"),
+                      fit: BoxFit.contain)),
+            );
+          },
+        ),
+        Positioned(
+          child: Text("$_currentIndex/${product.product_image.length}"),
+          bottom: 20,
+          right: 10,
+        ),
+      ]),
+    );
   }
 }
 
@@ -206,37 +206,101 @@ class AddToCartButton extends StatelessWidget {
         .read<ListProductsCubit>()
         .state
         .product[context.read<ListProductsCubit>().state.selectedItem];
+
     //print("Hello $product");
     return Container(
       height: 50,
       color: Colors.green,
       child: BlocProvider(
-  create: (context) => CartCubit()..loadCart(),
-  child: BlocBuilder<CartCubit, CartState>(
-  builder: (context, state) {
-    return TextButton(
-        onPressed: () {
-          context.read<CartCubit>().addToCart(context, product);
-        },
-        child: Column(
-          children: [
-            Expanded(
-              child: Icon(
-                Icons.add_shopping_cart,
-                color: Colors.white,
+        create: (context) => CartCubit()..loadCart(),
+        child: BlocBuilder<CartCubit, CartState>(
+          builder: (context, state) {
+            return TextButton(
+              onPressed: () {
+                final cartCubit = context.read<CartCubit>();
+                final product = context.read<ListProductsCubit>().state.product[
+                context.read<ListProductsCubit>().state.selectedItem
+                ];
+
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => BlocProvider.value(
+                    value: cartCubit,
+                    child: BottomSheetWidget(product: product),
+                  ),
+                );
+              },
+
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Icon(
+                      Icons.add_shopping_cart,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Expanded(
+                      child: Text(
+                    "Add to Cart",
+                    style: TextStyle(color: Colors.white),
+                  ))
+                ],
               ),
-            ),
-            Expanded(
-                child: Text(
-              "Add to Cart",
-              style: TextStyle(color: Colors.white),
-            ))
-          ],
+            );
+          },
         ),
-      );
-  },
-),
-),
+      ),
     );
+  }
+}
+class BottomSheetWidget extends StatelessWidget {
+  final ProductModel product;
+  const BottomSheetWidget({Key? key, required this.product}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final cartCubit = context.read<CartCubit>();
+
+    return BlocBuilder<CartCubit, CartState>(
+  builder: (context, state) {
+    return Container(
+      height: 200,
+      child: Column(
+        children: [
+          Column(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        cartCubit.decrementQuantityInDetailScreen();
+                      },
+                      icon: Icon(Icons.remove)),
+                  Text("${context.read<CartCubit>().quantity}"),
+
+                  IconButton(
+                      onPressed: () {
+                        cartCubit.incrementQuantityInDetailScreen();
+                      },
+                      icon: Icon(Icons.add)),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () {
+
+                  Map<int, int> qualities = {
+                    product.product_id: cartCubit.quantity
+                  };
+                  cartCubit.addToCart(context, product, qualities);
+                },
+                child: Text("Add to Cart"),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  },
+);
   }
 }

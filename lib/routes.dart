@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project_one/models/customer_model.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
@@ -20,11 +19,11 @@ Route<dynamic> mainRoute(RouteSettings settings) {
     case ListProductsScreen.route:
       return MaterialPageRoute(builder: (context) => ListProductsScreen());
     case DetailScreen.route:
-      var cubit_product = (settings.arguments
+      var cubitProduct = (settings.arguments
           as Map<String, dynamic>)['cubit_product'] as ListProductsCubit;
       return MaterialPageRoute(
         builder: (context) =>
-            BlocProvider.value(value: cubit_product, child: DetailScreen()),
+            BlocProvider.value(value: cubitProduct, child: DetailScreen()),
       );
     case CartScreen.route:
       return MaterialPageRoute(builder: (context) => CartScreen());
@@ -44,14 +43,18 @@ Route<dynamic> mainRoute(RouteSettings settings) {
                           selectedProduct, selectedQuantities, totalPayment),
                   ),
                   BlocProvider(
-                      create: (context) =>
-                          CustomerCubit(context.read<Api>())..loadCustomer()),
-                  BlocProvider(create: (context) => CheckoutCubit(context.read<Api>()) ),
+                      create: (context) => CustomerCubit(context.read<Api>())..loadCustomer()),
+                  BlocProvider(
+                      create: (context) => CheckoutCubit(context.read<Api>())),
                 ],
                 child: CheckoutScreen(),
               ));
     case CreateCustomerScreen.route:
-      return MaterialPageRoute(builder: (context) => CreateCustomerScreen());
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+                value: context.read<CustomerCubit>(),
+                child: CreateCustomerScreen(),
+              ));
     default:
       return MaterialPageRoute(builder: (context) => ListProductsScreen());
   }

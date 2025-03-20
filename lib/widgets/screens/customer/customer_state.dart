@@ -5,6 +5,7 @@ class CustomerState {
   final List<CustomerModel> customer;
   final LoadStatus loadStatus;
   final int idCustomer;
+
   const CustomerState.init(
       {
         this.customer = const [],

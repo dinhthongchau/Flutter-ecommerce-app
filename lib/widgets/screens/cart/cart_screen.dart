@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:project_one/models/product_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../checkout/checkout_screen.dart';
 import 'cart_cubit.dart';
 
