@@ -43,7 +43,7 @@ class Page extends StatelessWidget {
           children: [
             Expanded(
                 flex: 8,
-                child: Center(child: CustomBoldText(text: "List Product"))
+                child: Center(child: CustomBoldText(text: "List Products"))
             ),
 
 

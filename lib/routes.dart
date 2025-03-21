@@ -17,51 +17,53 @@ import 'widgets/screens/detail/detail_screen.dart';
 //routes.dart
 //test
 Route<dynamic> mainRoute(RouteSettings settings) {
-  switch (settings.name) {
-    case ListProductsScreen.route:
-      return MaterialPageRoute(builder: (context) => ListProductsScreen());
-    case DetailScreen.route:
-      var cubitProduct = (settings.arguments
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) {
+      switch (settings.name) {
+        case ListProductsScreen.route:
+          return ListProductsScreen();
+        case DetailScreen.route:
+          var cubitProduct = (settings.arguments
           as Map<String, dynamic>)['cubit_product'] as ListProductsCubit;
-      return MaterialPageRoute(
-        builder: (context) =>
-            BlocProvider.value(value: cubitProduct, child: DetailScreen()),
+          return BlocProvider.value(
+            value: cubitProduct,
+            child: DetailScreen(),
+          );
+        case CartScreen.route:
+          return CartScreen();
+        case CheckoutScreen.route:
+          var args = settings.arguments as Map<String, dynamic>;
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => CartCubit()
+                  ..initializeCart(args['selectedProduct'], args['selectedQuantities'], args['totalPayment']),
+              ),
+              BlocProvider(
+                  create: (context) => CustomerCubit(context.read<Api>())..loadCustomer()),
+              BlocProvider(
+                  create: (context) => CheckoutCubit(context.read<Api>())),
+            ],
+            child: CheckoutScreen(),
+          );
+        case CreateCustomerScreen.route:
+          return BlocProvider.value(
+            value: context.read<CustomerCubit>(),
+            child: CreateCustomerScreen(),
+          );
+        case MenuScreen.route:
+          return MenuScreen();
+        case SettingsScreen.route:
+          return SettingsScreen();
+        default:
+          return ListProductsScreen();
+      }
+    },
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: animation,
+        child: child,
       );
-    case CartScreen.route:
-      return MaterialPageRoute(builder: (context) => CartScreen());
-    case CheckoutScreen.route:
-      var selectedProduct = (settings.arguments
-          as Map<String, dynamic>)['selectedProduct'] as List<ProductModel>;
-      var selectedQuantities = (settings.arguments
-          as Map<String, dynamic>)['selectedQuantities'] as Map<int, int>;
-      var totalPayment =
-          (settings.arguments as Map<String, dynamic>)['totalPayment'];
-      return MaterialPageRoute(
-          builder: (context) => MultiBlocProvider(
-                providers: [
-                  BlocProvider(
-                    create: (context) => CartCubit()
-                      ..initializeCart(
-                          selectedProduct, selectedQuantities, totalPayment),
-                  ),
-                  BlocProvider(
-                      create: (context) => CustomerCubit(context.read<Api>())..loadCustomer()),
-                  BlocProvider(
-                      create: (context) => CheckoutCubit(context.read<Api>())),
-                ],
-                child: CheckoutScreen(),
-              ));
-    case CreateCustomerScreen.route:
-      return MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-                value: context.read<CustomerCubit>(),
-                child: CreateCustomerScreen(),
-              ));
-    case MenuScreen.route:
-      return MaterialPageRoute(builder: (context) => MenuScreen());
-    case SettingsScreen.route:
-      return MaterialPageRoute(builder: (context) => SettingsScreen());
-    default:
-      return MaterialPageRoute(builder: (context) => ListProductsScreen());
-  }
+    },
+  );
 }

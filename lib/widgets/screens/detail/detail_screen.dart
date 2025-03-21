@@ -48,12 +48,10 @@ class _DetailScreenState extends State<DetailScreen> {
           bottomNavigationBar: BottomNavigationBar(),
           appBar: AppBar(
             title: Row(
-              children: [
-                Expanded(
-                    flex: 8,
-                    child: Center(child: CustomBoldText(text: "List Product"))),
 
-                Expanded(flex: 2,child: CartButton()),
+              children: [
+                Spacer(),
+                CartButton(),
 
               ],
             ),
