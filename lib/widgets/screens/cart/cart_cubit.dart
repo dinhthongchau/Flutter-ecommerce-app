@@ -1,212 +1,178 @@
-import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:project_one/models/product_model.dart';
-import 'package:project_one/widgets/common_widgets/notice_snackbar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import '../../../common/enum/load_status.dart';
+import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:project_one/common/enum/load_status.dart';
+import 'package:project_one/models/product_model.dart';
+import 'package:project_one/services/storage_service.dart';
+import 'package:project_one/widgets/common_widgets/notice_snackbar.dart';
 
-//cart_cubit.dart
 part 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
+  final StorageService _storage = StorageService();
+  int quantity = 1;
+
   CartCubit() : super(CartState.init());
 
+  /// Loads cart data from storage
   Future<void> loadCart() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      List<String>? cartData = prefs.getStringList('cart') ?? [];
-      List<ProductModel> items = [];
-      Map<int, int> quantities = {};
-      int totalPayment = 0;
+      final cartData = await _storage.getList('cart') ?? [];
+      final items = <ProductModel>[];
+      final quantities = <int, int>{};
+      var totalPayment = 0;
 
-      for (String item in cartData) {
+      for (final item in cartData) {
         try {
-          // Print the raw data for debugging
-          //print('Raw JSON data: $item');
-
-          Map<String, dynamic> jsonMap = jsonDecode(item);
-          ProductModel product = ProductModel.fromJson(jsonMap);
-          int quantity = jsonMap['quantity'];
+          final jsonMap = jsonDecode(item);
+          final product = ProductModel.fromJson(jsonMap);
+          final qty = (jsonMap['quantity'] as num?)?.toInt() ?? 1;
           items.add(product);
-          quantities[product.product_id] = jsonMap['quantity'] ?? 1;
-          totalPayment += product.product_price * quantity;
+          quantities[product.product_id] = qty;
+          totalPayment += product.product_price * qty;
         } catch (e) {
-          print('Error parsing item: $item');
           print('Parse error: $e');
-          // Skip invalid items instead of failing the whole load
           continue;
         }
       }
 
       emit(CartState(
-          cartItems: items,
-          selectedItem: [],
-          loadStatus: LoadStatus.Done,
-          quantities: quantities,
-          selectedProducts: [],
-          selectedQuantities: {},
-          totalPayment: totalPayment,
-          allSelected: false));
+        cartItems: items,
+        quantities: quantities,
+        totalPayment: totalPayment,
+        selectedItem: [],
+        selectedProducts: [],
+        selectedQuantities: {},
+        loadStatus: LoadStatus.Done,
+        allSelected: false,
+      ));
     } catch (e) {
-      print('Error loading cart: $e');
-      emit(CartState(
-          cartItems: [],
-          selectedItem: [],
-          loadStatus: LoadStatus.Error,
-          quantities: {},
-          selectedProducts: [],
-          selectedQuantities: {},
-          totalPayment: 0,
-          allSelected: false)); // Emit empty state on error
+      print('Load cart error: $e');
+      emit(CartState.init(loadStatus: LoadStatus.Error));
     }
   }
-  int quantity =1;
 
-
-  void incrementQuantityInDetailScreen(){
-
-    quantity ++;
-    //Sao chép toàn bộ dữ liệu hiện có trong state.quantities
+  /// Increases quantity in detail screen
+  void incrementQuantityInDetailScreen() {
+    quantity++;
     emit(state.copyWith(quantities: {...state.quantities, -1: quantity}));
-
   }
-  void decrementQuantityInDetailScreen(){
-    if ( quantity > 1){
-      quantity --;
+
+  /// Decreases quantity in detail screen
+  void decrementQuantityInDetailScreen() {
+    if (quantity > 1) {
+      quantity--;
       emit(state.copyWith(quantities: {...state.quantities, -1: quantity}));
     }
-
-
   }
-  Future<void> addToCart(BuildContext context, ProductModel product,  Map<int, int> quantities) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      List<String>? cartData = prefs.getStringList('cart') ?? [];
-      //cart.add(jsonEncode(product.toJson()));
-      List<Map<String, dynamic>> cartItems =
-          cartData.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
 
-      bool productExist = false;
+  /// Adds product to cart
+  Future<void> addToCart(BuildContext context, ProductModel product, Map<int, int> quantities) async {
+    try {
+      final cartData = await _storage.getList('cart') ?? [];
+      final cartItems = cartData.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
+      var productExist = false;
+
       quantities[product.product_id] = quantity;
-      for (var item in cartItems) {
+      for (final item in cartItems) {
         if (item['product_id'] == product.product_id) {
           item['quantity'] = (item['quantity'] ?? 1) + quantity;
           productExist = true;
           break;
         }
       }
+
       if (!productExist) {
-        Map<String, dynamic> newItem = product.toJson();
-        newItem['quantity'] = quantities[product.product_id] ?? 1;
+        final newItem = product.toJson()..['quantity'] = quantities[product.product_id] ?? 1;
         cartItems.add(newItem);
       }
 
-      List<String> updatedCart = cartItems.map((e) => jsonEncode(e)).toList();
-      await prefs.setStringList('cart', updatedCart);
+      await _storage.saveList('cart', cartItems.map((e) => jsonEncode(e)).toList());
       await loadCart();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(noticeSnackbar("Added to cart", false));
     } catch (e) {
-      print("error $e");
-      ScaffoldMessenger.of(context)
-          .showSnackBar(noticeSnackbar("Error when add to cart", true));
+      print('Add to cart error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(noticeSnackbar("Error adding to cart", true));
     }
   }
 
+  /// Toggles item selection
   void toggleSelectItem(int productId) {
     final selected = List<int>.from(state.selectedItem);
     final selectedProducts = List<ProductModel>.from(state.selectedProducts);
     final selectedQuantities = Map<int, int>.from(state.selectedQuantities);
-    int totalPayment = 0;
+
     if (selected.contains(productId)) {
       selected.remove(productId);
       selectedProducts.removeWhere((item) => item.product_id == productId);
       selectedQuantities.remove(productId);
     } else {
-      final selectedProduct =
-          state.cartItems.firstWhere((item) => item.product_id == productId);
-      selectedProducts.add(selectedProduct);
-
+      final product = state.cartItems.firstWhere((item) => item.product_id == productId);
+      selectedProducts.add(product);
       selectedQuantities[productId] = state.quantities[productId] ?? 1;
       selected.add(productId);
     }
-     totalPayment = selectedProducts.fold(
-        0,
-        (sum, item) =>
-            sum +
-            (item.product_price * (selectedQuantities[item.product_id] ?? 1)));
+
+    final totalPayment = selectedProducts.fold(
+      0,
+          (sum, item) => sum + (item.product_price * (selectedQuantities[item.product_id] ?? 1)),
+    );
+
     emit(state.copyWith(
-        selectedItem: selected,
-        selectedProducts: selectedProducts,
-        selectedQuantities: selectedQuantities,
-        totalPayment: totalPayment));
-  }
-
-
-
-  void initializeCart(
-      List<ProductModel> selectedProduct, Map<int, int> selectedQuantities, totalPayment) {
-    emit(state.copyWith(
-        selectedProducts: selectedProduct,
-        selectedQuantities: selectedQuantities,
-      totalPayment: totalPayment
+      selectedItem: selected,
+      selectedProducts: selectedProducts,
+      selectedQuantities: selectedQuantities,
+      totalPayment: totalPayment,
     ));
   }
 
+  /// Initializes cart with selected items
+  void initializeCart(List<ProductModel> selectedProducts, Map<int, int> selectedQuantities, int totalPayment) {
+    emit(state.copyWith(
+      selectedProducts: selectedProducts,
+      selectedQuantities: selectedQuantities,
+      totalPayment: totalPayment,
+    ));
+  }
+
+  /// Toggles select all items
   void toggleSelectAll() {
-    bool newSelectAllState = !(state.allSelected);
-    List<ProductModel> updatedItems = List.from(state.cartItems);
-    Map<int, int> selectedQuantities = {};
-    List<int> selectedItem =
-        state.cartItems.map((item) => item.product_id).toList();
-    int totalPayment = -1;
-    if (newSelectAllState) {
-      final selectedProducts = List<ProductModel>.from(state.cartItems) ;
-      final selectedQuantities = Map<int, int>.from(state.quantities);
-      totalPayment = selectedProducts.fold(0, (sum, item) {
-        int quantity = selectedQuantities[item.product_id] ?? 1;
-        return sum + (item.product_price * quantity);
-      });
-    } else {
+    final newSelectAllState = !state.allSelected;
+    final selectedItem = newSelectAllState ? state.cartItems.map((item) => item.product_id).toList() : <int>[];
+    final selectedQuantities = newSelectAllState ? Map<int, int>.from(state.quantities) : <int, int>{};
+    final selectedProducts = newSelectAllState ? List<ProductModel>.from(state.cartItems) : state.cartItems;
 
-      selectedItem = [];
-      selectedQuantities = {};
-      totalPayment = 0;
-    }
-
-
+    final totalPayment = newSelectAllState
+        ? state.cartItems.fold(0, (sum, item) => sum + (item.product_price * (state.quantities[item.product_id] ?? 1)))
+        : 0;
 
     emit(state.copyWith(
       allSelected: newSelectAllState,
       selectedItem: selectedItem,
-      totalPayment: totalPayment,
-      selectedProducts: updatedItems,
+      selectedProducts: selectedProducts,
       selectedQuantities: selectedQuantities,
+      totalPayment: totalPayment,
     ));
   }
 
-  void incrementQuantity(int productId){
-    final updatedQuantities = Map<int,int>.from(state.quantities);
+  /// Increases item quantity
+  void incrementQuantity(int productId) {
+    final updatedQuantities = Map<int, int>.from(state.quantities);
     updatedQuantities[productId] = (updatedQuantities[productId] ?? 1) + 1;
-    int totalPayment = 0;
-    for (var item in state.cartItems) {
-      totalPayment += item.product_price * (updatedQuantities[item.product_id] ?? 1);
-    }
+    final totalPayment =
+    state.cartItems.fold(0, (sum, item) => sum + (item.product_price * (updatedQuantities[item.product_id] ?? 1)));
 
     emit(state.copyWith(quantities: updatedQuantities, totalPayment: totalPayment));
     _updateCart();
-
   }
-  Future<void> decrementQuantity(int productId) async {
-    final updatedQuantities = Map<int,int>.from(state.quantities);
 
+  /// Decreases item quantity
+  Future<void> decrementQuantity(int productId) async {
+    final updatedQuantities = Map<int, int>.from(state.quantities);
     if (updatedQuantities[productId]! > 1) {
       updatedQuantities[productId] = updatedQuantities[productId]! - 1;
-      final totalPayment = state.cartItems.fold(0, (sum, item) =>
-      sum + item.product_price * (updatedQuantities[item.product_id] ?? 1));
+      final totalPayment =
+      state.cartItems.fold(0, (sum, item) => sum + (item.product_price * (updatedQuantities[item.product_id] ?? 1)));
 
       emit(state.copyWith(quantities: updatedQuantities, totalPayment: totalPayment));
       await _updateCart();
@@ -215,36 +181,27 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> removeItem(int product_id) async {
-    final prefs = await SharedPreferences.getInstance();
-    final updatedCart = state.cartItems.where((item) => item.product_id != product_id).toList();
-    final updatedQuantities = Map<int,int>.from(state.quantities)..remove(product_id);
-    //update SharedPReferences
-    List<String> updatedCartData = updatedCart.map((item) {
-      Map<String, dynamic> itemJson = item.toJson();
-      itemJson['quantity'] = state.quantities[item.product_id] ?? 1;
-      return jsonEncode(itemJson);
-    }).toList();
-    await prefs.setStringList('cart', updatedCartData);
-
+  /// Removes item from cart
+  Future<void> removeItem(int productId) async {
+    final updatedCart = state.cartItems.where((item) => item.product_id != productId).toList();
+    final updatedQuantities = Map<int, int>.from(state.quantities)..remove(productId);
+    await _updateCart(updatedCart);
     emit(state.copyWith(cartItems: updatedCart, quantities: updatedQuantities));
-
-
-
   }
-  Future<void> _updateCart() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> updatedCartData = state.cartItems.map((item) {
-      Map<String, dynamic> itemJson = item.toJson();
-      itemJson['quantity'] = state.quantities[item.product_id] ?? 1;
+
+  /// Updates cart in storage
+  Future<void> _updateCart([List<ProductModel>? cartItems]) async {
+    final items = cartItems ?? state.cartItems;
+    final updatedCartData = items.map((item) {
+      final itemJson = item.toJson()..['quantity'] = state.quantities[item.product_id] ?? 1;
       return jsonEncode(itemJson);
     }).toList();
-    await prefs.setStringList('cart', updatedCartData); // Lưu lại giỏ hàng
+    await _storage.saveList('cart', updatedCartData);
   }
 
+  /// Clears all items in cart
   Future<void> clearProductInCart() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('cart', []);
+    await _storage.saveList('cart', []);
+    emit(CartState.init());
   }
-
 }

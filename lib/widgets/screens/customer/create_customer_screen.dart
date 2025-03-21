@@ -22,7 +22,10 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Create Customer Screen")),
+      appBar: AppBar(
+          backgroundColor: Colors.deepOrange,
+          foregroundColor: Colors.white,
+          title: const Text("Create Customer Screen")),
       body: Body(),
     );
   }
@@ -56,8 +59,10 @@ class _BodyState extends State<Body> {
     final customer = state.customer.isNotEmpty ? state.customer.first : null;
 
     _nameController = TextEditingController(text: customer?.customerName ?? '');
-    _emailController = TextEditingController(text: customer?.customerEmail ?? '');
-    _phoneController = TextEditingController(text: customer?.customerPhone ?? '');
+    _emailController =
+        TextEditingController(text: customer?.customerEmail ?? '');
+    _phoneController =
+        TextEditingController(text: customer?.customerPhone ?? '');
     _detailAddressController = TextEditingController();
 
     _loadProvinces();
@@ -107,7 +112,8 @@ class _BodyState extends State<Body> {
                 const SizedBox(height: 16),
                 // Dropdown Tỉnh/Thành
                 DropdownButtonFormField<Province>(
-                  decoration: const InputDecoration(labelText: 'Chọn tỉnh thành'),
+                  decoration:
+                      const InputDecoration(labelText: 'Chọn tỉnh thành'),
                   value: selectedProvince,
                   items: provinces.map((province) {
                     return DropdownMenuItem<Province>(
@@ -126,14 +132,16 @@ class _BodyState extends State<Body> {
                 const SizedBox(height: 16),
                 // Dropdown Quận/Huyện
                 DropdownButtonFormField<District>(
-                  decoration: const InputDecoration(labelText: 'Chọn quận huyện'),
+                  decoration:
+                      const InputDecoration(labelText: 'Chọn quận huyện'),
                   value: selectedDistrict,
                   items: selectedProvince?.districts.map((district) {
-                    return DropdownMenuItem<District>(
-                      value: district,
-                      child: Text(district.name),
-                    );
-                  }).toList() ?? [],
+                        return DropdownMenuItem<District>(
+                          value: district,
+                          child: Text(district.name),
+                        );
+                      }).toList() ??
+                      [],
                   onChanged: (District? value) {
                     setState(() {
                       selectedDistrict = value;
@@ -144,14 +152,16 @@ class _BodyState extends State<Body> {
                 const SizedBox(height: 16),
                 // Dropdown Phường/Xã
                 DropdownButtonFormField<Ward>(
-                  decoration: const InputDecoration(labelText: 'Chọn phường xã'),
+                  decoration:
+                      const InputDecoration(labelText: 'Chọn phường xã'),
                   value: selectedWard,
                   items: selectedDistrict?.wards.map((ward) {
-                    return DropdownMenuItem<Ward>(
-                      value: ward,
-                      child: Text(ward.name),
-                    );
-                  }).toList() ?? [],
+                        return DropdownMenuItem<Ward>(
+                          value: ward,
+                          child: Text(ward.name),
+                        );
+                      }).toList() ??
+                      [],
                   onChanged: (Ward? value) {
                     setState(() {
                       selectedWard = value;
@@ -168,10 +178,14 @@ class _BodyState extends State<Body> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange,
+                      foregroundColor: Colors.white),
                   onPressed: () async {
                     int randomId = generateRandomId();
                     String address = [
-                      _detailAddressController.text, // Địa chỉ chi tiết nhập vào
+                      _detailAddressController.text,
+                      // Địa chỉ chi tiết nhập vào
                       selectedWard?.name,
                       selectedDistrict?.name,
                       selectedProvince?.name
@@ -185,7 +199,9 @@ class _BodyState extends State<Body> {
                       customerAddress: address,
                     );
 
-                    await context.read<CustomerCubit>().createCustomer(customer);
+                    await context
+                        .read<CustomerCubit>()
+                        .createCustomer(customer);
                     Navigator.pop(context, customer);
                   },
                   child: const Text("Create Customer"),

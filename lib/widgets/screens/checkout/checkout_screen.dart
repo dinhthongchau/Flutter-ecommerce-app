@@ -213,7 +213,7 @@ class PaymentMethodContainer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const CustomBoldText(
-                  text: "Chi tiet thanh toan",
+                  text: "Payment method",
                   // Matching PaymentMethodContainer1's header
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
@@ -471,7 +471,7 @@ class DetailPaymentContainer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomBoldText(
-                  text: "Chi tiet thanh toan",
+                  text: "Details payment",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
@@ -480,7 +480,7 @@ class DetailPaymentContainer extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Tong tien hang"),
+                    Text("Total price: "),
                     SizedBox(
                       width: 20,
                     ),
@@ -490,7 +490,7 @@ class DetailPaymentContainer extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Tong tien phi van chuyen"),
+                    Text("Ship cost: "),
                     SizedBox(
                       width: 20,
                     ),
@@ -500,7 +500,7 @@ class DetailPaymentContainer extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CustomBoldText(text: "Tong thanh toan"),
+                    CustomBoldText(text: "Total payment: "),
                     SizedBox(
                       width: 50,
                     ),

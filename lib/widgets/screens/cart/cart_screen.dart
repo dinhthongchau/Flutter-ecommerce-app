@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:project_one/models/product_model.dart';
 import '../../common_widgets/bold_text.dart';
+import '../../common_widgets/common_styles.dart';
 import '../checkout/checkout_screen.dart';
 import 'cart_cubit.dart';
 
@@ -37,8 +38,7 @@ class Page extends StatelessWidget {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CustomBoldText(
-                    text: "Cart(${state.selectedProducts.length})"),
+                CommonStyles.boldTextWidget( "Cart(${state.selectedProducts.length})"),
                 SizedBox(width: 40,)
               ],
 
