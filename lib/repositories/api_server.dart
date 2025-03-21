@@ -5,27 +5,27 @@ import 'package:dio/dio.dart';
 import '../models/order_model.dart';
 import 'api.dart';
 import 'log.dart';
-class ApiServer implements Api{
-  String? baseUrl =dotenv.env['API_BASE_URL'];
+
+class ApiServer implements Api {
+  String? baseUrl = dotenv.env['API_BASE_URL'];
   Dio dio = Dio();
   late Log log;
 
   ApiServer(this.log);
   @override
   Future<List<ProductModel>> getAllProducts() async {
-    try{
-        final response = await dio.get('$baseUrl/products?limit=100');
-        final List<dynamic> data=response.data['data']['products'];
-        //print("Fetching API: $baseUrl/products?limit=100");
-        //print("Response Data: ${response.data}");
-        return data.map((json) => ProductModel.fromJson(json)).toList();
-
-    }
-    catch(e){
+    try {
+      final response = await dio.get('$baseUrl/products?limit=100');
+      final List<dynamic> data = response.data['data']['products'];
+      //print("Fetching API: $baseUrl/products?limit=100");
+      //print("Response Data: ${response.data}");
+      return data.map((json) => ProductModel.fromJson(json)).toList();
+    } catch (e) {
       print("API Fetch Prod Error: $e");
       rethrow;
     }
   }
+
   @override
   Future<dynamic> createCustomer(CustomerModel customer) async {
     try {
@@ -36,25 +36,20 @@ class ApiServer implements Api{
         'customer_email': customer.customerEmail,
         'customer_phone': customer.customerPhone,
         'customer_address': customer.customerAddress,
-
       });
-      Response response = await dio.post(
-        url,
-        data: formData,
-        options: Options(
-          headers: {
+      Response response = await dio.post(url,
+          data: formData,
+          options: Options(headers: {
             'accept': 'application/json',
             'Content-Type': 'multipart/form-data'
-          }
-        )
-      );
+          }));
       return response.data;
-
-    }catch(e){
+    } catch (e) {
       print("API Create Cus Error: $e");
       rethrow;
     }
   }
+
   @override
   Future<dynamic> createOrder(OrderModel order) async {
     try {
@@ -65,25 +60,17 @@ class ApiServer implements Api{
         "order_payment_method": order.orderPaymentMethod,
         "order_status": order.orderStatus,
         "order_note": order.orderNote
-
       });
-      Response response = await dio.post(
-          url,
+      Response response = await dio.post(url,
           data: formData,
-          options: Options(
-              headers: {
-                'accept': 'application/json',
-                'Content-Type': 'multipart/form-data'
-              }
-          )
-      );
+          options: Options(headers: {
+            'accept': 'application/json',
+            'Content-Type': 'multipart/form-data'
+          }));
       return response.data;
-
-    }catch(e){
+    } catch (e) {
       print("API Create Order Error: ${e.toString()}");
       rethrow;
     }
   }
-
-
 }

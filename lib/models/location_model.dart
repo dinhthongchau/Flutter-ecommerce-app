@@ -8,7 +8,8 @@ class Province {
 
   factory Province.fromJson(Map<String, dynamic> json) {
     var districtList = json['Districts'] as List<dynamic>? ?? [];
-    List<District> districts = districtList.map((d) => District.fromJson(d)).toList();
+    List<District> districts =
+        districtList.map((d) => District.fromJson(d)).toList();
     return Province(
       id: json['Id'] as String? ?? 'Unknown ID', // Default value if null
       name: json['Name'] as String? ?? 'Unknown Name', // Default value if null
@@ -34,6 +35,7 @@ class District {
     );
   }
 }
+
 class Ward {
   final String id;
   final String name;

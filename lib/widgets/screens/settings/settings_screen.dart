@@ -20,10 +20,12 @@ class SettingsScreen extends StatelessWidget {
         )),
       ),
       body: Container(
-        decoration: BoxDecoration(borderRadius:BorderRadius.circular(10),color: Colors.deepOrangeAccent, ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.deepOrangeAccent,
+        ),
         padding: EdgeInsets.all(30),
         margin: EdgeInsets.all(30),
-
         child: Row(
           children: [
             Flexible(flex: 5, child: Text("Light mode ")),

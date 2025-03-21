@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common_widgets/bold_text.dart';
 import '../../common_widgets/cart_button.dart';
+
 //detail_screen.dart
 class DetailScreen extends StatefulWidget {
   static const String route = "DetailScreen";
@@ -47,11 +48,9 @@ class _DetailScreenState extends State<DetailScreen> {
             iconTheme: IconThemeData(color: Colors.white),
             backgroundColor: Colors.deepOrange,
             title: Row(
-
               children: [
                 Spacer(),
                 CartButton(),
-
               ],
             ),
             leading: IconButton(
@@ -115,15 +114,24 @@ class _DetailScreenState extends State<DetailScreen> {
                         "đ${NumberFormat('#,###', 'vi').format(product.product_price)} ",
                         style: TextStyle(color: Colors.redAccent, fontSize: 25),
                       ),
-                      Text(product.product_name,style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+                      Text(
+                        product.product_name,
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.bold),
+                      ),
                       // Text(product.product_price),
 
                       SizedBox(
                         height: 20,
                       ),
 
-                      CustomBoldText(text: "Description : ",style: TextStyle(fontSize: 20),),
-                      Divider(height: 2,),
+                      CustomBoldText(
+                        text: "Description : ",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Divider(
+                        height: 2,
+                      ),
                       SizedBox(
                         height: 10,
                       ),
@@ -239,7 +247,8 @@ class AddToCartButton extends StatelessWidget {
     return Container(
       height: 50,
       color: Colors.green,
-      child: BlocBuilder<CartCubit, CartState>( // Dùng instance từ main.dart
+      child: BlocBuilder<CartCubit, CartState>(
+        // Dùng instance từ main.dart
         builder: (context, state) {
           return TextButton(
             onPressed: () {
@@ -278,133 +287,109 @@ class AddToCartButton extends StatelessWidget {
 class BottomSheetWidget extends StatelessWidget {
   final ProductModel product;
 
-  const BottomSheetWidget({Key? key, required this.product}) : super(key: key);
+  const BottomSheetWidget({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
-    final cartCubit = context.read<CartCubit>();
-
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
+        final cartCubit = context.read<CartCubit>();
         return Container(
           height: 150,
+          padding: const EdgeInsets.all(20),
           child: Column(
-            mainAxisSize: MainAxisSize.min, // Giúp column chỉ chiếm không gian cần thiết
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Column(
-
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Quanlity"),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  cartCubit.decrementQuantityInDetailScreen();
-                                },
-                                icon: Icon(Icons.remove)),
-                            Text("${context.read<CartCubit>().quantity}"),
-                            IconButton(
-                                onPressed: () {
-                                  cartCubit.incrementQuantityInDetailScreen();
-                                },
-                                icon: Icon(Icons.add)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 400,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Map<int, int> qualities = {
-                          product.product_id: cartCubit.quantity
-                        };
-                        cartCubit.addToCart(context, product, qualities);
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16), // Bo góc mềm mại
-                              ),
-                              backgroundColor: Colors.white, // Màu nền sáng, dễ nhìn
-                              title: Column(
-                                children: [
-                                  Icon(Icons.check_circle, color: Colors.green, size: 48), // Icon xác nhận
-                                  SizedBox(height: 8),
-                                  Text(
-                                    "Product added successfully!",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              content: Text(
-                                "The item has been added to your cart.",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.black54),
-                              ),
-                              actions: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.deepOrange,
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      padding: EdgeInsets.symmetric(vertical: 12),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      "OK",
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-
-                          },
-                        );
-
-
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrange
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add_shopping_cart_sharp, color: Colors.white,),
-                          SizedBox(width: 10,),
-                          Text("Add to Cart",style: TextStyle(color: Colors.white),),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              _buildQuantitySelector(context, cartCubit),
+              const SizedBox(height: 10),
+              _buildAddToCartButton(context, cartCubit),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildQuantitySelector(BuildContext context, CartCubit cartCubit) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text("Quantity"),
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: cartCubit.decrementQuantityInDetailScreen,
+            ),
+            Text("${cartCubit.quantity}"),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: cartCubit.incrementQuantityInDetailScreen,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddToCartButton(BuildContext context, CartCubit cartCubit) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          final quantities = {product.product_id: cartCubit.quantity};
+          cartCubit.addToCart(context, product, quantities);
+          _showSuccessDialog(context);
+        },
+        icon: const Icon(Icons.add_shopping_cart_sharp, color: Colors.white),
+        label: const Text("Add to Cart", style: TextStyle(color: Colors.white)),
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange),
+      ),
+    );
+  }
+
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.white,
+        title: Column(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.green, size: 48),
+            const SizedBox(height: 8),
+            const Text(
+              "Product added successfully!",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: const Text(
+          "The item has been added to your cart.",
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.black54),
+        ),
+        actions: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                Navigator.pop(context); // Close bottom sheet
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepOrange,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text("OK",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

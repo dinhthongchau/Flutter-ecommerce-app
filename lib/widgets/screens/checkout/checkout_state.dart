@@ -2,11 +2,10 @@ part of 'checkout_cubit.dart';
 
 @immutable
 class CheckoutState {
-
   LoadStatus loadStatus;
   final String selectedMethod;
 
-    CheckoutState.init({
+  CheckoutState.init({
     this.loadStatus = LoadStatus.Init,
     this.selectedMethod = "",
   });
@@ -62,5 +61,3 @@ class CheckoutState {
 
 //</editor-fold>
 }
-
-

@@ -1,3 +1,1 @@
-enum LoadStatus  {
-  Init,Loading,Done,Error
-}
+enum LoadStatus { Init, Loading, Done, Error }

@@ -1,24 +1,23 @@
 part of 'list_products_cubit.dart';
 
-
- class ListProductsState {
-   final List<ProductModel> product;
-   final int selectedItem;
-   final LoadStatus loadStatus;
-   const ListProductsState.init({
-      this.product=const [],
-      this.selectedItem=-1,
-      this.loadStatus=LoadStatus.Init,
-   });
+class ListProductsState {
+  final List<ProductModel> product;
+  final int selectedItem;
+  final LoadStatus loadStatus;
+  const ListProductsState.init({
+    this.product = const [],
+    this.selectedItem = -1,
+    this.loadStatus = LoadStatus.Init,
+  });
 
   //<editor-fold desc="Data Methods">
-   const ListProductsState({
+  const ListProductsState({
     required this.product,
     required this.selectedItem,
     required this.loadStatus,
   });
 
-   @override
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ListProductsState &&
@@ -27,11 +26,11 @@ part of 'list_products_cubit.dart';
           selectedItem == other.selectedItem &&
           loadStatus == other.loadStatus);
 
-   @override
+  @override
   int get hashCode =>
       product.hashCode ^ selectedItem.hashCode ^ loadStatus.hashCode;
 
-   @override
+  @override
   String toString() {
     return 'ListProductsState{' +
         ' product: $product,' +
@@ -40,7 +39,7 @@ part of 'list_products_cubit.dart';
         '}';
   }
 
-   ListProductsState copyWith({
+  ListProductsState copyWith({
     List<ProductModel>? product,
     int? selectedItem,
     LoadStatus? loadStatus,
@@ -52,7 +51,7 @@ part of 'list_products_cubit.dart';
     );
   }
 
-   Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'product': this.product,
       'selectedItem': this.selectedItem,

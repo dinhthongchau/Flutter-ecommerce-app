@@ -14,6 +14,7 @@ import 'widgets/screens/list_products/list_products_screen.dart';
 import 'widgets/screens/cart/cart_screen.dart';
 import 'widgets/screens/checkout/checkout_screen.dart';
 import 'widgets/screens/detail/detail_screen.dart';
+
 //routes.dart
 //test
 Route<dynamic> mainRoute(RouteSettings settings) {
@@ -24,7 +25,7 @@ Route<dynamic> mainRoute(RouteSettings settings) {
           return ListProductsScreen();
         case DetailScreen.route:
           var cubitProduct = (settings.arguments
-          as Map<String, dynamic>)['cubit_product'] as ListProductsCubit;
+              as Map<String, dynamic>)['cubit_product'] as ListProductsCubit;
           return BlocProvider.value(
             value: cubitProduct,
             child: DetailScreen(),
@@ -37,10 +38,12 @@ Route<dynamic> mainRoute(RouteSettings settings) {
             providers: [
               BlocProvider(
                 create: (context) => CartCubit()
-                  ..initializeCart(args['selectedProduct'], args['selectedQuantities'], args['totalPayment']),
+                  ..initializeCart(args['selectedProduct'],
+                      args['selectedQuantities'], args['totalPayment']),
               ),
               BlocProvider(
-                  create: (context) => CustomerCubit(context.read<Api>())..loadCustomer()),
+                  create: (context) =>
+                      CustomerCubit(context.read<Api>())..loadCustomer()),
               BlocProvider(
                   create: (context) => CheckoutCubit(context.read<Api>())),
             ],

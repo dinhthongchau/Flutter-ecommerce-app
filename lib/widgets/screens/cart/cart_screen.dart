@@ -38,10 +38,12 @@ class Page extends StatelessWidget {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CommonStyles.boldTextWidget( "Cart(${state.selectedProducts.length})"),
-                SizedBox(width: 40,)
+                CommonStyles.boldTextWidget(
+                    "Cart(${state.selectedProducts.length})"),
+                SizedBox(
+                  width: 40,
+                )
               ],
-
             );
           },
         ),
@@ -216,7 +218,8 @@ class CheckOutButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8))),
             child: Text(
               "Buy now (${context.read<CartCubit>().state.selectedProducts.length})",
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ));
       },
     );
@@ -234,135 +237,124 @@ class CartItemListTile extends StatelessWidget {
   final ProductModel itemsInCart;
 
   @override
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
-        var cubit_cart = context.read<CartCubit>();
-        bool isSelected = state.selectedItem.contains(itemsInCart.product_id);
+        final cubit = context.read<CartCubit>();
+        final isSelected = state.selectedItem.contains(itemsInCart.product_id);
+        final quantity = state.quantities[itemsInCart.product_id] ?? 1;
 
         return Container(
-          height: 150,
-          //padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          height: 150, // Giữ nguyên chiều cao như code gốc
+          padding: const EdgeInsets.symmetric(
+              vertical: 8), // Thêm padding nhẹ để căn đều
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Checkbox ở bên trái
-              Checkbox(
-                activeColor: Colors.deepOrange,
-                checkColor: Colors.white,
-                value: isSelected,
-                onChanged: (value) {
-                  cubit_cart.toggleSelectItem(itemsInCart.product_id);
-                },
-              ),
-
-              // Ảnh sản phẩm
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image:
-                        NetworkImage("$baseUrl${itemsInCart.product_image[0]}"),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              SizedBox(width: 12),
-
-              // Thông tin sản phẩm
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(itemsInCart.product_name,
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    Card(
-                        color: Colors.white54,
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Text(itemsInCart.product_color),
-                        )),
-                    Text(
-                      "đ${NumberFormat('#,###', 'vi').format(itemsInCart.product_price)}",
-                      style: TextStyle(color: Colors.redAccent, fontSize: 15),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 2),
-                      // Giảm padding sát nhất
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              context
-                                  .read<CartCubit>()
-                                  .decrementQuantity(itemsInCart.product_id);
-                            },
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child:
-                                  Center(child: Icon(Icons.remove, size: 14)),
-                            ),
-                          ),
-                          SizedBox(
-                              width: 1,
-                              height: 14,
-                              child: ColoredBox(color: Colors.grey)),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Text(
-                              "${state.quantities[itemsInCart.product_id] ?? 1}",
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                              width: 1,
-                              height: 14,
-                              child: ColoredBox(color: Colors.grey)),
-                          GestureDetector(
-                            onTap: () {
-                              context
-                                  .read<CartCubit>()
-                                  .incrementQuantity(itemsInCart.product_id);
-                            },
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: Center(child: Icon(Icons.add, size: 14)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-
-              // Nút xóa
-              IconButton(
-                onPressed: () {
-                  cubit_cart.removeItem(itemsInCart.product_id);
-                },
-                icon: Icon(Icons.delete, color: Colors.red),
-              ),
+              _buildCheckbox(cubit, isSelected),
+              _buildProductImage(),
+              const SizedBox(width: 12),
+              _buildProductDetails(context, quantity),
+              _buildDeleteButton(cubit),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildCheckbox(CartCubit cubit, bool isSelected) {
+    return Checkbox(
+      activeColor: Colors.deepOrange,
+      checkColor: Colors.white,
+      value: isSelected,
+      onChanged: (_) => cubit.toggleSelectItem(itemsInCart.product_id),
+    );
+  }
+
+  Widget _buildProductImage() {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: NetworkImage("$baseUrl${itemsInCart.product_image[0]}"),
+          fit: BoxFit.cover,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+  }
+
+  Widget _buildProductDetails(BuildContext context, int quantity) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            itemsInCart.product_name,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          Card(
+            color: Colors.white54,
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Text(itemsInCart.product_color),
+            ),
+          ),
+          Text(
+            "đ${NumberFormat('#,###', 'vi').format(itemsInCart.product_price)}",
+            style: const TextStyle(color: Colors.redAccent, fontSize: 15),
+          ),
+          _buildQuantityControls(context, quantity),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuantityControls(BuildContext context, int quantity) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () => context
+                .read<CartCubit>()
+                .decrementQuantity(itemsInCart.product_id),
+            child: const SizedBox(
+              width: 20,
+              height: 20,
+              child: Icon(Icons.remove, size: 14),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text("$quantity", style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => context
+                .read<CartCubit>()
+                .incrementQuantity(itemsInCart.product_id),
+            child: const SizedBox(
+              width: 20,
+              height: 20,
+              child: Icon(Icons.add, size: 14),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeleteButton(CartCubit cubit) {
+    return IconButton(
+      onPressed: () => cubit.removeItem(itemsInCart.product_id),
+      icon: const Icon(Icons.delete, color: Colors.red),
     );
   }
 }

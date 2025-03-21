@@ -1,10 +1,8 @@
 import 'log.dart';
 
-class LogImplement implements Log{
+class LogImplement implements Log {
   @override
-
   void d(String tag, String content) {
-
     print("$tag $content");
   }
 
@@ -17,5 +15,4 @@ class LogImplement implements Log{
   void i(String tag, String content) {
     print("$tag $content");
   }
-
 }

@@ -14,7 +14,9 @@ class CustomBoldText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text, style: style?? const TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
+      text,
+      style: style ??
+          const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
     );
   }
 }

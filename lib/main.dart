@@ -10,33 +10,32 @@ import 'repositories/api.dart';
 import 'repositories/api_server.dart';
 import 'repositories/log_implements.dart';
 
-
 import 'widgets/screens/list_products/list_products_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: "lib/assets/.env");
-  Log log = LogImplement();
+  final log = LogImplement(); // Khởi tạo log như gốc
   Bloc.observer = MyBlocObserver(log);
-  runApp(Repository());
+  runApp(Repository(log: log)); // Truyền log vào Repository
 }
 
 class Repository extends StatelessWidget {
-  final Log log = LogImplement();
+  final Log log;
+
+  const Repository({super.key, required this.log});
 
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider<Log>.value(
       value: log,
-      child: Provider(),
+      child: const Provider(),
     );
   }
 }
 
 class Provider extends StatelessWidget {
-  const Provider({
-    super.key,
-  });
+  const Provider({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,31 +44,30 @@ class Provider extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => CustomerCubit(context.read<Api>())..loadCustomer(),
+            create: (context) =>
+                CustomerCubit(context.read<Api>())..loadCustomer(),
           ),
           BlocProvider(
-            create: (context) => CartCubit()..loadCart(), // Thêm CartCubit ở đây
+            create: (context) => CartCubit()..loadCart(),
           ),
         ],
-        child: App(),
+        child: const App(),
       ),
     );
   }
 }
 
 class App extends StatelessWidget {
-  const App({
-    super.key,
-  });
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => MainCubit(),
-        child: SafeArea(child: BlocBuilder<MainCubit, MainState>(
+      create: (context) => MainCubit(),
+      child: SafeArea(
+        child: BlocBuilder<MainCubit, MainState>(
           builder: (context, state) {
             return MaterialApp(
-
               darkTheme: ThemeData.dark(),
               theme: ThemeData.light(),
               themeMode: state.isLightTheme ? ThemeMode.light : ThemeMode.dark,
@@ -78,6 +76,8 @@ class App extends StatelessWidget {
               initialRoute: ListProductsScreen.route,
             );
           },
-        )));
+        ),
+      ),
+    );
   }
 }

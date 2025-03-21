@@ -68,10 +68,12 @@ class CartCubit extends Cubit<CartState> {
   }
 
   /// Adds product to cart
-  Future<void> addToCart(BuildContext context, ProductModel product, Map<int, int> quantities) async {
+  Future<void> addToCart(BuildContext context, ProductModel product,
+      Map<int, int> quantities) async {
     try {
       final cartData = await _storage.getList('cart') ?? [];
-      final cartItems = cartData.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
+      final cartItems =
+          cartData.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
       var productExist = false;
 
       quantities[product.product_id] = quantity;
@@ -84,15 +86,18 @@ class CartCubit extends Cubit<CartState> {
       }
 
       if (!productExist) {
-        final newItem = product.toJson()..['quantity'] = quantities[product.product_id] ?? 1;
+        final newItem = product.toJson()
+          ..['quantity'] = quantities[product.product_id] ?? 1;
         cartItems.add(newItem);
       }
 
-      await _storage.saveList('cart', cartItems.map((e) => jsonEncode(e)).toList());
+      await _storage.saveList(
+          'cart', cartItems.map((e) => jsonEncode(e)).toList());
       await loadCart();
     } catch (e) {
       print('Add to cart error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(noticeSnackbar("Error adding to cart", true));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(noticeSnackbar("Error adding to cart", true));
     }
   }
 
@@ -107,7 +112,8 @@ class CartCubit extends Cubit<CartState> {
       selectedProducts.removeWhere((item) => item.product_id == productId);
       selectedQuantities.remove(productId);
     } else {
-      final product = state.cartItems.firstWhere((item) => item.product_id == productId);
+      final product =
+          state.cartItems.firstWhere((item) => item.product_id == productId);
       selectedProducts.add(product);
       selectedQuantities[productId] = state.quantities[productId] ?? 1;
       selected.add(productId);
@@ -115,7 +121,9 @@ class CartCubit extends Cubit<CartState> {
 
     final totalPayment = selectedProducts.fold(
       0,
-          (sum, item) => sum + (item.product_price * (selectedQuantities[item.product_id] ?? 1)),
+      (sum, item) =>
+          sum +
+          (item.product_price * (selectedQuantities[item.product_id] ?? 1)),
     );
 
     emit(state.copyWith(
@@ -127,7 +135,8 @@ class CartCubit extends Cubit<CartState> {
   }
 
   /// Initializes cart with selected items
-  void initializeCart(List<ProductModel> selectedProducts, Map<int, int> selectedQuantities, int totalPayment) {
+  void initializeCart(List<ProductModel> selectedProducts,
+      Map<int, int> selectedQuantities, int totalPayment) {
     emit(state.copyWith(
       selectedProducts: selectedProducts,
       selectedQuantities: selectedQuantities,
@@ -138,12 +147,21 @@ class CartCubit extends Cubit<CartState> {
   /// Toggles select all items
   void toggleSelectAll() {
     final newSelectAllState = !state.allSelected;
-    final selectedItem = newSelectAllState ? state.cartItems.map((item) => item.product_id).toList() : <int>[];
-    final selectedQuantities = newSelectAllState ? Map<int, int>.from(state.quantities) : <int, int>{};
-    final selectedProducts = newSelectAllState ? List<ProductModel>.from(state.cartItems) : state.cartItems;
+    final selectedItem = newSelectAllState
+        ? state.cartItems.map((item) => item.product_id).toList()
+        : <int>[];
+    final selectedQuantities =
+        newSelectAllState ? Map<int, int>.from(state.quantities) : <int, int>{};
+    final selectedProducts = newSelectAllState
+        ? List<ProductModel>.from(state.cartItems)
+        : state.cartItems;
 
     final totalPayment = newSelectAllState
-        ? state.cartItems.fold(0, (sum, item) => sum + (item.product_price * (state.quantities[item.product_id] ?? 1)))
+        ? state.cartItems.fold(
+            0,
+            (sum, item) =>
+                sum +
+                (item.product_price * (state.quantities[item.product_id] ?? 1)))
         : 0;
 
     emit(state.copyWith(
@@ -159,10 +177,14 @@ class CartCubit extends Cubit<CartState> {
   void incrementQuantity(int productId) {
     final updatedQuantities = Map<int, int>.from(state.quantities);
     updatedQuantities[productId] = (updatedQuantities[productId] ?? 1) + 1;
-    final totalPayment =
-    state.cartItems.fold(0, (sum, item) => sum + (item.product_price * (updatedQuantities[item.product_id] ?? 1)));
+    final totalPayment = state.cartItems.fold(
+        0,
+        (sum, item) =>
+            sum +
+            (item.product_price * (updatedQuantities[item.product_id] ?? 1)));
 
-    emit(state.copyWith(quantities: updatedQuantities, totalPayment: totalPayment));
+    emit(state.copyWith(
+        quantities: updatedQuantities, totalPayment: totalPayment));
     _updateCart();
   }
 
@@ -171,10 +193,14 @@ class CartCubit extends Cubit<CartState> {
     final updatedQuantities = Map<int, int>.from(state.quantities);
     if (updatedQuantities[productId]! > 1) {
       updatedQuantities[productId] = updatedQuantities[productId]! - 1;
-      final totalPayment =
-      state.cartItems.fold(0, (sum, item) => sum + (item.product_price * (updatedQuantities[item.product_id] ?? 1)));
+      final totalPayment = state.cartItems.fold(
+          0,
+          (sum, item) =>
+              sum +
+              (item.product_price * (updatedQuantities[item.product_id] ?? 1)));
 
-      emit(state.copyWith(quantities: updatedQuantities, totalPayment: totalPayment));
+      emit(state.copyWith(
+          quantities: updatedQuantities, totalPayment: totalPayment));
       await _updateCart();
     } else {
       await removeItem(productId);
@@ -183,8 +209,10 @@ class CartCubit extends Cubit<CartState> {
 
   /// Removes item from cart
   Future<void> removeItem(int productId) async {
-    final updatedCart = state.cartItems.where((item) => item.product_id != productId).toList();
-    final updatedQuantities = Map<int, int>.from(state.quantities)..remove(productId);
+    final updatedCart =
+        state.cartItems.where((item) => item.product_id != productId).toList();
+    final updatedQuantities = Map<int, int>.from(state.quantities)
+      ..remove(productId);
     await _updateCart(updatedCart);
     emit(state.copyWith(cartItems: updatedCart, quantities: updatedQuantities));
   }
@@ -193,7 +221,8 @@ class CartCubit extends Cubit<CartState> {
   Future<void> _updateCart([List<ProductModel>? cartItems]) async {
     final items = cartItems ?? state.cartItems;
     final updatedCartData = items.map((item) {
-      final itemJson = item.toJson()..['quantity'] = state.quantities[item.product_id] ?? 1;
+      final itemJson = item.toJson()
+        ..['quantity'] = state.quantities[item.product_id] ?? 1;
       return jsonEncode(itemJson);
     }).toList();
     await _storage.saveList('cart', updatedCartData);

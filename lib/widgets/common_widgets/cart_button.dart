@@ -23,7 +23,10 @@ class CartButton extends StatelessWidget {
               backgroundColor: Colors.white,
               textColor: Colors.deepOrange,
               count: state.quantities.length,
-              child: const Icon(Icons.shopping_cart_outlined,color: Colors.white,),
+              child: const Icon(
+                Icons.shopping_cart_outlined,
+                color: Colors.white,
+              ),
             ));
       },
     );

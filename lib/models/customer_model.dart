@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
 part 'customer_model.g.dart';
+
 @JsonSerializable()
 class CustomerModel {
   final int customerId;
@@ -18,8 +19,9 @@ class CustomerModel {
   });
 
   //json to object
-  factory CustomerModel.fromJson(Map<String,dynamic> json) => _$CustomerModelFromJson(json);
+  factory CustomerModel.fromJson(Map<String, dynamic> json) =>
+      _$CustomerModelFromJson(json);
 
   //object to json
-  Map<String,dynamic> toJson() =>  _$CustomerModelToJson(this);
+  Map<String, dynamic> toJson() => _$CustomerModelToJson(this);
 }

@@ -13,7 +13,6 @@ import '../../common_widgets/notice_snackbar.dart';
 import 'list_products_cubit.dart';
 import 'package:intl/intl.dart';
 
-
 class ListProductsScreen extends StatelessWidget {
   static const String route = "ListProductsScreen";
 
@@ -39,19 +38,15 @@ class Page extends StatelessWidget {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.deepOrange,
-
         title: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
                 flex: 8,
-                child: Center(child: CustomBoldText(text: "List Products"))
-            ),
-
-
+                child: Center(child: CustomBoldText(text: "List Products"))),
             Expanded(
-                flex: 2,
-                child: CartButton(),
+              flex: 2,
+              child: CartButton(),
             ),
           ],
         ),
@@ -115,13 +110,10 @@ class ListProductPage extends StatelessWidget {
                   child: Card(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-
                       children: [
                         CachedNetworkImage(
-
                           imageUrl:
                               "$baseUrl${state.product[index].product_image[0]}",
-
                           height: 150,
                           width: double.infinity,
                           fit: BoxFit.contain,
@@ -152,7 +144,6 @@ class ListProductPage extends StatelessWidget {
                     ),
                   ),
                 );
-
               }),
         );
       },

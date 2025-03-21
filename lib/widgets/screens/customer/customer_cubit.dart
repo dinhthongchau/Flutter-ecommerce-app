@@ -13,7 +13,8 @@ part 'customer_state.dart';
 
 class CustomerCubit extends Cubit<CustomerState> {
   final Api _api;
-  final StorageService _storage = StorageService(); // Use StorageService instead of SharedPreferences
+  final StorageService _storage =
+      StorageService(); // Use StorageService instead of SharedPreferences
 
   CustomerCubit(this._api) : super(CustomerState.init());
 
@@ -54,7 +55,9 @@ class CustomerCubit extends Cubit<CustomerState> {
       if (response != null &&
           response['data'] != null &&
           response['data']['customer'] != null) {
-        final int customerId = int.tryParse(response['data']['customer']['customer_id'].toString()) ?? 0;
+        final int customerId = int.tryParse(
+                response['data']['customer']['customer_id'].toString()) ??
+            0;
 
         //print("customerId: $customerId");
 
@@ -110,6 +113,7 @@ class CustomerCubit extends Cubit<CustomerState> {
 
   Future<void> removeCustomer() async {
     await _storage.remove('customer'); // Use StorageService to remove customer
-    emit(state.copyWith(customer: [], idCustomer: 0, loadStatus: LoadStatus.Init));
+    emit(state
+        .copyWith(customer: [], idCustomer: 0, loadStatus: LoadStatus.Init));
   }
 }

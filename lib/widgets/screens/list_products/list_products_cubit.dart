@@ -13,12 +13,11 @@ class ListProductsCubit extends Cubit<ListProductsState> {
 
   Future<void> loadData() async {
     emit(state.copyWith(loadStatus: LoadStatus.Loading));
-    try{
-        List<ProductModel> product = await api.getAllProducts();
-        emit(state.copyWith(loadStatus: LoadStatus.Done, product: product));
-        //print("Products fetched: ${product.length}");
-    }
-    catch(e){
+    try {
+      List<ProductModel> product = await api.getAllProducts();
+      emit(state.copyWith(loadStatus: LoadStatus.Done, product: product));
+      //print("Products fetched: ${product.length}");
+    } catch (e) {
       emit(state.copyWith(loadStatus: LoadStatus.Error));
     }
   }

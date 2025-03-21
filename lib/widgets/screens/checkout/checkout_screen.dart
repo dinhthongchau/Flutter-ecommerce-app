@@ -312,12 +312,12 @@ class ProductOrderContainer extends StatelessWidget {
                       height: 150,
                       child: Row(
                         children: [
-
                           Container(
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey, width: 1),
                               // Viền màu xám, dày 2px
-                              borderRadius: BorderRadius.circular(8), // Bo góc nhẹ
+                              borderRadius:
+                                  BorderRadius.circular(8), // Bo góc nhẹ
                             ),
                             child: Image.network(
                               "$baseUrl${product.product_image[0]}",
@@ -341,10 +341,12 @@ class ProductOrderContainer extends StatelessWidget {
                               Text(product.product_name),
                               Text(
                                 product.product_color,
-                                style: TextStyle(color: Colors.grey, fontSize: 12),
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12),
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   CustomBoldText(
                                     text:

@@ -1,27 +1,22 @@
 part of 'customer_cubit.dart';
 
-
 class CustomerState {
   final List<CustomerModel> customer;
   final LoadStatus loadStatus;
   final int idCustomer;
 
-  const CustomerState.init(
-      {
-        this.customer = const [],
-        this.loadStatus = LoadStatus.Init,
-        this.idCustomer = 0,
-      }
-      );
+  const CustomerState.init({
+    this.customer = const [],
+    this.loadStatus = LoadStatus.Init,
+    this.idCustomer = 0,
+  });
 //<editor-fold desc="Data Methods">
 
-  const CustomerState(
-      {
-        required this.customer ,
-        required this.loadStatus ,
-        required this.idCustomer ,
-      }
-      );
+  const CustomerState({
+    required this.customer,
+    required this.loadStatus,
+    required this.idCustomer,
+  });
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -74,5 +69,3 @@ class CustomerState {
 
 //</editor-fold>
 }
-
-

@@ -1,6 +1,6 @@
 part of 'cart_cubit.dart';
 
- class CartState {
+class CartState {
   final List<ProductModel> cartItems;
   final List<int> selectedItem;
   final LoadStatus loadStatus;
@@ -10,9 +10,8 @@ part of 'cart_cubit.dart';
   final int totalPayment;
   final bool allSelected;
 
-
   const CartState.init({
-    this.cartItems= const [],
+    this.cartItems = const [],
     this.selectedItem = const [],
     this.loadStatus = LoadStatus.Init,
     this.quantities = const {},
@@ -123,5 +122,3 @@ part of 'cart_cubit.dart';
 
   //</editor-fold>
 }
-
-

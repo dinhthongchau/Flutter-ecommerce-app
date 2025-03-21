@@ -1,11 +1,10 @@
 part of 'main_cubit.dart';
 
-
 class MainState {
   final bool isLightTheme;
   const MainState.init({
     this.isLightTheme = false,
-});
+  });
 
 //<editor-fold desc="Data Methods">
   const MainState({
@@ -49,5 +48,3 @@ class MainState {
 
 //</editor-fold>
 }
-
-

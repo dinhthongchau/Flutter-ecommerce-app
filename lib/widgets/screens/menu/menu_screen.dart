@@ -14,22 +14,16 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-
         child: Column(
           children: [
-            ListTile(title: Center(child: CustomBoldText(text: "Menu")),),
-
+            ListTile(
+              title: Center(child: CustomBoldText(text: "Menu")),
+            ),
             ListTile(
               tileColor: Colors.deepOrangeAccent,
-
-
               title: Row(
-                children: [
-                  Text("Settings"),
-                  Icon(Icons.settings)
-                ],
+                children: [Text("Settings"), Icon(Icons.settings)],
               ),
-
               onTap: () {
                 Navigator.of(context).pushNamed(SettingsScreen.route);
               },
