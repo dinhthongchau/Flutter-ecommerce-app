@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:project_one/models/customer_model.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:project_one/repositories/api.dart';
+import 'package:project_one/widgets/common_widgets/common_styles.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
@@ -286,76 +287,87 @@ class ProductOrderContainer extends StatelessWidget {
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: state.selectedProducts.length,
-              itemBuilder: (context, index) {
-                final product = state.selectedProducts[index];
-                final quantity =
-                    state.selectedQuantities[product.product_id] ?? 1;
-                // return ListTile(
-                //   title: Text(product.product_name),
-                //   subtitle: Text("Quantity : $quantity"),
-                //   trailing: Text(product.product_color),
-                // );
-                return SizedBox(
-                  height: 150,
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1),
-                          // Viền màu xám, dày 2px
-                          borderRadius: BorderRadius.circular(8), // Bo góc nhẹ
-                        ),
-                        child: Image.network(
-                          "$baseUrl${product.product_image[0]}",
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(Icons.error,
-                                size: 80,
-                                color: Colors.red); // Xử lý khi ảnh lỗi
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const CustomBoldText(
+                  text: "List products: ",
+                  // Matching PaymentMethodContainer1's header
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: state.selectedProducts.length,
+                  itemBuilder: (context, index) {
+                    final product = state.selectedProducts[index];
+                    final quantity =
+                        state.selectedQuantities[product.product_id] ?? 1;
+                    // return ListTile(
+                    //   title: Text(product.product_name),
+                    //   subtitle: Text("Quantity : $quantity"),
+                    //   trailing: Text(product.product_color),
+                    // );
+                    return SizedBox(
+                      height: 150,
+                      child: Row(
                         children: [
-                          Text(product.product_name),
-                          Text(
-                            product.product_color,
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
+
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey, width: 1),
+                              // Viền màu xám, dày 2px
+                              borderRadius: BorderRadius.circular(8), // Bo góc nhẹ
+                            ),
+                            child: Image.network(
+                              "$baseUrl${product.product_image[0]}",
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(Icons.error,
+                                    size: 80,
+                                    color: Colors.red); // Xử lý khi ảnh lỗi
+                              },
+                            ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CustomBoldText(
-                                text:
-                                    "đ${NumberFormat('#,###', 'vi').format(product.product_price)}",
-                                style: TextStyle(color: Colors.black),
-                              ),
-                              SizedBox(
-                                width: 20,
-                              ),
+                              Text(product.product_name),
                               Text(
-                                "x$quantity",
-                                style: TextStyle(fontSize: 10),
+                                product.product_color,
+                                style: TextStyle(color: Colors.grey, fontSize: 12),
                               ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  CustomBoldText(
+                                    text:
+                                        "đ${NumberFormat('#,###', 'vi').format(product.product_price)}",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    "x$quantity",
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                ],
+                              )
                             ],
                           )
                         ],
-                      )
-                    ],
-                  ),
-                );
-              },
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         );
