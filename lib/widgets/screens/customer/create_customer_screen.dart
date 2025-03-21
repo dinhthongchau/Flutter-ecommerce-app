@@ -39,6 +39,7 @@ class _BodyState extends State<Body> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
+  late TextEditingController _detailAddressController;
 
   List<Province> provinces = [];
   Province? selectedProvince;
@@ -57,6 +58,7 @@ class _BodyState extends State<Body> {
     _nameController = TextEditingController(text: customer?.customerName ?? '');
     _emailController = TextEditingController(text: customer?.customerEmail ?? '');
     _phoneController = TextEditingController(text: customer?.customerPhone ?? '');
+    _detailAddressController = TextEditingController();
 
     _loadProvinces();
   }
@@ -156,11 +158,20 @@ class _BodyState extends State<Body> {
                     });
                   },
                 ),
+                const SizedBox(height: 16),
+                // Ô nhập địa chỉ chi tiết
+                TextField(
+                  controller: _detailAddressController,
+                  decoration: const InputDecoration(
+                    labelText: 'Địa chỉ chi tiết (số nhà, tên đường)',
+                  ),
+                ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     int randomId = generateRandomId();
                     String address = [
+                      _detailAddressController.text, // Địa chỉ chi tiết nhập vào
                       selectedWard?.name,
                       selectedDistrict?.name,
                       selectedProvince?.name
@@ -179,15 +190,6 @@ class _BodyState extends State<Body> {
                   },
                   child: const Text("Create Customer"),
                 ),
-                if (state.loadStatus == LoadStatus.Done) ...[
-                  Text("Customer ID: ${state.idCustomer}"),
-                  for (var customer in state.customer) ...[
-                    Text("Name: ${customer.customerName}"),
-                    Text("Email: ${customer.customerEmail}"),
-                    Text("Phone: ${customer.customerPhone}"),
-                    Text("Address: ${customer.customerAddress}"),
-                  ]
-                ],
               ],
             ),
           ),
@@ -201,6 +203,7 @@ class _BodyState extends State<Body> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _detailAddressController.dispose(); // Giải phóng bộ nhớ cho controller
     super.dispose();
   }
 }
