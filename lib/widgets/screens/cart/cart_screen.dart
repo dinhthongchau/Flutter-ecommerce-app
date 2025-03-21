@@ -30,6 +30,8 @@ class Page extends StatelessWidget {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(),
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Colors.deepOrange,
         title: BlocBuilder<CartCubit, CartState>(
           builder: (context, state) {
             return Row(

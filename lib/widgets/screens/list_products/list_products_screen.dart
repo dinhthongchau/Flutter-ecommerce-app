@@ -37,6 +37,8 @@ class Page extends StatelessWidget {
         child: MenuScreen(),
       ),
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Colors.deepOrange,
 
         title: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -112,10 +114,14 @@ class ListProductPage extends StatelessWidget {
                   },
                   child: Card(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+
                       children: [
                         CachedNetworkImage(
+
                           imageUrl:
                               "$baseUrl${state.product[index].product_image[0]}",
+
                           height: 150,
                           width: double.infinity,
                           fit: BoxFit.contain,
@@ -146,7 +152,7 @@ class ListProductPage extends StatelessWidget {
                     ),
                   ),
                 );
-                ;
+
               }),
         );
       },

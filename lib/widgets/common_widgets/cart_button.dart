@@ -20,8 +20,10 @@ class CartButton extends StatelessWidget {
               );
             },
             icon: Badge.count(
+              backgroundColor: Colors.white,
+              textColor: Colors.deepOrange,
               count: state.quantities.length,
-              child: const Icon(Icons.shopping_cart),
+              child: const Icon(Icons.shopping_cart_outlined,color: Colors.white,),
             ));
       },
     );
