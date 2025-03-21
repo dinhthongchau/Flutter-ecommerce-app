@@ -13,9 +13,11 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   final Api _api;
 
   Future<void> submitOrder(OrderModel order) async {
+
     emit(state.copyWith(loadStatus: LoadStatus.Loading));
     try {
       final response = await _api.createOrder(order);
+      print("API Response: $response");
       emit(state.copyWith(loadStatus: LoadStatus.Done));
       print("OK");
     } catch (e) {

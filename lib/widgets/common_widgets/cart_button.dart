@@ -1,7 +1,7 @@
+// cart_button.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
-
 import '../screens/cart/cart_screen.dart';
 
 class CartButton extends StatelessWidget {
@@ -11,13 +11,9 @@ class CartButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
-        print("Quantities: ${state.quantities}"); // In toàn bộ map quantities
-        print("Number of product types: ${state.quantities.length}");
         return IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(
-                CartScreen.route,
-              );
+              Navigator.of(context).pushNamed(CartScreen.route);
             },
             icon: Badge.count(
               backgroundColor: Colors.white,

@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'package:project_one/models/customer_model.dart';
 import 'package:project_one/services/storage_service.dart'; // Import StorageService
 
@@ -62,7 +60,7 @@ class CustomerCubit extends Cubit<CustomerState> {
         //print("customerId: $customerId");
 
         final newCustomer = CustomerModel(
-          customerId: customerId ?? 0,
+          customerId: customerId ,
           customerName: response['data']['customer']['customer_name'],
           customerEmail: response['data']['customer']['customer_email'],
           customerPhone: response['data']['customer']['customer_phone'],
@@ -71,7 +69,7 @@ class CustomerCubit extends Cubit<CustomerState> {
 
         emit(state.copyWith(
           loadStatus: LoadStatus.Done,
-          idCustomer: customerId ?? 0,
+          idCustomer: customerId ,
           customer: [newCustomer], // Update customer list
         ));
 

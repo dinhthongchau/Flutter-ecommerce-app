@@ -1,1 +1,0 @@
-enum DrawerItems { Home, Setting }

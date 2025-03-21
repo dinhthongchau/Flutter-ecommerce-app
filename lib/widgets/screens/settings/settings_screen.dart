@@ -28,7 +28,7 @@ class SettingsScreen extends StatelessWidget {
         margin: EdgeInsets.all(30),
         child: Row(
           children: [
-            Flexible(flex: 5, child: Text("Light mode ")),
+            Flexible(flex: 5, child: const Text("Light mode ")),
             BlocBuilder<MainCubit, MainState>(
               builder: (context, state) {
                 var isLightTheme = state.isLightTheme;

@@ -3,14 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:project_one/models/customer_model.dart';
-import 'package:project_one/models/product_model.dart';
-import 'package:project_one/repositories/api.dart';
-import 'package:project_one/widgets/common_widgets/common_styles.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/enum/load_status.dart';
 import '../../../main_cubit.dart';
@@ -48,7 +44,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white70,
+      backgroundColor: Colors.black26,
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.deepOrange,
@@ -121,7 +117,7 @@ class Body extends StatelessWidget {
                             Navigator.of(context)
                                 .pushNamed(ListProductsScreen.route);
                           },
-                          child: Text("Back to Home",
+                          child: const Text("Back to Home",
                               style: TextStyle(color: Colors.white)),
                         ),
                       ],
@@ -219,7 +215,7 @@ class PaymentMethodContainer extends StatelessWidget {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 RadioListTile<String>(
-                  title: const Text("Cash on Delivery"),
+                  title: Text("Cash on Delivery"),
                   value: "Cash on Delivery",
                   groupValue: state.selectedMethod,
                   onChanged: (String? value) {
@@ -229,7 +225,7 @@ class PaymentMethodContainer extends StatelessWidget {
                   },
                 ),
                 RadioListTile<String>(
-                  title: const Text("Banking"),
+                  title: Text("Banking"),
                   value: "Banking",
                   groupValue: state.selectedMethod,
                   onChanged: (String? value) {
@@ -408,13 +404,13 @@ class CustomerContainer extends StatelessWidget {
                                 children: [
                                   Text(
                                     customer.customerName,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15),
                                   ),
                                   Text(
                                     " (+84) ${customer.customerPhone}",
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.grey),
                                   ),
@@ -492,32 +488,23 @@ class DetailPaymentContainer extends StatelessWidget {
                   height: 10,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("Total price: "),
-                    SizedBox(
-                      width: 20,
-                    ),
+                    Spacer(),
                     Text(state.totalPayment.toString())
                   ],
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("Ship cost: "),
-                    SizedBox(
-                      width: 20,
-                    ),
+                    Spacer(),
                     Text("0")
                   ],
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CustomBoldText(text: "Total payment: "),
-                    SizedBox(
-                      width: 50,
-                    ),
+                    Spacer(),
                     CustomBoldText(text: state.totalPayment.toString())
                   ],
                 ),

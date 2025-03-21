@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:project_one/models/product_model.dart';
-import '../../common_widgets/bold_text.dart';
 import '../../common_widgets/common_styles.dart';
 import '../checkout/checkout_screen.dart';
 import 'cart_cubit.dart';
@@ -64,7 +63,7 @@ class Body extends StatelessWidget {
       builder: (context, state) {
         if (state.cartItems.isEmpty) {
           return Center(
-            child: Text("Your cart is empty"),
+            child: const Text("Your cart is empty"),
           );
         }
         return ListItemsInCart(
@@ -178,7 +177,7 @@ class SelectAll extends StatelessWidget {
                 context.read<CartCubit>().toggleSelectAll();
               },
             ),
-            const Text("All")
+            Text("All")
           ],
         );
       },
@@ -216,7 +215,7 @@ class CheckOutButton extends StatelessWidget {
                 backgroundColor: Colors.deepOrange,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8))),
-            child: Text(
+            child:  Text(
               "Buy now (${context.read<CartCubit>().state.selectedProducts.length})",
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -294,18 +293,18 @@ class CartItemListTile extends StatelessWidget {
         children: [
           Text(
             itemsInCart.product_name,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           Card(
             color: Colors.white54,
             child: Padding(
               padding: const EdgeInsets.all(5),
-              child: Text(itemsInCart.product_color),
+              child:  Text(itemsInCart.product_color),
             ),
           ),
           Text(
             "đ${NumberFormat('#,###', 'vi').format(itemsInCart.product_price)}",
-            style: const TextStyle(color: Colors.redAccent, fontSize: 15),
+            style: TextStyle(color: Colors.redAccent, fontSize: 15),
           ),
           _buildQuantityControls(context, quantity),
         ],
@@ -334,7 +333,7 @@ class CartItemListTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text("$quantity", style: const TextStyle(fontSize: 14)),
+          Text("$quantity", style: TextStyle(fontSize: 14)),
           const SizedBox(width: 8),
           GestureDetector(
             onTap: () => context

@@ -1,4 +1,4 @@
-import 'dart:math';
+
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +7,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
-import 'package:project_one/widgets/screens/cart/cart_screen.dart';
+
 import 'package:project_one/widgets/screens/checkout/checkout_screen.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 import '../../common_widgets/bold_text.dart';
 import '../../common_widgets/cart_button.dart';
@@ -38,7 +38,7 @@ class _DetailScreenState extends State<DetailScreen> {
       builder: (context, state) {
         if (state.product.isEmpty ||
             state.selectedItem >= state.product.length) {
-          return Center(child: Text("Không có sản phẩm nào!"));
+          return Center(child: const Text("Không có sản phẩm nào!"));
         }
         var product = state.product[state.selectedItem];
         //print("Image detail is $baseUrl${product.product_image[2]}");
@@ -173,7 +173,7 @@ class _DetailScreenState extends State<DetailScreen> {
         Positioned(
           bottom: 20,
           right: 10,
-          child: Text("$numberCurrentIndex/${product.product_image.length}"),
+          child:  Text("$numberCurrentIndex/${product.product_image.length}"),
         ),
       ]),
     );
@@ -224,7 +224,7 @@ class BuyNowButton extends StatelessWidget {
                   'totalPayment': selectedProduct.product_price,
                 });
               },
-              child: Text(
+              child: const Text(
                 "Buy Now",
                 style: TextStyle(color: Colors.white),
               ));
@@ -270,7 +270,7 @@ class AddToCartButton extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Text(
+                  child: const Text(
                     "Add to Cart",
                     style: TextStyle(color: Colors.white),
                   ),
@@ -314,7 +314,7 @@ class BottomSheetWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text("Quantity"),
+        Text("Quantity"),
         Row(
           children: [
             IconButton(
@@ -342,7 +342,7 @@ class BottomSheetWidget extends StatelessWidget {
           _showSuccessDialog(context);
         },
         icon: const Icon(Icons.add_shopping_cart_sharp, color: Colors.white),
-        label: const Text("Add to Cart", style: TextStyle(color: Colors.white)),
+        label: Text("Add to Cart", style: TextStyle(color: Colors.white)),
         style: ElevatedButton.styleFrom(backgroundColor: Colors.deepOrange),
       ),
     );
@@ -358,14 +358,14 @@ class BottomSheetWidget extends StatelessWidget {
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 48),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               "Product added successfully!",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
-        content: const Text(
+        content: Text(
           "The item has been added to your cart.",
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.black54),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project_one/models/product_model.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';

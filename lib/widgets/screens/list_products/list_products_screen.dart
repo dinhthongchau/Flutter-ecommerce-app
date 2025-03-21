@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/repositories/api.dart';
 import 'package:project_one/widgets/common_widgets/bold_text.dart';
-import 'package:project_one/widgets/screens/cart/cart_screen.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
 import 'package:project_one/widgets/screens/menu/menu_screen.dart';
 import '../../../common/enum/load_status.dart';
@@ -82,14 +81,22 @@ class Body extends StatelessWidget {
   }
 }
 
-class ListProductPage extends StatelessWidget {
+class ListProductPage extends StatefulWidget {
+
+  ListProductPage({super.key});
+
+  @override
+  State<ListProductPage> createState() => _ListProductPageState();
+}
+
+class _ListProductPageState extends State<ListProductPage> {
   String? baseUrl = dotenv.env['API_BASE_URL_NoApi_NoV1'];
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ListProductsCubit, ListProductsState>(
       builder: (context, state) {
-        var cubit_product = context.read<ListProductsCubit>();
+        var cubitProduct = context.read<ListProductsCubit>();
 
         return Container(
           child: GridView.builder(
@@ -103,9 +110,9 @@ class ListProductPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    cubit_product.setSelectedIndex(index);
+                    cubitProduct.setSelectedIndex(index);
                     Navigator.of(context).pushNamed(DetailScreen.route,
-                        arguments: {'cubit_product': cubit_product});
+                        arguments: {'cubit_product': cubitProduct});
                   },
                   child: Card(
                     child: Column(

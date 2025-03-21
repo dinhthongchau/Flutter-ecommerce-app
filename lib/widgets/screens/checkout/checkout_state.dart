@@ -2,16 +2,16 @@ part of 'checkout_cubit.dart';
 
 @immutable
 class CheckoutState {
-  LoadStatus loadStatus;
+  final LoadStatus loadStatus;
   final String selectedMethod;
 
-  CheckoutState.init({
+  const CheckoutState.init({
     this.loadStatus = LoadStatus.Init,
     this.selectedMethod = "",
   });
 
 //<editor-fold desc="Data Methods">
-  CheckoutState({
+  const CheckoutState({
     required this.loadStatus,
     required this.selectedMethod,
   });

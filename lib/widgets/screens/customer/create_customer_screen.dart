@@ -1,8 +1,7 @@
 // lib/widgets/screens/customer/create_customer_screen.dart
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project_one/common/enum/load_status.dart';
 import 'package:project_one/models/customer_model.dart';
 import 'package:project_one/models/location_model.dart';
 import 'package:project_one/services/location_service.dart';
@@ -25,7 +24,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> {
       appBar: AppBar(
           backgroundColor: Colors.deepOrange,
           foregroundColor: Colors.white,
-          title: const Text("Create Customer Screen")),
+          title: Text("Create Customer Screen")),
       body: Body(),
     );
   }
@@ -118,7 +117,7 @@ class _BodyState extends State<Body> {
                   items: provinces.map((province) {
                     return DropdownMenuItem<Province>(
                       value: province,
-                      child: Text(province.name),
+                      child:  Text(province.name),
                     );
                   }).toList(),
                   onChanged: (Province? value) {
@@ -138,7 +137,7 @@ class _BodyState extends State<Body> {
                   items: selectedProvince?.districts.map((district) {
                         return DropdownMenuItem<District>(
                           value: district,
-                          child: Text(district.name),
+                          child:  Text(district.name),
                         );
                       }).toList() ??
                       [],
@@ -158,7 +157,7 @@ class _BodyState extends State<Body> {
                   items: selectedDistrict?.wards.map((ward) {
                         return DropdownMenuItem<Ward>(
                           value: ward,
-                          child: Text(ward.name),
+                          child:  Text(ward.name),
                         );
                       }).toList() ??
                       [],

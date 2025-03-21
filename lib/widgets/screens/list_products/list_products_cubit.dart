@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+
 import 'package:project_one/models/product_model.dart';
 
 import '../../../common/enum/load_status.dart';

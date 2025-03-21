@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CommonStyles {
-  static const TextStyle boldText = TextStyle(
+  static TextStyle boldText = TextStyle(
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );

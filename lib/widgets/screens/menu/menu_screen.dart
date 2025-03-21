@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project_one/widgets/screens/settings/settings_screen.dart';
 
-import '../../../main_cubit.dart';
+import 'package:project_one/widgets/screens/settings/settings_screen.dart';
 import '../../common_widgets/bold_text.dart';
 
 class MenuScreen extends StatelessWidget {
