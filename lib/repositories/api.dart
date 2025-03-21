@@ -6,4 +6,10 @@ abstract class Api {
   Future<List<ProductModel>> getAllProducts();
   Future<dynamic> createCustomer(CustomerModel customer);
   Future<dynamic> createOrder(OrderModel order);
+  Future<dynamic> sendOrderEmail({
+    required String to,
+    required String subject,
+    required String text,
+    required String html,
+  });
 }

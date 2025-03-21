@@ -8,6 +8,7 @@ import 'log.dart';
 
 class ApiServer implements Api {
   String? baseUrl = dotenv.env['API_BASE_URL'];
+  String? baseUrlForSendEmail = dotenv.env['API_BASE_URL_NoApi_NoV1'];
   Dio dio = Dio();
   late Log log;
 
@@ -73,4 +74,42 @@ class ApiServer implements Api {
       rethrow;
     }
   }
+  @override
+  Future<dynamic> sendOrderEmail({
+    required String to,
+    required String subject,
+    required String text,
+    required String html,
+  }) async {
+    try {
+      final String url = '$baseUrlForSendEmail/send-email';
+      print("📤 Sending email to: $to");
+      print("📧 Subject: $subject");
+      print("📜 Text: $text");
+      print("📜 HTML: $html");
+
+      final data = {
+        'to': to,
+        'subject': subject,
+        'text': text,
+        'html': html,
+      };
+
+      Response response = await dio.post(
+        url,
+        data: data,
+        options: Options(headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+        }),
+      );
+
+      print("✅ Email sent successfully: ${response.data}");
+      return response.data;
+    } catch (e) {
+      print("❌ API Send Email Error: $e");
+      rethrow;
+    }
+  }
+
 }

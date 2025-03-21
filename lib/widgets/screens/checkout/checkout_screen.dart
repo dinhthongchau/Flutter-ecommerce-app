@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -7,12 +8,11 @@ import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_screen.dart';
-
 import '../../../common/enum/load_status.dart';
 import '../../../main_cubit.dart';
-import '../../../models/order_model.dart';
+import '../../../repositories/api_server.dart';
+import '../../../repositories/log_implements.dart';
 import '../../common_widgets/bold_text.dart';
-import '../../common_widgets/notice_snackbar.dart';
 import '../customer/create_customer_screen.dart';
 
 //checkout_screen.dart
@@ -36,10 +36,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<MainCubit>().setTheme(true);
+
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -65,132 +67,87 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
 class Body extends StatelessWidget {
   const Body({super.key});
-
   @override
   Widget build(BuildContext context) {
     final TextEditingController _noteController = TextEditingController();
 
-    return BlocBuilder<CheckoutCubit, CheckoutState>(
-      builder: (contextCheckout, stateCheckout) {
-        return BlocBuilder<CustomerCubit, CustomerState>(
-          builder: (context, state) {
-            if (state.loadStatus == LoadStatus.Loading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (stateCheckout.loadStatus == LoadStatus.Done) {
-              context.read<CustomerCubit>().clearOrder();
-              context.read<CartCubit>().clearProductInCart();
-              return Center(
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  elevation: 4,
-                  margin: EdgeInsets.all(20),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.green, size: 80),
-                        SizedBox(height: 10),
-                        Text(
-                          "Order Successfully Submitted!",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
+    return BlocListener<CheckoutCubit, CheckoutState>(
+      listener: (context, state) {
+        if (state.loadStatus == LoadStatus.Done) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Đặt hàng thành công! Email xác nhận đã được gửi.")),
+          );
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            ListProductsScreen.route,
+                (route) => false,
+          );
+        } else if (state.loadStatus == LoadStatus.Error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Đặt hàng thất bại! Vui lòng thử lại.")),
+          );
+        }
+      },
+      child: BlocBuilder<CustomerCubit, CustomerState>(
+        builder: (context, state) {
+          if (state.loadStatus == LoadStatus.Loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final customer = state.customer.isNotEmpty ? state.customer.first : null;
+          return BlocBuilder<CartCubit, CartState>(
+            builder: (context, cartState) {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    CustomerContainer(),
+                    ProductOrderContainer(),
+                    NoteContainer(noteController: _noteController),
+                    PaymentMethodContainer(),
+                    DetailPaymentContainer(),
+                    // Thay toàn bộ ElevatedButton trong build của Body
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          "Thank you for your purchase. Your order will be processed soon.",
-                          style: TextStyle(color: Colors.grey),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepOrange,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pushNamed(ListProductsScreen.route);
-                          },
-                          child: const Text("Back to Home",
-                              style: TextStyle(color: Colors.white)),
-                        ),
-                      ],
+                      ),
+                      onPressed: () {
+                        if (customer == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Vui lòng tạo khách hàng trước!")),
+                          );
+                          return;
+                        }
+                        context.read<CheckoutCubit>().placeOrder(
+                          context: context,
+                          customer: customer,
+                          selectedProducts: cartState.selectedProducts,
+                          selectedQuantities: cartState.selectedQuantities,
+                          totalPayment: cartState.totalPayment.toDouble(),
+                          paymentMethod: context.read<CheckoutCubit>().state.selectedMethod,
+                          note: _noteController.text,
+                        );
+                      },
+                      child: BlocBuilder<CheckoutCubit, CheckoutState>(
+                        builder: (context, checkoutState) {
+                          return checkoutState.loadStatus == LoadStatus.Loading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text(
+                            'Order Now',
+                            style: TextStyle(color: Colors.white),
+                          );
+                        },
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               );
-            } else {
-              if (stateCheckout.loadStatus == LoadStatus.Error) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    noticeSnackbar(
-                        "Error when ordering. Please enter all required fields.",
-                        true),
-                  );
-                });
-
-                // Trả về một widget rỗng để giữ nguyên trang
-              }
-              final customer =
-                  state.customer.isNotEmpty ? state.customer.first : null;
-              return BlocBuilder<CartCubit, CartState>(
-                builder: (context, state) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        CustomerContainer(),
-                        ProductOrderContainer(),
-                        NoteContainer(noteController: _noteController),
-                        PaymentMethodContainer(),
-                        DetailPaymentContainer(),
-                        ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepOrange,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                            ),
-                            onPressed: () {
-                              final orderNote = context
-                                  .read<CheckoutCubit>()
-                                  .generateOrderNote(
-                                      state.selectedProducts,
-                                      // Danh sách sản phẩm đã chọn
-                                      state.selectedQuantities,
-                                      // Số lượng tương ứng
-                                      _noteController.text);
-                              final order = OrderModel(
-                                customerId: customer?.customerId ?? 0,
-                                orderTotal:
-                                    double.parse(state.totalPayment.toString()),
-                                orderPaymentMethod: context
-                                    .read<CheckoutCubit>()
-                                    .state
-                                    .selectedMethod,
-                                orderStatus: "Orded",
-                                orderNote: orderNote,
-                              );
-                              context.read<CheckoutCubit>().submitOrder(order);
-                            },
-                            child: const Text(
-                              'Order Now',
-                              style: TextStyle(color: Colors.white),
-                            ))
-                      ],
-                    ),
-                  );
-                },
-              );
-            }
-          },
-        );
-      },
+            },
+          );
+        },
+      ),
     );
   }
 }
@@ -299,11 +256,6 @@ class ProductOrderContainer extends StatelessWidget {
                     final product = state.selectedProducts[index];
                     final quantity =
                         state.selectedQuantities[product.product_id] ?? 1;
-                    // return ListTile(
-                    //   title: Text(product.product_name),
-                    //   subtitle: Text("Quantity : $quantity"),
-                    //   trailing: Text(product.product_color),
-                    // );
                     return SizedBox(
                       height: 150,
                       child: Row(
