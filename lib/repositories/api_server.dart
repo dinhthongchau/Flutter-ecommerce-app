@@ -7,8 +7,8 @@ import 'api.dart';
 import 'log.dart';
 
 class ApiServer implements Api {
-  String? baseUrl = dotenv.env['API_BASE_URL'];
-  String? baseUrlForSendEmail = dotenv.env['API_BASE_URL_NoApi_NoV1'];
+  String? baseUrl = dotenv.env['API_BASE_URL_API_V1'];
+  String? baseUrlForSendEmail = dotenv.env['API_BASE_URL'];
   Dio dio = Dio();
   late Log log;
 

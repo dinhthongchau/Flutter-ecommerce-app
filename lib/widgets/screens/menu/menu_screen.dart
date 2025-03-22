@@ -11,23 +11,21 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Column(
-          children: [
-            ListTile(
-              title: Center(child: CustomBoldText(text: "Menu")),
+      body: Column(
+        children: [
+          ListTile(
+            title: Center(child: CustomBoldText(text: "Menu")),
+          ),
+          ListTile(
+            tileColor: Colors.deepOrangeAccent,
+            title: Row(
+              children: [Text("Settings"), Icon(Icons.settings)],
             ),
-            ListTile(
-              tileColor: Colors.deepOrangeAccent,
-              title: Row(
-                children: [Text("Settings"), Icon(Icons.settings)],
-              ),
-              onTap: () {
-                Navigator.of(context).pushNamed(SettingsScreen.route);
-              },
-            )
-          ],
-        ),
+            onTap: () {
+              Navigator.of(context).pushNamed(SettingsScreen.route);
+            },
+          )
+        ],
       ),
     );
   }

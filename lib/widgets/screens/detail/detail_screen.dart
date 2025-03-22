@@ -38,7 +38,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     ScreenSize screenSize = calculateScreenSize(width);
-    String? baseUrl = dotenv.env['API_BASE_URL_NoApi_NoV1'];
+    String? baseUrl = dotenv.env['API_BASE_URL'];
 
     return BlocBuilder<ListProductsCubit, ListProductsState>(
       builder: (context, state) {
@@ -220,30 +220,36 @@ class _DetailScreenState extends State<DetailScreen> {
 }
 
 class BottomNavigationBar extends StatelessWidget {
+  const BottomNavigationBar({super.key});
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     ScreenSize screenSize = calculateScreenSize(width);
 
-    double buttonHeight = screenSize == ScreenSize.small ? 50
-        : screenSize == ScreenSize.medium ? 60
-        : 70; // Desktop
+    return Container(
+      margin: screenSize == ScreenSize.small
+          ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+          : screenSize == ScreenSize.medium
+          ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
+          : EdgeInsets.symmetric(horizontal: 400),  // Desktop
 
-    return Row(
-      children: [
-        Expanded(
-          child: SizedBox(
-            height: buttonHeight,
-            child: AddToCartButton(),
+      child: Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: 50,
+              child: AddToCartButton(),
+            ),
           ),
-        ),
-        Expanded(
-          child: SizedBox(
-            height: buttonHeight,
-            child: BuyNowButton(),
+          Expanded(
+            child: SizedBox(
+              height: 50,
+              child: BuyNowButton(),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
