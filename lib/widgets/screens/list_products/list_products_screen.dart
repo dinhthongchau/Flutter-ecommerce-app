@@ -7,7 +7,9 @@ import 'package:project_one/repositories/api.dart';
 import 'package:project_one/widgets/common_widgets/bold_text.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
 import 'package:project_one/widgets/screens/menu/menu_screen.dart';
+import '../../../common/code/calculateScreenSize.dart';
 import '../../../common/enum/load_status.dart';
+import '../../../common/enum/screen_size.dart';
 import '../../common_widgets/cart_button.dart';
 import '../../common_widgets/notice_snackbar.dart';
 import 'list_products_cubit.dart';
@@ -21,7 +23,6 @@ class ListProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // read API
       create: (context) => ListProductsCubit(context.read<Api>())..loadData(),
       child: Page(),
     );
@@ -85,9 +86,7 @@ class Body extends StatelessWidget {
     );
   }
 }
-
 class ListProductPage extends StatefulWidget {
-
   const ListProductPage({super.key});
 
   @override
@@ -103,78 +102,106 @@ class _ListProductPageState extends State<ListProductPage> {
       builder: (context, state) {
         var cubitProduct = context.read<ListProductsCubit>();
 
-        return GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.75,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemCount: state.product.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  cubitProduct.setSelectedIndex(index);
-                  Navigator.of(context).pushNamed(DetailScreen.route,
-                      arguments: {'cubit_product': cubitProduct});
-                },
-                child: Card(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            // Tính toán kích thước màn hình
+            final screenSize = calculateScreenSize(constraints.maxWidth);
 
-                      if (kIsWeb)
-                        //display on web
-                      Image.network(
-                        "$baseUrl${state.product[index].product_image[0]}",
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.contain,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(child: CircularProgressIndicator());
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.error);
-                        },
-                      )
-                      else
-                      // display on android
-                        CachedNetworkImage(
-                          imageUrl:
-                              "$baseUrl${state.product[index].product_image[0]}",
-                          height: 150,
-                          width: double.infinity,
-                          fit: BoxFit.contain,
-                          placeholder: (context, url) =>
-                              new CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                        ),
+            // Điều chỉnh số lượng cột dựa trên kích thước màn hình
+            final crossAxisCount = switch (screenSize) {
+              ScreenSize.small => 2,  // 2 cột cho màn hình nhỏ
+              ScreenSize.medium => 3, // 3 cột cho màn hình trung bình
+              ScreenSize.large => 4,  // 4 cột cho màn hình lớn
+            };
 
-                      Container(
-                        padding: EdgeInsets.all(20),
+            return Center(
+              child: Container(
+                // Giới hạn chiều rộng tối đa
+                constraints: BoxConstraints(maxWidth: 1200), // Có thể điều chỉnh giá trị này
+                margin: switch (screenSize) {
+                  ScreenSize.small => EdgeInsets.symmetric(horizontal: 20), // 20px cho màn hình nhỏ
+                  ScreenSize.medium => EdgeInsets.symmetric(horizontal: 50), // 50px cho màn hình trung bình
+                  ScreenSize.large => EdgeInsets.symmetric(horizontal: 100), // 100px cho màn hình lớn
+                },// Khoảng trống hai bên
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    childAspectRatio: 0.75,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemCount: state.product.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        cubitProduct.setSelectedIndex(index);
+                        Navigator.of(context).pushNamed(DetailScreen.route,
+                            arguments: {'cubit_product': cubitProduct});
+                      },
+                      child: Card(
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              "${state.product[index].product_name} ",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Text(
-                              "${NumberFormat('#,###', 'vi').format(state.product[index].product_price)} đ",
-                              style: TextStyle(color: Colors.orange),
+                            if (kIsWeb)
+                            // Hiển thị trên web
+                              Expanded(
+                                child: Image.network(
+                                  "$baseUrl${state.product[index].product_image[0]}",
+                                  height: 150,
+                                  width: double.infinity,
+                                  fit: BoxFit.contain,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(child: CircularProgressIndicator());
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(Icons.error);
+                                  },
+                                ),
+                              )
+                            else
+                            // Hiển thị trên Android
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                  "$baseUrl${state.product[index].product_image[0]}",
+                                  height: 150,
+                                  width: double.infinity,
+                                  fit: BoxFit.contain,
+                                  placeholder: (context, url) =>
+                                  new CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                ),
+                              ),
+                            Container(
+                              padding: EdgeInsets.all(20),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "${state.product[index].product_name} ",
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    "${NumberFormat('#,###', 'vi').format(state.product[index].product_price)} đ",
+                                    style: TextStyle(color: Colors.orange),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              );
-            });
+              ),
+            );
+          },
+        );
       },
     );
   }
