@@ -77,6 +77,7 @@ class _BodyState extends State<Body> {
       setState(() {
         isLoading = false;
       });
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error loading provinces: $e")),
       );
@@ -201,6 +202,7 @@ class _BodyState extends State<Body> {
                     await context
                         .read<CustomerCubit>()
                         .createCustomer(customer);
+                    if (!context.mounted) return;
                     Navigator.pop(context, customer);
                   },
                   child: const Text("Create Customer"),

@@ -28,6 +28,8 @@ class ListProductsScreen extends StatelessWidget {
 }
 
 class Page extends StatelessWidget {
+  const Page({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,6 +68,8 @@ class Page extends StatelessWidget {
 }
 
 class Body extends StatelessWidget {
+  const Body({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ListProductsCubit, ListProductsState>(
@@ -83,7 +87,7 @@ class Body extends StatelessWidget {
 
 class ListProductPage extends StatefulWidget {
 
-  ListProductPage({super.key});
+  const ListProductPage({super.key});
 
   @override
   State<ListProductPage> createState() => _ListProductPageState();

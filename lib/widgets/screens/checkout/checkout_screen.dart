@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,8 +10,6 @@ import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_screen.dart';
 import '../../../common/enum/load_status.dart';
 import '../../../main_cubit.dart';
-import '../../../repositories/api_server.dart';
-import '../../../repositories/log_implements.dart';
 import '../../common_widgets/bold_text.dart';
 import '../customer/create_customer_screen.dart';
 
@@ -400,9 +398,12 @@ class CustomerContainer extends StatelessWidget {
                             ),
                           );
                           if (result != null) {
+                            if (!context.mounted) return;
                             await context
                                 .read<CustomerCubit>()
                                 .createCustomer(result);
+                            if (!context.mounted) return;
+
                             await context.read<CustomerCubit>().loadCustomer();
                           }
                         },

@@ -125,6 +125,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       print("Email sent to admin: $adminEmail");
 
       // 6. Xóa giỏ hàng sau khi đặt hàng thành công
+      if (!context.mounted) return;
       await context.read<CartCubit>().clearProductInCart();
       emit(state.copyWith(loadStatus: LoadStatus.Done));
 
