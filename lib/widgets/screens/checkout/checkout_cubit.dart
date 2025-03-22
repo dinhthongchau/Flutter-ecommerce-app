@@ -65,11 +65,10 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       }
 
       // 2. Tạo order
-      final orderNote = selectedProducts
+      final orderNote = '${selectedProducts
           .map((product) =>
       "${product.product_name} (${product.product_color}) x ${selectedQuantities[product.product_id] ?? 1}")
-          .join('\n') +
-          '\nGhi chú: $note';
+          .join('\n')}\nGhi chú: $note';
 
       final order = OrderModel(
         customerId: customerId,

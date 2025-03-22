@@ -94,7 +94,7 @@ class ListProductPage extends StatefulWidget {
 }
 
 class _ListProductPageState extends State<ListProductPage> {
-  String? baseUrl = dotenv.env['API_BASE_URL_NoApi_NoV1'];
+  String? baseUrl = dotenv.env['API_BASE_URL'];
 
   @override
   Widget build(BuildContext context) {
