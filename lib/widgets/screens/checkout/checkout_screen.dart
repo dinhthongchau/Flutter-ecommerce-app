@@ -8,7 +8,9 @@ import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_screen.dart';
+import '../../../common/code/calculateScreenSize.dart';
 import '../../../common/enum/load_status.dart';
+import '../../../common/enum/screen_size.dart';
 import '../../../main_cubit.dart';
 import '../../common_widgets/bold_text.dart';
 import '../customer/create_customer_screen.dart';
@@ -67,6 +69,8 @@ class Body extends StatelessWidget {
   const Body({super.key});
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    ScreenSize screenSize = calculateScreenSize(width);
     final TextEditingController _noteController = TextEditingController();
 
     return BlocListener<CheckoutCubit, CheckoutState>(
@@ -94,52 +98,59 @@ class Body extends StatelessWidget {
           final customer = state.customer.isNotEmpty ? state.customer.first : null;
           return BlocBuilder<CartCubit, CartState>(
             builder: (context, cartState) {
-              return SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    CustomerContainer(),
-                    ProductOrderContainer(),
-                    NoteContainer(noteController: _noteController),
-                    PaymentMethodContainer(),
-                    DetailPaymentContainer(),
-                    // Thay toàn bộ ElevatedButton trong build của Body
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrange,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+              return Container(
+                margin: screenSize == ScreenSize.small
+                    ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+                    : screenSize == ScreenSize.medium
+                    ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
+                    : EdgeInsets.symmetric(horizontal: 400),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      CustomerContainer(),
+                      ProductOrderContainer(),
+                      NoteContainer(noteController: _noteController),
+                      PaymentMethodContainer(),
+                      DetailPaymentContainer(),
+                      // Thay toàn bộ ElevatedButton trong build của Body
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepOrange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                      ),
-                      onPressed: () {
-                        if (customer == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Vui lòng tạo khách hàng trước!")),
-                          );
-                          return;
-                        }
-                        context.read<CheckoutCubit>().placeOrder(
-                          context: context,
-                          customer: customer,
-                          selectedProducts: cartState.selectedProducts,
-                          selectedQuantities: cartState.selectedQuantities,
-                          totalPayment: cartState.totalPayment.toDouble(),
-                          paymentMethod: context.read<CheckoutCubit>().state.selectedMethod,
-                          note: _noteController.text,
-                        );
-                      },
-                      child: BlocBuilder<CheckoutCubit, CheckoutState>(
-                        builder: (context, checkoutState) {
-                          return checkoutState.loadStatus == LoadStatus.Loading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text(
-                            'Order Now',
-                            style: TextStyle(color: Colors.white),
+                        onPressed: () {
+                          if (customer == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Vui lòng tạo khách hàng trước!")),
+                            );
+                            return;
+                          }
+                          context.read<CheckoutCubit>().placeOrder(
+                            context: context,
+                            customer: customer,
+                            selectedProducts: cartState.selectedProducts,
+                            selectedQuantities: cartState.selectedQuantities,
+                            totalPayment: cartState.totalPayment.toDouble(),
+                            paymentMethod: context.read<CheckoutCubit>().state.selectedMethod,
+                            note: _noteController.text,
                           );
                         },
+                        child: BlocBuilder<CheckoutCubit, CheckoutState>(
+                          builder: (context, checkoutState) {
+                            return checkoutState.loadStatus == LoadStatus.Loading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text(
+                              'Order Now',
+                              style: TextStyle(color: Colors.white),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
