@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:project_one/models/product_model.dart';
+import '../../../common/code/calculateScreenSize.dart';
+import '../../../common/enum/screen_size.dart';
 import '../../common_widgets/common_styles.dart';
 import '../checkout/checkout_screen.dart';
 import 'cart_cubit.dart';
@@ -59,6 +61,7 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
         if (state.cartItems.isEmpty) {
@@ -81,19 +84,28 @@ class ListItemsInCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    ScreenSize screenSize = calculateScreenSize(width);
     String? baseUrl = dotenv.env['API_BASE_URL_NoApi_NoV1'];
-    return SizedBox(
-      child: ListView.builder(
-        itemCount: state.cartItems.length,
-        itemBuilder: (context, index) {
-          ProductModel itemsInCart = state.cartItems[index];
-          return Column(
-            children: [
-              CartItemListTile(baseUrl: baseUrl, itemsInCart: itemsInCart),
-              Divider()
-            ],
-          );
-        },
+    return Container(
+      margin: screenSize == ScreenSize.small
+          ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+          : screenSize == ScreenSize.medium
+          ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
+          : EdgeInsets.symmetric(horizontal: 400),  // Desktop
+      child: SizedBox(
+        child: ListView.builder(
+          itemCount: state.cartItems.length,
+          itemBuilder: (context, index) {
+            ProductModel itemsInCart = state.cartItems[index];
+            return Column(
+              children: [
+                CartItemListTile(baseUrl: baseUrl, itemsInCart: itemsInCart),
+                Divider()
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -139,17 +151,22 @@ class TotalCalculator extends StatelessWidget {
         String formattedTotal = formatCurrency.format(state.totalPayment);
 
         return Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              "Total Payment: ",
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            Expanded(
+              child: Text(
+                "Total Payment: ",
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
             ),
-            Text(
-              "đ$formattedTotal",
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepOrange),
+            Expanded(
+              child: Text(
+                "đ$formattedTotal",
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepOrange),
+              ),
             )
           ],
         );
