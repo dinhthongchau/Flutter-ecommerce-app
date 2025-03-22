@@ -101,10 +101,30 @@ class _BodyState extends State<Body> {
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'Name'),
                 ),
+                SizedBox(height: 20,),
                 TextField(
                   controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  cursorColor: Colors.red,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+                    hintText: 'Nhập email chính xác để nhận thông tin đơn hàng',
+                    hintStyle: TextStyle(color: Colors.grey),
+                    prefixIcon: Icon(Icons.email, color: Colors.red),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.red, width: 2),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.redAccent, width: 2.5),
+                    ),
+                  ),
                 ),
+                SizedBox(height: 20,),
+
+
                 TextField(
                   controller: _phoneController,
                   decoration: const InputDecoration(labelText: 'Phone'),
