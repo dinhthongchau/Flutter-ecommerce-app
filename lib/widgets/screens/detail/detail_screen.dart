@@ -57,7 +57,7 @@ class _DetailScreenState extends State<DetailScreen> {
             title: Row(
               children: [
                 Spacer(),
-                const Text("Detail Screen"),
+                const Text("Detail Screen",style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                 Spacer(),
                 CartButton(),
               ],
