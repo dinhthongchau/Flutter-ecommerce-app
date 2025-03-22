@@ -3,7 +3,7 @@ part of 'main_cubit.dart';
 class MainState {
   final bool isLightTheme;
   const MainState.init({
-    this.isLightTheme = false,
+    this.isLightTheme = true,
   });
 
 //<editor-fold desc="Data Methods">

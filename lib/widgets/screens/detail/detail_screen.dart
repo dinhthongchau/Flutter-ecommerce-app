@@ -13,6 +13,8 @@ import 'package:project_one/widgets/screens/checkout/checkout_screen.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
 
 
+import '../../../common/code/calculateScreenSize.dart';
+import '../../../common/enum/screen_size.dart';
 import '../../common_widgets/bold_text.dart';
 import '../../common_widgets/cart_button.dart';
 
@@ -34,7 +36,10 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    ScreenSize screenSize = calculateScreenSize(width);
     String? baseUrl = dotenv.env['API_BASE_URL_NoApi_NoV1'];
+
     return BlocBuilder<ListProductsCubit, ListProductsState>(
       builder: (context, state) {
         if (state.product.isEmpty ||
@@ -44,12 +49,15 @@ class _DetailScreenState extends State<DetailScreen> {
         var product = state.product[state.selectedItem];
         //print("Image detail is $baseUrl${product.product_image[2]}");
         return Scaffold(
+
           bottomNavigationBar: BottomNavigationBar(),
           appBar: AppBar(
             iconTheme: IconThemeData(color: Colors.white),
             backgroundColor: Colors.deepOrange,
             title: Row(
               children: [
+                Spacer(),
+                const Text("Detail Screen"),
                 Spacer(),
                 CartButton(),
               ],
@@ -62,101 +70,109 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
           ),
           body: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildSizedBoxForImages(product, baseUrl),
-                SizedBox(
-                  height: 80,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: product.product_image.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          _pageController.animateToPage(index,
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.easeInOut); //hieu ung click
-                        },
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: _currentIndex == index
-                                  ? Colors.deepOrange
-                                  : Colors.transparent,
-                              width: 2,
+            child: Container(
+
+              margin: screenSize == ScreenSize.small
+                  ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+                  : screenSize == ScreenSize.medium
+                  ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
+                  : EdgeInsets.symmetric(horizontal: 400),  // Desktop
+              child: Column(
+                children: [
+                  _buildSizedBoxForImages(product, baseUrl),
+                  SizedBox(
+                    height: 80,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: product.product_image.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            _pageController.animateToPage(index,
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeInOut); //hieu ung click
+                          },
+                          child: Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: _currentIndex == index
+                                    ? Colors.deepOrange
+                                    : Colors.transparent,
+                                width: 2,
+                              ),
+                            ),
+                            child: kIsWeb
+                            //check if is web
+                                ? Image.network(
+                              "$baseUrl${product.product_image[index]}",
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(child: CircularProgressIndicator());
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                print("Error loading $baseUrl${product.product_image[index]}: $error");
+                                return Icon(Icons.error);
+                              },
+                            )
+                                : CachedNetworkImage(
+                              imageUrl: "$baseUrl${product.product_image[index]}",
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) =>
+                                  Center(child: CircularProgressIndicator()),
+                              errorWidget: (context, url, error) {
+                                print("Error loading $url: $error");
+                                return Icon(Icons.error);
+                              },
                             ),
                           ),
-                          child: kIsWeb
-                          //check if is web
-                              ? Image.network(
-                            "$baseUrl${product.product_image[index]}",
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(child: CircularProgressIndicator());
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              print("Error loading $baseUrl${product.product_image[index]}: $error");
-                              return Icon(Icons.error);
-                            },
-                          )
-                              : CachedNetworkImage(
-                            imageUrl: "$baseUrl${product.product_image[index]}",
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                                Center(child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) {
-                              print("Error loading $url: $error");
-                              return Icon(Icons.error);
-                            },
-                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.bottomLeft,
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "đ${NumberFormat('#,###', 'vi').format(product.product_price)} ",
+                          style: TextStyle(color: Colors.redAccent, fontSize: 25),
                         ),
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.bottomLeft,
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "đ${NumberFormat('#,###', 'vi').format(product.product_price)} ",
-                        style: TextStyle(color: Colors.redAccent, fontSize: 25),
-                      ),
-                      Text(
-                        product.product_name,
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.bold),
-                      ),
-                      // Text(product.product_price),
+                        Text(
+                          product.product_name,
+                          style: TextStyle(
+                              fontSize: 25, fontWeight: FontWeight.bold),
+                        ),
+                        // Text(product.product_price),
 
-                      SizedBox(
-                        height: 20,
-                      ),
+                        SizedBox(
+                          height: 20,
+                        ),
 
-                      CustomBoldText(
-                        text: "Description : ",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      Divider(
-                        height: 2,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(product.product_description),
-                    ],
-                  ),
-                )
-              ],
+                        CustomBoldText(
+                          text: "Description : ",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Divider(
+                          height: 2,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(product.product_description),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         );
@@ -166,8 +182,14 @@ class _DetailScreenState extends State<DetailScreen> {
 
   SizedBox _buildSizedBoxForImages(ProductModel product, String? baseUrl) {
     var numberCurrentIndex = _currentIndex + 1;
+    double width = MediaQuery.of(context).size.width;
+    ScreenSize screenSize = calculateScreenSize(width);
+
+    double imageHeight = screenSize == ScreenSize.small ? 300
+        : screenSize == ScreenSize.medium ? 400
+        : 500; // Desktop
     return SizedBox(
-      height: 450,
+      height: imageHeight,
       child: Stack(children: [
         PageView.builder(
           controller: _pageController,
@@ -198,23 +220,34 @@ class _DetailScreenState extends State<DetailScreen> {
 }
 
 class BottomNavigationBar extends StatelessWidget {
-  const BottomNavigationBar({super.key});
-
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    ScreenSize screenSize = calculateScreenSize(width);
+
+    double buttonHeight = screenSize == ScreenSize.small ? 50
+        : screenSize == ScreenSize.medium ? 60
+        : 70; // Desktop
+
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: AddToCartButton(),
+          child: SizedBox(
+            height: buttonHeight,
+            child: AddToCartButton(),
+          ),
         ),
         Expanded(
-          child: BuyNowButton(),
+          child: SizedBox(
+            height: buttonHeight,
+            child: BuyNowButton(),
+          ),
         ),
       ],
     );
   }
 }
+
 
 class BuyNowButton extends StatelessWidget {
   const BuyNowButton({
