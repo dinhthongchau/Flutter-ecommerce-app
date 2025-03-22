@@ -1,6 +1,7 @@
 
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -87,7 +88,23 @@ class _DetailScreenState extends State<DetailScreen> {
                               width: 2,
                             ),
                           ),
-                          child: CachedNetworkImage(
+                          child: kIsWeb
+                          //check if is web
+                              ? Image.network(
+                            "$baseUrl${product.product_image[index]}",
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(child: CircularProgressIndicator());
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              print("Error loading $baseUrl${product.product_image[index]}: $error");
+                              return Icon(Icons.error);
+                            },
+                          )
+                              : CachedNetworkImage(
                             imageUrl: "$baseUrl${product.product_image[index]}",
                             width: 80,
                             height: 80,

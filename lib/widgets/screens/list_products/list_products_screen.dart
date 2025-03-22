@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -102,26 +103,43 @@ class _ListProductPageState extends State<ListProductPage> {
       builder: (context, state) {
         var cubitProduct = context.read<ListProductsCubit>();
 
-        return Container(
-          child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: state.product.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    cubitProduct.setSelectedIndex(index);
-                    Navigator.of(context).pushNamed(DetailScreen.route,
-                        arguments: {'cubit_product': cubitProduct});
-                  },
-                  child: Card(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+        return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.75,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            itemCount: state.product.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  cubitProduct.setSelectedIndex(index);
+                  Navigator.of(context).pushNamed(DetailScreen.route,
+                      arguments: {'cubit_product': cubitProduct});
+                },
+                child: Card(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+
+                      if (kIsWeb)
+                        //display on web
+                      Image.network(
+                        "$baseUrl${state.product[index].product_image[0]}",
+                        height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(child: CircularProgressIndicator());
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(Icons.error);
+                        },
+                      )
+                      else
+                      // display on android
                         CachedNetworkImage(
                           imageUrl:
                               "$baseUrl${state.product[index].product_image[0]}",
@@ -133,30 +151,30 @@ class _ListProductPageState extends State<ListProductPage> {
                           errorWidget: (context, url, error) =>
                               Icon(Icons.error),
                         ),
-                        Container(
-                          padding: EdgeInsets.all(20),
-                          child: Column(
-                            children: [
-                              Text(
-                                "${state.product[index].product_name} ",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              Text(
-                                "${NumberFormat('#,###', 'vi').format(state.product[index].product_price)} đ",
-                                style: TextStyle(color: Colors.orange),
-                              ),
-                            ],
-                          ),
+
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Text(
+                              "${state.product[index].product_name} ",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Text(
+                              "${NumberFormat('#,###', 'vi').format(state.product[index].product_price)} đ",
+                              style: TextStyle(color: Colors.orange),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              }),
-        );
+                ),
+              );
+            });
       },
     );
   }
