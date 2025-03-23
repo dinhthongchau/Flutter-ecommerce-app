@@ -238,7 +238,7 @@ class _BodyState extends State<Body> {
                     if (!context.mounted) return;
                     Navigator.pop(context, customer);
                   },
-                  child: const Text("Create Customer"),
+                  child: const Text("Tạo thông tin khách hàng "),
                 ),
               ],
             ),

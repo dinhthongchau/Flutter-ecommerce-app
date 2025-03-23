@@ -4,6 +4,7 @@ import 'package:project_one/widgets/common_widgets/common_styles.dart';
 
 import '../../../main_cubit.dart';
 import '../../common_widgets/bottom_navigation_bar.dart';
+import '../../common_widgets/custom_gradient_appbar.dart';
 
 class SettingsScreen extends StatelessWidget {
   static const String route = "SettingsScreen";
@@ -14,12 +15,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: CustomBottomNavigationBar(),
-      appBar: AppBar(
-        title: Align(
-            alignment: Alignment.center,
-            child: CommonStyles.boldTextWidget("Setting Screen")),
-        backgroundColor: Colors.deepOrange,
-      ),
+      appBar: CustomGradientAppBar(title: "Setting Screen"),
       body: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),

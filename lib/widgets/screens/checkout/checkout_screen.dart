@@ -292,35 +292,38 @@ class ProductOrderContainer extends StatelessWidget {
                           SizedBox(
                             width: 20,
                           ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(product.product_name),
-                              Text(
-                                product.product_color,
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 12),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  CustomBoldText(
-                                    text:
-                                        "đ${NumberFormat('#,###', 'vi').format(product.product_price)}",
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Text(
-                                    "x$quantity",
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ],
-                              )
-                            ],
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(product.product_name,maxLines: 3,softWrap: true,),
+                            
+                                Text(
+                                  product.product_color,
+                                  style:
+                                      TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    CustomBoldText(
+                                      text:
+                                          "đ${NumberFormat('#,###', 'vi').format(product.product_price)}",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      "x$quantity",
+                                      style: TextStyle(fontSize: 10),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
                           )
                         ],
                       ),
@@ -419,7 +422,7 @@ class CustomerContainer extends StatelessWidget {
                             await context.read<CustomerCubit>().loadCustomer();
                           }
                         },
-                        child: const Text("Create Customer",
+                        child: const Text("Tạo thông tin khách hàng ",
                             style: TextStyle(color: Colors.white)),
                       ),
                     ),

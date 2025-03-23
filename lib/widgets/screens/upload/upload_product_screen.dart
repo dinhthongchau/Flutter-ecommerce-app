@@ -5,6 +5,8 @@ import 'package:project_one/widgets/common_widgets/bottom_navigation_bar.dart';
 import 'package:project_one/widgets/common_widgets/common_styles.dart';
 import 'package:project_one/widgets/screens/upload/upload_product_cubit.dart';
 
+import '../../common_widgets/custom_gradient_appbar.dart';
+
 class UploadProductScreen extends StatefulWidget {
   static const String route = "UploadProductScreen";
 
@@ -61,10 +63,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
     return Scaffold(
       bottomNavigationBar: CustomBottomNavigationBar(),
       appBar: AppBar(
-        title: Align(
-            alignment: Alignment.center,
-            child: CommonStyles.boldTextWidget("Upload Product")),
-        backgroundColor: Colors.deepOrange,
+        title: CustomGradientAppBar(title: "Upload Product"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -85,69 +84,131 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    // Sửa: Thêm màu nền và bo góc cho TextFormField
                     TextFormField(
-                      decoration: InputDecoration(labelText: 'Product Name'),
+                      decoration: InputDecoration(
+                        labelText: 'Product Name',
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       validator: (value) => value!.isEmpty ? 'Required' : null,
                       onSaved: (value) => _productName = value!,
                     ),
+                    const SizedBox(height: 16), // Thêm khoảng cách
                     TextFormField(
-                      decoration: InputDecoration(labelText: 'Product Price'),
+                      decoration: InputDecoration(
+                        labelText: 'Product Price',
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) return 'Required';
-                        if (int.tryParse(value) == null)
-                          return 'Must be a valid number';
+                        if (int.tryParse(value) == null) return 'Must be a valid number';
                         return null;
                       },
                       onSaved: (value) {
-                        _productPrice = int.tryParse(value!) ??
-                            0; // Default to 0 if invalid
-                        print(
-                            "Parsed productPrice: $_productPrice"); // Debug log
+                        _productPrice = int.tryParse(value!) ?? 0;
+                        print("Parsed productPrice: $_productPrice");
                       },
                     ),
+                    const SizedBox(height: 16),
                     TextFormField(
-                      decoration: InputDecoration(labelText: 'Product Color'),
+                      decoration: InputDecoration(
+                        labelText: 'Product Color',
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       validator: (value) => value!.isEmpty ? 'Required' : null,
                       onSaved: (value) => _productColor = value!,
                     ),
+                    const SizedBox(height: 16),
                     TextFormField(
-                      decoration:
-                          InputDecoration(labelText: 'Product Description'),
+                      decoration: InputDecoration(
+                        labelText: 'Product Description',
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       onSaved: (value) => _productDescription = value ?? '',
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 24), // Tăng khoảng cách
+                    // Sửa: Cải thiện nút "Chọn ảnh"
                     ElevatedButton(
                       onPressed: _pickImages,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepOrange,
                         foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Chọn ảnh'),
-                          Icon(Icons.image_outlined,color: Colors.white,)
+                          Text('Chọn ảnh', style: TextStyle(fontSize: 16)),
+                          SizedBox(width: 8),
+                          Icon(Icons.image_outlined, color: Colors.white),
                         ],
                       ),
                     ),
-                    Text('Selected images: ${_imageFiles.length}'),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: state is ProductUploadLoading ? null : _submit,
-                      child: state is ProductUploadLoading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                  color: Colors.white),
-                            )
-                          : Text('Upload Product'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrange,
-                        foregroundColor: Colors.white,
+                    const SizedBox(height: 8),
+                    Text(
+                      'Selected images: ${_imageFiles.length}',
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 24),
+                    // Sửa: Làm nút Upload nổi bật hơn
+                    Container(
+                      width: double.infinity, // Full width
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1), // Màu nền nhẹ để nổi bật
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: state is ProductUploadLoading ? null : _submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          elevation: 5, // Thêm shadow
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: state is ProductUploadLoading
+                            ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(color: Colors.white),
+                        )
+                            : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text(
+                              'Upload',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.upload, color: Colors.white, size: 24),
+                          ],
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 16), // Khoảng trống cuối
                   ],
                 ),
               ),

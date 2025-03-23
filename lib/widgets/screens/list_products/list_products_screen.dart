@@ -179,12 +179,12 @@ class _ListProductPageState extends State<ListProductPage> {
             if (!widget.isSearching)
               Container(
                 padding: EdgeInsets.symmetric(vertical: 10),
-                color: Colors.grey[200],
+                //color: Colors.grey[200],
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _buildCategoryButton("All", null),
-                    _buildCategoryButton("Iphone", "Iphone"),
+                    _buildCategoryButton("Iphone ", "Iphone"),
                     _buildCategoryButton("Samsung", "Samsung"),
                     _buildCategoryButton("Macbook", "Macbook"),
                   ],
@@ -211,7 +211,11 @@ class _ListProductPageState extends State<ListProductPage> {
                       child: GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: crossAxisCount,
-                          childAspectRatio: 0.75,
+                          childAspectRatio: switch (screenSize) {
+                            ScreenSize.small => 0.75,
+                            ScreenSize.medium => 0.75,
+                            ScreenSize.large => 1.2,
+                          },
                           crossAxisSpacing: 8,
                           mainAxisSpacing: 8,
                         ),
@@ -227,40 +231,42 @@ class _ListProductPageState extends State<ListProductPage> {
                                   arguments: {'cubit_product': cubitProduct});
                             },
                             child: Card(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.network(
-                                    "${product.product_image[0]}",
-                                    fit: BoxFit.contain,
-                                    height: 150,
-                                    width: double.infinity,
-                                    loadingBuilder: (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return Center(child: CircularProgressIndicator());
-                                    },
-                                    errorBuilder: (context, error, stackTrace) {
-                                      print("Image Load Error: $error");
-                                      return Icon(Icons.error, color: Colors.red);
-                                    },
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.all(20),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          "${product.product_name} ",
-                                          style: TextStyle(fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          "${NumberFormat('#,###', 'vi').format(product.product_price)} đ",
-                                          style: TextStyle(color: Colors.orange),
-                                        ),
-                                      ],
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.network(
+                                      "${product.product_image[0]}",
+                                      fit: BoxFit.contain,
+                                      height: 150,
+                                      width: double.infinity,
+                                      loadingBuilder: (context, child, loadingProgress) {
+                                        if (loadingProgress == null) return child;
+                                        return Center(child: CircularProgressIndicator());
+                                      },
+                                      errorBuilder: (context, error, stackTrace) {
+                                        print("Image Load Error: $error");
+                                        return Icon(Icons.error, color: Colors.red);
+                                      },
                                     ),
-                                  ),
-                                ],
+                                    Container(
+                                      padding: EdgeInsets.all(20),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            "${product.product_name} ",
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            "${NumberFormat('#,###', 'vi').format(product.product_price)} đ",
+                                            style: TextStyle(color: Colors.orange),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -288,7 +294,7 @@ class _ListProductPageState extends State<ListProductPage> {
         });
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: selectedCategory == category ? Colors.deepOrange : Colors.grey,
+        backgroundColor: selectedCategory == category ? Colors.green : Colors.deepOrange,
         foregroundColor: Colors.white,
       ),
       child: Text(label),
