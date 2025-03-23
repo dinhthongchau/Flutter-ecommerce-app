@@ -1,60 +1,12 @@
-// lib/widgets/screens/menu/menu_screen.dart
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:project_one/repositories/api.dart';
-import 'package:project_one/repositories/api_server.dart';
-import 'package:project_one/widgets/common_widgets/bold_text.dart';
-import 'package:project_one/widgets/screens/menu/upload_product_cubit.dart';
-import 'package:project_one/widgets/screens/settings/settings_screen.dart';
-
-import '../../../common/enum/load_status.dart';
-
-class MenuScreen extends StatelessWidget {
-  static const String route = "MenuScreen";
-
-  const MenuScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          ListTile(
-            title: Center(child: CustomBoldText(text: "Menu")),
-          ),
-          ListTile(
-            tileColor: Colors.deepOrangeAccent,
-            title: Row(
-              children: const [Text("Settings"), Icon(Icons.settings)],
-            ),
-            onTap: () {
-              Navigator.of(context).pushNamed(SettingsScreen.route);
-            },
-          ),
-          ListTile(
-            tileColor: Colors.blueAccent,
-            title: Row(
-              children: const [Text("Upload Product"), Icon(Icons.upload)],
-            ),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => BlocProvider.value(
-                    value: context.read<ProductUploadCubit>(),
-                    child: UploadProductScreen(),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
+import 'package:project_one/widgets/common_widgets/bottom_navigation_bar.dart';
+import 'package:project_one/widgets/screens/upload/upload_product_cubit.dart';
 
 class UploadProductScreen extends StatefulWidget {
+  static const String route = "UploadProductScreen";
   const UploadProductScreen({super.key});
 
   @override
@@ -106,6 +58,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: CustomBottomNavigationBar(),
       appBar: AppBar(
         title: Text("Upload Product"),
         backgroundColor: Colors.blueAccent,

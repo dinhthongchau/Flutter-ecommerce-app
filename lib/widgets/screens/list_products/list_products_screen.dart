@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
-import 'package:project_one/widgets/screens/menu/menu_screen.dart';
 import '../../../common/code/calculateScreenSize.dart';
 import '../../../common/enum/load_status.dart';
 import '../../../common/enum/screen_size.dart';
 import '../../../repositories/api_server.dart';
+import '../../common_widgets/bottom_navigation_bar.dart';
 import '../../common_widgets/cart_button.dart';
 import '../../common_widgets/notice_snackbar.dart';
+import '../settings/settings_screen.dart';
 import 'list_products_cubit.dart';
 import 'package:intl/intl.dart';
 
@@ -53,10 +54,7 @@ class _PageState extends State<Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: MenuScreen(),
-      ),
-      bottomNavigationBar: BottomNavigationBar(),
+      bottomNavigationBar: CustomBottomNavigationBar(),
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.deepOrange,
@@ -117,33 +115,6 @@ class _PageState extends State<Page> {
   }
 }
 
-class BottomNavigationBar extends StatelessWidget {
-  const BottomNavigationBar({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return NavigationBar(destinations: [
-      NavigationDestination(
-        selectedIcon: Icon(Icons.home),
-        icon: Icon(Icons.home_outlined),
-        label: 'Home',
-      ),
-      NavigationDestination(
-        selectedIcon: Icon(Icons.home),
-        icon: Icon(Icons.home_outlined),
-        label: 'Home',
-      ),
-      NavigationDestination(
-        selectedIcon: Icon(Icons.home),
-        icon: Icon(Icons.home_outlined),
-        label: 'Home',
-      ),
-
-    ]);
-  }
-}
 
 class Body extends StatelessWidget {
   final String searchQuery;

@@ -4,9 +4,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/main_cubit.dart';
 import 'package:project_one/repositories/log.dart';
 import 'package:project_one/routes.dart';
+import 'package:project_one/widgets/common_widgets/bottom_navigation_cubit.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
-import 'package:project_one/widgets/screens/menu/upload_product_cubit.dart';
+import 'package:project_one/widgets/screens/upload/upload_product_cubit.dart';
 import 'repositories/api.dart';
 import 'repositories/api_server.dart';
 import 'repositories/log_implements.dart';
@@ -52,6 +53,9 @@ class Provider extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => ProductUploadCubit(context.read<ApiServer>()),
+          ),
+          BlocProvider(
+            create: (context) => BottomNavigationCubit(),
           ),
         ],
         child: const App(),

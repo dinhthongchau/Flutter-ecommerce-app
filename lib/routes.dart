@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
-import 'package:project_one/widgets/screens/menu/menu_screen.dart';
 import 'package:project_one/widgets/screens/settings/settings_screen.dart';
+import 'package:project_one/widgets/screens/upload/upload_product_screen.dart';
 import 'repositories/api.dart';
 import 'repositories/api_server.dart'; // Add this import
 import 'widgets/screens/customer/create_customer_screen.dart';
@@ -52,8 +52,8 @@ Route<dynamic> mainRoute(RouteSettings settings) {
             value: context.read<CustomerCubit>(),
             child: CreateCustomerScreen(),
           );
-        case MenuScreen.route:
-          return MenuScreen();
+        case UploadProductScreen.route:
+          return UploadProductScreen();
         case SettingsScreen.route:
           return SettingsScreen();
         default:
