@@ -14,7 +14,7 @@ import 'widgets/screens/list_products/list_products_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: "lib/assets/.env");
+  await dotenv.load(fileName: "assets/dotenv");
   final log = LogImplement(); // Khởi tạo log như gốc
   Bloc.observer = MyBlocObserver(log);
   runApp(Repository(log: log)); // Truyền log vào Repository

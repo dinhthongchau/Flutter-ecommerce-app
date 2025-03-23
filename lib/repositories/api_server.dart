@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/models/customer_model.dart';
 import 'package:project_one/models/product_model.dart';
@@ -17,13 +19,24 @@ class ApiServer implements Api {
   Future<List<ProductModel>> getAllProducts() async {
     try {
       final response = await dio.get('$baseUrl/products?limit=100');
+      print("Fetching API: $baseUrl/products?limit=100");
+      print("Response Data: ${response.data}");
+
       final List<dynamic> data = response.data['data']['products'];
-      //print("Fetching API: $baseUrl/products?limit=100");
-      //print("Response Data: ${response.data}");
-      return data.map((json) => ProductModel.fromJson(json)).toList();
+
+      // Parse product_image từ chuỗi JSON thành List trước khi map
+      final parsedData = data.map((json) {
+        final Map<String, dynamic> jsonCopy = Map<String, dynamic>.from(json);
+        if (jsonCopy['product_image'] is String) {
+          jsonCopy['product_image'] = jsonDecode(jsonCopy['product_image']);
+        }
+        return jsonCopy;
+      }).toList();
+
+      return parsedData.map((json) => ProductModel.fromJson(json)).toList();
     } catch (e) {
       print("API Fetch Prod Error: $e");
-      rethrow;
+      rethrow; // Ném lỗi để Cubit xử lý
     }
   }
 

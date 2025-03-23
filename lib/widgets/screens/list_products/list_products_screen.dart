@@ -1,8 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:project_one/models/product_model.dart';
 import 'package:project_one/repositories/api.dart';
 import 'package:project_one/widgets/common_widgets/bold_text.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
@@ -101,6 +103,8 @@ class _ListProductPageState extends State<ListProductPage> {
     return BlocBuilder<ListProductsCubit, ListProductsState>(
       builder: (context, state) {
         var cubitProduct = context.read<ListProductsCubit>();
+        List<ProductModel> sortedProducts = List.from(state.product)
+          ..sort((a, b) => b.product_id.compareTo(a.product_id)); // Sắp xếp giảm dần theo product_id
 
         return LayoutBuilder(
           builder: (context, constraints) {
@@ -132,6 +136,7 @@ class _ListProductPageState extends State<ListProductPage> {
                   ),
                   itemCount: state.product.length,
                   itemBuilder: (context, index) {
+                    final product = sortedProducts[index];
                     return GestureDetector(
                       onTap: () {
                         cubitProduct.setSelectedIndex(index);
@@ -142,38 +147,63 @@ class _ListProductPageState extends State<ListProductPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            if (kIsWeb)
-                            // Hiển thị trên web
-                              Expanded(
-                                child: Image.network(
-                                  "$baseUrl${state.product[index].product_image[0]}",
-                                  height: 150,
-                                  width: double.infinity,
-                                  fit: BoxFit.contain,
-                                  loadingBuilder: (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Center(child: CircularProgressIndicator());
-                                  },
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Icon(Icons.error);
-                                  },
-                                ),
-                              )
-                            else
+                            // if (kIsWeb)
+                            // // Hiển thị trên web
+                          Image.network(
+                          //"https://storage.googleapis.com/project1-flutter-454507.appspot.com/uploads/1742707776299-552752944-images.png",
+                            //  "$baseUrl${state.product[index].product_image[0]}",
+                            "${state.product[index].product_image[0]}",
+                          fit: BoxFit.contain,
+                            height: 150,
+                            width: double.infinity,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(child: CircularProgressIndicator());
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            print("Image Load Error: $error");
+                            return Icon(Icons.error, color: Colors.red);
+                          },
+                        ),
+
+
+
+
+                          // Expanded(
+                            //   child: Image.network(
+                            //     // "$baseUrl${state.product[index].product_image[0]}",
+                            //     "https://storage.googleapis.com/project1-flutter-454507.appspot.com/uploads/1742707776299-552752944-images.png",
+                            //     height: 150,
+                            //     width: double.infinity,
+                            //     fit: BoxFit.contain,
+                            //     loadingBuilder: (context, child, loadingProgress) {
+                            //       if (loadingProgress == null) return child;
+                            //       return Center(child: CircularProgressIndicator());
+                            //     },
+                            //     errorBuilder: (context, error, stackTrace) {
+                            //       print("Image Load Error: $error");
+                            //       print("Stack Trace: $stackTrace");
+                            //       return Icon(Icons.error,color: Colors.red,);
+                            //     },
+                            //   ),
+                            // ),
+                            // else
                             // Hiển thị trên Android
-                              Expanded(
-                                child: CachedNetworkImage(
-                                  imageUrl:
-                                  "$baseUrl${state.product[index].product_image[0]}",
-                                  height: 150,
-                                  width: double.infinity,
-                                  fit: BoxFit.contain,
-                                  placeholder: (context, url) =>
-                                  new CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
-                                ),
-                              ),
+                            //   Expanded(
+                            //     child:
+                            //
+                            //     CachedNetworkImage(
+                            //       imageUrl:
+                            //       "$baseUrl${state.product[index].product_image[0]}",
+                            //       height: 150,
+                            //       width: double.infinity,
+                            //       fit: BoxFit.contain,
+                            //       placeholder: (context, url) =>
+                            //       new CircularProgressIndicator(),
+                            //       errorWidget: (context, url, error) =>
+                            //           Icon(Icons.error),
+                            //     ),
+                            //   ),
                             Container(
                               padding: EdgeInsets.all(20),
                               child: Column(

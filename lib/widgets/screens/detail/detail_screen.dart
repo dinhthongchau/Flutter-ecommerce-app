@@ -1,6 +1,6 @@
 
 
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -103,10 +103,13 @@ class _DetailScreenState extends State<DetailScreen> {
                                 width: 2,
                               ),
                             ),
-                            child: kIsWeb
-                            //check if is web
-                                ? Image.network(
-                              "$baseUrl${product.product_image[index]}",
+                            child:
+                            // kIsWeb ?
+                            // //check if is web
+
+                            Image.network(
+                              //"$baseUrl${product.product_image[index]}",
+                              "${product.product_image[index]}",
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
@@ -115,22 +118,23 @@ class _DetailScreenState extends State<DetailScreen> {
                                 return Center(child: CircularProgressIndicator());
                               },
                               errorBuilder: (context, error, stackTrace) {
-                                print("Error loading $baseUrl${product.product_image[index]}: $error");
+                                //print("Error loading $baseUrl${product.product_image[index]}: $error");
+                                print("Error loading ${product.product_image[index]}: $error");
                                 return Icon(Icons.error);
                               },
                             )
-                                : CachedNetworkImage(
-                              imageUrl: "$baseUrl${product.product_image[index]}",
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) =>
-                                  Center(child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) {
-                                print("Error loading $url: $error");
-                                return Icon(Icons.error);
-                              },
-                            ),
+                            //     : CachedNetworkImage(
+                            //   imageUrl: "$baseUrl${product.product_image[index]}",
+                            //   width: 80,
+                            //   height: 80,
+                            //   fit: BoxFit.cover,
+                            //   placeholder: (context, url) =>
+                            //       Center(child: CircularProgressIndicator()),
+                            //   errorWidget: (context, url, error) {
+                            //     print("Error loading $url: $error");
+                            //     return Icon(Icons.error);
+                            //   },
+                            // ),
                           ),
                         );
                       },
@@ -204,7 +208,8 @@ class _DetailScreenState extends State<DetailScreen> {
               decoration: BoxDecoration(
                   image: DecorationImage(
                       image: NetworkImage(
-                          "$baseUrl${product.product_image[index]}"),
+                          //"$baseUrl${product.product_image[index]}"),
+                          "${product.product_image[index]}"),
                       fit: BoxFit.contain)),
             );
           },

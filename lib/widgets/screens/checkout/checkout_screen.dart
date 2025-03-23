@@ -277,7 +277,8 @@ class ProductOrderContainer extends StatelessWidget {
                                   BorderRadius.circular(8), // Bo góc nhẹ
                             ),
                             child: Image.network(
-                              "$baseUrl${product.product_image[0]}",
+                              //"$baseUrl${product.product_image[0]}",
+                              "${product.product_image[0]}",
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
