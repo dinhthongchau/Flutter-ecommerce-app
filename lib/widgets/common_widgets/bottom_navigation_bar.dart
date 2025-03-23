@@ -5,6 +5,8 @@ import 'package:project_one/widgets/screens/upload/upload_product_screen.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_screen.dart';
 import 'package:project_one/widgets/screens/settings/settings_screen.dart';
 
+import '../../common/code/calculateScreenSize.dart';
+import '../../common/enum/screen_size.dart';
 import 'bottom_navigation_cubit.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
@@ -22,6 +24,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
       builder: (context, currentPageIndex) {
         // Tạo controller cho AnimatedNotchBottomBar, đồng bộ với Cubit
         final NotchBottomBarController controller = NotchBottomBarController(index: currentPageIndex);
+        // Sửa: Sử dụng calculateScreenSize để xác định kích thước màn hình
+        final double screenWidth = MediaQuery.of(context).size.width;
+        final ScreenSize screenSize = calculateScreenSize(screenWidth);
+        // Điều chỉnh bottomBarWidth dựa trên screenSize
+        final double adjustedWidth = switch (screenSize) {
+          ScreenSize.small => screenWidth, // Full width cho mobile
+          ScreenSize.medium => screenWidth, // Full width cho medium
+          ScreenSize.large => screenWidth, // Giới hạn 500px cho web
+        };
         return AnimatedNotchBottomBar(
 
           notchBottomBarController: controller,
@@ -31,9 +42,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
           maxLine: 1,
           shadowElevation: 5,
           kBottomRadius: 28.0,
-          notchColor: Colors.black87,
+          notchColor: Colors.green,
           removeMargins: false,
-          bottomBarWidth: 500,
+          bottomBarWidth: adjustedWidth,
           showShadow: false,
           durationInMilliSeconds: 300,
           itemLabelStyle: const TextStyle(fontSize: 10),
@@ -48,7 +59,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             ),
             BottomBarItem(
               inActiveItem: Icon(Icons.upload_outlined, color: Colors.white),
-              activeItem: Icon(Icons.upload, color: Colors.green), // Màu khi được chọn
+              activeItem: Icon(Icons.upload, color: Colors.white), // Màu khi được chọn
               itemLabelWidget: Text(
                 'Upload',
                 style: TextStyle(

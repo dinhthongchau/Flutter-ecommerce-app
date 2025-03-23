@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project_one/widgets/common_widgets/common_styles.dart';
 
 import '../../../main_cubit.dart';
 import '../../common_widgets/bottom_navigation_bar.dart';
@@ -14,12 +15,10 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       bottomNavigationBar: CustomBottomNavigationBar(),
       appBar: AppBar(
-        title: Center(
-            child: Row(
-          children: [
-            Text("Settings Screen"),
-          ],
-        )),
+        title: Align(
+            alignment: Alignment.center,
+            child: CommonStyles.boldTextWidget("Setting Screen")),
+        backgroundColor: Colors.deepOrange,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -30,7 +29,7 @@ class SettingsScreen extends StatelessWidget {
         margin: EdgeInsets.all(30),
         child: Row(
           children: [
-            Flexible(flex: 5, child: const Text("Light mode ")),
+            Flexible(flex: 5, child:  CommonStyles.boldTextWidget("Light mode ")),
             BlocBuilder<MainCubit, MainState>(
               builder: (context, state) {
                 var isLightTheme = state.isLightTheme;

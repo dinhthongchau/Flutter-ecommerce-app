@@ -1,12 +1,13 @@
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/widgets/common_widgets/bottom_navigation_bar.dart';
+import 'package:project_one/widgets/common_widgets/common_styles.dart';
 import 'package:project_one/widgets/screens/upload/upload_product_cubit.dart';
 
 class UploadProductScreen extends StatefulWidget {
   static const String route = "UploadProductScreen";
+
   const UploadProductScreen({super.key});
 
   @override
@@ -46,12 +47,12 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
       }
 
       context.read<ProductUploadCubit>().uploadProduct(
-        productName: _productName,
-        productPrice: _productPrice,
-        productColor: _productColor,
-        productDescription: _productDescription,
-        imageFiles: _imageFiles,
-      );
+            productName: _productName,
+            productPrice: _productPrice,
+            productColor: _productColor,
+            productDescription: _productDescription,
+            imageFiles: _imageFiles,
+          );
     }
   }
 
@@ -60,8 +61,10 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
     return Scaffold(
       bottomNavigationBar: CustomBottomNavigationBar(),
       appBar: AppBar(
-        title: Text("Upload Product"),
-        backgroundColor: Colors.blueAccent,
+        title: Align(
+            alignment: Alignment.center,
+            child: CommonStyles.boldTextWidget("Upload Product")),
+        backgroundColor: Colors.deepOrange,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -92,12 +95,15 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) return 'Required';
-                        if (int.tryParse(value) == null) return 'Must be a valid number';
+                        if (int.tryParse(value) == null)
+                          return 'Must be a valid number';
                         return null;
                       },
                       onSaved: (value) {
-                        _productPrice = int.tryParse(value!) ?? 0; // Default to 0 if invalid
-                        print("Parsed productPrice: $_productPrice"); // Debug log
+                        _productPrice = int.tryParse(value!) ??
+                            0; // Default to 0 if invalid
+                        print(
+                            "Parsed productPrice: $_productPrice"); // Debug log
                       },
                     ),
                     TextFormField(
@@ -106,16 +112,23 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       onSaved: (value) => _productColor = value!,
                     ),
                     TextFormField(
-                      decoration: InputDecoration(labelText: 'Product Description'),
+                      decoration:
+                          InputDecoration(labelText: 'Product Description'),
                       onSaved: (value) => _productDescription = value ?? '',
                     ),
                     SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _pickImages,
-                      child: Text('Pick Images'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: Colors.deepOrange,
                         foregroundColor: Colors.white,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Chọn ảnh'),
+                          Icon(Icons.image_outlined,color: Colors.white,)
+                        ],
                       ),
                     ),
                     Text('Selected images: ${_imageFiles.length}'),
@@ -124,13 +137,14 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       onPressed: state is ProductUploadLoading ? null : _submit,
                       child: state is ProductUploadLoading
                           ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(color: Colors.white),
-                      )
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                  color: Colors.white),
+                            )
                           : Text('Upload Product'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: Colors.deepOrange,
                         foregroundColor: Colors.white,
                       ),
                     ),
