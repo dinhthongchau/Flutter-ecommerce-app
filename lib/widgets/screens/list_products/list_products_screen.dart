@@ -1,17 +1,12 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/models/product_model.dart';
-import 'package:project_one/repositories/api.dart';
-import 'package:project_one/repositories/api_server.dart'; // Add this import
-import 'package:project_one/widgets/common_widgets/bold_text.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
 import 'package:project_one/widgets/screens/menu/menu_screen.dart';
 import '../../../common/code/calculateScreenSize.dart';
 import '../../../common/enum/load_status.dart';
 import '../../../common/enum/screen_size.dart';
+import '../../../repositories/api_server.dart';
 import '../../common_widgets/cart_button.dart';
 import '../../common_widgets/notice_snackbar.dart';
 import 'list_products_cubit.dart';
@@ -31,8 +26,29 @@ class ListProductsScreen extends StatelessWidget {
   }
 }
 
-class Page extends StatelessWidget {
+class Page extends StatefulWidget {
   const Page({super.key});
+
+  @override
+  State<Page> createState() => _PageState();
+}
+
+class _PageState extends State<Page> {
+  String searchQuery = ''; // Lưu từ khóa tìm kiếm
+  bool isSearching = false; // Theo dõi trạng thái tìm kiếm
+  late TextEditingController _searchController; // Controller cho TextField
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,21 +56,51 @@ class Page extends StatelessWidget {
       drawer: Drawer(
         child: MenuScreen(),
       ),
+      bottomNavigationBar: BottomNavigationBar(),
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.deepOrange,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-                flex: 8,
-                child: Center(child: CustomBoldText(text: "List Products"))),
-            Expanded(
-              flex: 2,
-              child: CartButton(),
+        title: TextField(
+          controller: _searchController,
+          onChanged: (value) {
+            setState(() {
+              searchQuery = value;
+              isSearching = value.isNotEmpty;
+            });
+          },
+          style: TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: 'Tìm kiếm sản phẩm...',
+            hintStyle: TextStyle(color: Colors.white70),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Colors.yellow,
+                    width: 2
+                )
             ),
-          ],
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Colors.white,
+                    width: 2
+                )
+            ),
+            suffixIcon: isSearching
+                ? IconButton(
+              icon: Icon(Icons.clear, color: Colors.white),
+              onPressed: () {
+                setState(() {
+                  searchQuery = '';
+                  isSearching = false;
+                  _searchController.clear();
+                });
+              },
+            )
+                : Icon(Icons.search, color: Colors.white),
+          ),
         ),
+        actions: [
+          CartButton(),
+        ],
       ),
       body: BlocConsumer<ListProductsCubit, ListProductsState>(
         listener: (context, state) {
@@ -64,15 +110,46 @@ class Page extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          return Body();
+          return Body(searchQuery: searchQuery, isSearching: isSearching);
         },
       ),
     );
   }
 }
 
+class BottomNavigationBar extends StatelessWidget {
+  const BottomNavigationBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return NavigationBar(destinations: [
+      NavigationDestination(
+        selectedIcon: Icon(Icons.home),
+        icon: Icon(Icons.home_outlined),
+        label: 'Home',
+      ),
+      NavigationDestination(
+        selectedIcon: Icon(Icons.home),
+        icon: Icon(Icons.home_outlined),
+        label: 'Home',
+      ),
+      NavigationDestination(
+        selectedIcon: Icon(Icons.home),
+        icon: Icon(Icons.home_outlined),
+        label: 'Home',
+      ),
+
+    ]);
+  }
+}
+
 class Body extends StatelessWidget {
-  const Body({super.key});
+  final String searchQuery;
+  final bool isSearching;
+
+  const Body({super.key, required this.searchQuery, required this.isSearching});
 
   @override
   Widget build(BuildContext context) {
@@ -83,21 +160,24 @@ class Body extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-        return ListProductPage();
+        return ListProductPage(searchQuery: searchQuery, isSearching: isSearching);
       },
     );
   }
 }
 
 class ListProductPage extends StatefulWidget {
-  const ListProductPage({super.key});
+  final String searchQuery;
+  final bool isSearching;
+
+  const ListProductPage({super.key, required this.searchQuery, required this.isSearching});
 
   @override
   State<ListProductPage> createState() => _ListProductPageState();
 }
 
 class _ListProductPageState extends State<ListProductPage> {
-  String? baseUrl = dotenv.env['API_BASE_URL'];
+  String? selectedCategory; // null đại diện cho "See All"
 
   @override
   Widget build(BuildContext context) {
@@ -105,92 +185,142 @@ class _ListProductPageState extends State<ListProductPage> {
       builder: (context, state) {
         var cubitProduct = context.read<ListProductsCubit>();
         List<ProductModel> sortedProducts = List.from(state.product)
-          ..sort((a, b) => b.product_id.compareTo(a.product_id)); // Sắp xếp giảm dần theo product_id
+          ..sort((a, b) => b.product_id.compareTo(a.product_id));
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            // Tính toán kích thước màn hình
-            final screenSize = calculateScreenSize(constraints.maxWidth);
+        // Lọc sản phẩm dựa trên từ khóa tìm kiếm hoặc danh mục được chọn
+        List<ProductModel> filteredProducts;
+        if (widget.isSearching && widget.searchQuery.isNotEmpty) {
+          String queryLower = widget.searchQuery.toLowerCase();
+          filteredProducts = sortedProducts.where((product) {
+            return product.product_name.toLowerCase().contains(queryLower);
+          }).toList();
+        } else if (selectedCategory != null) {
+          String categoryLower = selectedCategory!.toLowerCase();
+          filteredProducts = sortedProducts.where((product) {
+            return product.product_name.toLowerCase().contains(categoryLower);
+          }).toList();
+        } else {
+          filteredProducts = sortedProducts;
+        }
 
-            // Điều chỉnh số lượng cột dựa trên kích thước màn hình
-            final crossAxisCount = switch (screenSize) {
-              ScreenSize.small => 2,  // 2 cột cho màn hình nhỏ
-              ScreenSize.medium => 3, // 3 cột cho màn hình trung bình
-              ScreenSize.large => 4,  // 4 cột cho màn hình lớn
-            };
+        return Column(
+          children: [
+            if (!widget.isSearching)
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                color: Colors.grey[200],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildCategoryButton("All", null),
+                    _buildCategoryButton("Iphone", "Iphone"),
+                    _buildCategoryButton("Samsung", "Samsung"),
+                    _buildCategoryButton("Macbook", "Macbook"),
+                  ],
+                ),
+              ),
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final screenSize = calculateScreenSize(constraints.maxWidth);
+                  final crossAxisCount = switch (screenSize) {
+                    ScreenSize.small => 2,
+                    ScreenSize.medium => 3,
+                    ScreenSize.large => 4,
+                  };
 
-            return Center(
-              child: Container(
-                // Giới hạn chiều rộng tối đa
-                constraints: BoxConstraints(maxWidth: 1200), // Có thể điều chỉnh giá trị này
-                margin: switch (screenSize) {
-                  ScreenSize.small => EdgeInsets.symmetric(horizontal: 20), // 20px cho màn hình nhỏ
-                  ScreenSize.medium => EdgeInsets.symmetric(horizontal: 50), // 50px cho màn hình trung bình
-                  ScreenSize.large => EdgeInsets.symmetric(horizontal: 100), // 100px cho màn hình lớn
-                }, // Khoảng trống hai bên
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    childAspectRatio: 0.75,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                  ),
-                  itemCount: state.product.length,
-                  itemBuilder: (context, index) {
-                    final product = sortedProducts[index];
-                    return GestureDetector(
-                      onTap: () {
-                        cubitProduct.setSelectedIndex(index);
-                        Navigator.of(context).pushNamed(DetailScreen.route,
-                            arguments: {'cubit_product': cubitProduct});
+                  return Center(
+                    child: Container(
+                      constraints: BoxConstraints(maxWidth: 1200),
+                      margin: switch (screenSize) {
+                        ScreenSize.small => EdgeInsets.symmetric(horizontal: 20),
+                        ScreenSize.medium => EdgeInsets.symmetric(horizontal: 50),
+                        ScreenSize.large => EdgeInsets.symmetric(horizontal: 100),
                       },
-                      child: Card(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.network(
-                              "${state.product[index].product_image[0]}",
-                              fit: BoxFit.contain,
-                              height: 150,
-                              width: double.infinity,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(child: CircularProgressIndicator());
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                print("Image Load Error: $error");
-                                return Icon(Icons.error, color: Colors.red);
-                              },
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(20),
+                      child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          childAspectRatio: 0.75,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                        ),
+                        itemCount: filteredProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = filteredProducts[index];
+                          return GestureDetector(
+                            onTap: () {
+                              // Tìm index của sản phẩm trong danh sách gốc
+                              int originalIndex = state.product.indexOf(product);
+                              cubitProduct.setSelectedIndex(originalIndex);
+                              Navigator.of(context).pushNamed(DetailScreen.route,
+                                  arguments: {'cubit_product': cubitProduct});
+                            },
+                            child: Card(
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    "${state.product[index].product_name} ",
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  Image.network(
+                                    "${product.product_image[0]}",
+                                    fit: BoxFit.contain,
+                                    height: 150,
+                                    width: double.infinity,
+                                    loadingBuilder: (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Center(child: CircularProgressIndicator());
+                                    },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      print("Image Load Error: $error");
+                                      return Icon(Icons.error, color: Colors.red);
+                                    },
                                   ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                  Text(
-                                    "${NumberFormat('#,###', 'vi').format(state.product[index].product_price)} đ",
-                                    style: TextStyle(color: Colors.orange),
+                                  Container(
+                                    padding: EdgeInsets.all(20),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          "${product.product_name} ",
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          "${NumberFormat('#,###', 'vi').format(product.product_price)} đ",
+                                          style: TextStyle(color: Colors.orange),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            ),
+
+          ],
         );
       },
+    );
+  }
+
+  // Hàm tạo nút danh mục
+  Widget _buildCategoryButton(String label, String? category) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedCategory = category;
+          // Không cần reset searchQuery/isSearching ở đây vì đã xử lý ở Page
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: selectedCategory == category ? Colors.deepOrange : Colors.grey,
+        foregroundColor: Colors.white,
+      ),
+      child: Text(label),
     );
   }
 }

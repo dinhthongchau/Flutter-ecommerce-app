@@ -69,7 +69,6 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
   String _productDescription = '';
   List<PlatformFile> _imageFiles = [];
 
-  // Chọn file từ thiết bị
   Future<void> _pickImages() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
@@ -83,7 +82,6 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
     }
   }
 
-  // Gửi dữ liệu lên server
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -121,7 +119,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                 SnackBar(content: Text(state.message!)),
               );
               if (state is ProductUploadSuccess) {
-                Navigator.pop(context); // Quay lại sau khi upload thành công
+                Navigator.pop(context);
               }
             }
           },
@@ -139,8 +137,15 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                     TextFormField(
                       decoration: InputDecoration(labelText: 'Product Price'),
                       keyboardType: TextInputType.number,
-                      validator: (value) => value!.isEmpty ? 'Required' : null,
-                      onSaved: (value) => _productPrice = int.parse(value!),
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Required';
+                        if (int.tryParse(value) == null) return 'Must be a valid number';
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _productPrice = int.tryParse(value!) ?? 0; // Default to 0 if invalid
+                        print("Parsed productPrice: $_productPrice"); // Debug log
+                      },
                     ),
                     TextFormField(
                       decoration: InputDecoration(labelText: 'Product Color'),
