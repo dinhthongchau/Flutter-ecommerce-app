@@ -6,6 +6,7 @@ import 'package:project_one/repositories/log.dart';
 import 'package:project_one/routes.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
+import 'package:project_one/widgets/screens/menu/upload_product_cubit.dart';
 import 'repositories/api.dart';
 import 'repositories/api_server.dart';
 import 'repositories/log_implements.dart';
@@ -39,16 +40,18 @@ class Provider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<Api>(
+    return RepositoryProvider<ApiServer>( // Change from Api to ApiServer
       create: (context) => ApiServer(context.read<Log>()),
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) =>
-                CustomerCubit(context.read<Api>())..loadCustomer(),
+            create: (context) => CustomerCubit(context.read<ApiServer>())..loadCustomer(),
           ),
           BlocProvider(
             create: (context) => CartCubit()..loadCart(),
+          ),
+          BlocProvider(
+            create: (context) => ProductUploadCubit(context.read<ApiServer>()),
           ),
         ],
         child: const App(),

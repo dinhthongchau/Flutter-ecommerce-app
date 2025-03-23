@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:project_one/repositories/api.dart';
+import 'package:project_one/repositories/api_server.dart'; // Add this import
 import 'package:project_one/widgets/common_widgets/bold_text.dart';
 import 'package:project_one/widgets/screens/detail/detail_screen.dart';
 import 'package:project_one/widgets/screens/menu/menu_screen.dart';
@@ -25,7 +25,7 @@ class ListProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ListProductsCubit(context.read<Api>())..loadData(),
+      create: (context) => ListProductsCubit(context.read<ApiServer>())..loadData(),
       child: Page(),
     );
   }
@@ -88,6 +88,7 @@ class Body extends StatelessWidget {
     );
   }
 }
+
 class ListProductPage extends StatefulWidget {
   const ListProductPage({super.key});
 
@@ -126,7 +127,7 @@ class _ListProductPageState extends State<ListProductPage> {
                   ScreenSize.small => EdgeInsets.symmetric(horizontal: 20), // 20px cho màn hình nhỏ
                   ScreenSize.medium => EdgeInsets.symmetric(horizontal: 50), // 50px cho màn hình trung bình
                   ScreenSize.large => EdgeInsets.symmetric(horizontal: 100), // 100px cho màn hình lớn
-                },// Khoảng trống hai bên
+                }, // Khoảng trống hai bên
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
@@ -147,63 +148,20 @@ class _ListProductPageState extends State<ListProductPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // if (kIsWeb)
-                            // // Hiển thị trên web
-                          Image.network(
-                          //"https://storage.googleapis.com/project1-flutter-454507.appspot.com/uploads/1742707776299-552752944-images.png",
-                            //  "$baseUrl${state.product[index].product_image[0]}",
-                            "${state.product[index].product_image[0]}",
-                          fit: BoxFit.contain,
-                            height: 150,
-                            width: double.infinity,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(child: CircularProgressIndicator());
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            print("Image Load Error: $error");
-                            return Icon(Icons.error, color: Colors.red);
-                          },
-                        ),
-
-
-
-
-                          // Expanded(
-                            //   child: Image.network(
-                            //     // "$baseUrl${state.product[index].product_image[0]}",
-                            //     "https://storage.googleapis.com/project1-flutter-454507.appspot.com/uploads/1742707776299-552752944-images.png",
-                            //     height: 150,
-                            //     width: double.infinity,
-                            //     fit: BoxFit.contain,
-                            //     loadingBuilder: (context, child, loadingProgress) {
-                            //       if (loadingProgress == null) return child;
-                            //       return Center(child: CircularProgressIndicator());
-                            //     },
-                            //     errorBuilder: (context, error, stackTrace) {
-                            //       print("Image Load Error: $error");
-                            //       print("Stack Trace: $stackTrace");
-                            //       return Icon(Icons.error,color: Colors.red,);
-                            //     },
-                            //   ),
-                            // ),
-                            // else
-                            // Hiển thị trên Android
-                            //   Expanded(
-                            //     child:
-                            //
-                            //     CachedNetworkImage(
-                            //       imageUrl:
-                            //       "$baseUrl${state.product[index].product_image[0]}",
-                            //       height: 150,
-                            //       width: double.infinity,
-                            //       fit: BoxFit.contain,
-                            //       placeholder: (context, url) =>
-                            //       new CircularProgressIndicator(),
-                            //       errorWidget: (context, url, error) =>
-                            //           Icon(Icons.error),
-                            //     ),
-                            //   ),
+                            Image.network(
+                              "${state.product[index].product_image[0]}",
+                              fit: BoxFit.contain,
+                              height: 150,
+                              width: double.infinity,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(child: CircularProgressIndicator());
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                print("Image Load Error: $error");
+                                return Icon(Icons.error, color: Colors.red);
+                              },
+                            ),
                             Container(
                               padding: EdgeInsets.all(20),
                               child: Column(
