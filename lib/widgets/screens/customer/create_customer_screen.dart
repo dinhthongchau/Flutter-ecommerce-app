@@ -106,7 +106,7 @@ class _BodyState extends State<Body> {
                   cursorColor: Colors.red,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                   decoration: InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'Email (I will send to email)',
                     labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
                     hintText: 'Nhập email chính xác để nhận thông tin đơn hàng',
                     hintStyle: TextStyle(color: Colors.grey),
@@ -201,6 +201,20 @@ class _BodyState extends State<Body> {
                       backgroundColor: Colors.deepOrange,
                       foregroundColor: Colors.white),
                   onPressed: () async {
+
+                    // Kiểm tra nếu có trường nào chưa nhập
+                    if (_nameController.text.isEmpty ||
+                        _emailController.text.isEmpty ||
+                        _phoneController.text.isEmpty ||
+                        _detailAddressController.text.isEmpty ||
+                        selectedProvince == null ||
+                        selectedDistrict == null ||
+                        selectedWard == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Vui lòng nhập đầy đủ thông tin")),
+                      );
+                      return; // Dừng lại nếu chưa nhập đủ
+                    }
                     int randomId = generateRandomId();
                     String address = [
                       _detailAddressController.text,
@@ -224,7 +238,7 @@ class _BodyState extends State<Body> {
                     if (!context.mounted) return;
                     Navigator.pop(context, customer);
                   },
-                  child: const Text("Create Customer"),
+                  child: const Text("Tạo thông tin khách hàng "),
                 ),
               ],
             ),

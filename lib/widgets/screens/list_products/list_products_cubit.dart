@@ -1,14 +1,13 @@
 import 'package:bloc/bloc.dart';
-
 import 'package:project_one/models/product_model.dart';
-
 import '../../../common/enum/load_status.dart';
 import '../../../repositories/api.dart';
+import '../../../repositories/api_server.dart'; // Add this import
 
 part 'list_products_state.dart';
 
 class ListProductsCubit extends Cubit<ListProductsState> {
-  Api api;
+  ApiServer api; // Change from Api to ApiServer
   ListProductsCubit(this.api) : super(ListProductsState.init());
 
   Future<void> loadData() async {
@@ -16,7 +15,6 @@ class ListProductsCubit extends Cubit<ListProductsState> {
     try {
       List<ProductModel> product = await api.getAllProducts();
       emit(state.copyWith(loadStatus: LoadStatus.Done, product: product));
-      //print("Products fetched: ${product.length}");
     } catch (e) {
       emit(state.copyWith(loadStatus: LoadStatus.Error));
     }

@@ -4,8 +4,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/main_cubit.dart';
 import 'package:project_one/repositories/log.dart';
 import 'package:project_one/routes.dart';
+import 'package:project_one/widgets/common_widgets/bottom_navigation_cubit.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
+import 'package:project_one/widgets/screens/upload/upload_product_cubit.dart';
 import 'repositories/api.dart';
 import 'repositories/api_server.dart';
 import 'repositories/log_implements.dart';
@@ -14,7 +16,7 @@ import 'widgets/screens/list_products/list_products_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: "lib/assets/.env");
+  await dotenv.load(fileName: "assets/dotenv");
   final log = LogImplement(); // Khởi tạo log như gốc
   Bloc.observer = MyBlocObserver(log);
   runApp(Repository(log: log)); // Truyền log vào Repository
@@ -39,16 +41,21 @@ class Provider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<Api>(
+    return RepositoryProvider<ApiServer>( // Change from Api to ApiServer
       create: (context) => ApiServer(context.read<Log>()),
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) =>
-                CustomerCubit(context.read<Api>())..loadCustomer(),
+            create: (context) => CustomerCubit(context.read<ApiServer>())..loadCustomer(),
           ),
           BlocProvider(
             create: (context) => CartCubit()..loadCart(),
+          ),
+          BlocProvider(
+            create: (context) => ProductUploadCubit(context.read<ApiServer>()),
+          ),
+          BlocProvider(
+            create: (context) => BottomNavigationCubit(),
           ),
         ],
         child: const App(),

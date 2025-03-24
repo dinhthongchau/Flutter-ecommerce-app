@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
-import 'package:project_one/widgets/screens/menu/menu_screen.dart';
 import 'package:project_one/widgets/screens/settings/settings_screen.dart';
+import 'package:project_one/widgets/screens/upload/upload_product_screen.dart';
 import 'repositories/api.dart';
+import 'repositories/api_server.dart'; // Add this import
 import 'widgets/screens/customer/create_customer_screen.dart';
 import 'widgets/screens/customer/customer_cubit.dart';
 import 'widgets/screens/list_products/list_products_screen.dart';
@@ -14,8 +15,6 @@ import 'widgets/screens/cart/cart_screen.dart';
 import 'widgets/screens/checkout/checkout_screen.dart';
 import 'widgets/screens/detail/detail_screen.dart';
 
-//routes.dart
-//test
 Route<dynamic> mainRoute(RouteSettings settings) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) {
@@ -24,7 +23,7 @@ Route<dynamic> mainRoute(RouteSettings settings) {
           return ListProductsScreen();
         case DetailScreen.route:
           var cubitProduct = (settings.arguments
-              as Map<String, dynamic>)['cubit_product'] as ListProductsCubit;
+          as Map<String, dynamic>)['cubit_product'] as ListProductsCubit;
           return BlocProvider.value(
             value: cubitProduct,
             child: DetailScreen(),
@@ -42,9 +41,9 @@ Route<dynamic> mainRoute(RouteSettings settings) {
               ),
               BlocProvider(
                   create: (context) =>
-                      CustomerCubit(context.read<Api>())..loadCustomer()),
+                  CustomerCubit(context.read<ApiServer>())..loadCustomer()),
               BlocProvider(
-                  create: (context) => CheckoutCubit(context.read<Api>())),
+                  create: (context) => CheckoutCubit(context.read<ApiServer>())),
             ],
             child: CheckoutScreen(),
           );
@@ -53,8 +52,8 @@ Route<dynamic> mainRoute(RouteSettings settings) {
             value: context.read<CustomerCubit>(),
             child: CreateCustomerScreen(),
           );
-        case MenuScreen.route:
-          return MenuScreen();
+        case UploadProductScreen.route:
+          return UploadProductScreen();
         case SettingsScreen.route:
           return SettingsScreen();
         default:

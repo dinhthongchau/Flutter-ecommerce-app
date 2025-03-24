@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/models/customer_model.dart';
 import 'package:project_one/models/product_model.dart';
@@ -13,14 +15,25 @@ class ApiServer implements Api {
   late Log log;
 
   ApiServer(this.log);
+
   @override
   Future<List<ProductModel>> getAllProducts() async {
     try {
       final response = await dio.get('$baseUrl/products?limit=100');
+      print("Fetching API: $baseUrl/products?limit=100");
+      print("Response Data: ${response.data}");
+
       final List<dynamic> data = response.data['data']['products'];
-      //print("Fetching API: $baseUrl/products?limit=100");
-      //print("Response Data: ${response.data}");
-      return data.map((json) => ProductModel.fromJson(json)).toList();
+
+      final parsedData = data.map((json) {
+        final Map<String, dynamic> jsonCopy = Map<String, dynamic>.from(json);
+        if (jsonCopy['product_image'] is String) {
+          jsonCopy['product_image'] = jsonDecode(jsonCopy['product_image']);
+        }
+        return jsonCopy;
+      }).toList();
+
+      return parsedData.map((json) => ProductModel.fromJson(json)).toList();
     } catch (e) {
       print("API Fetch Prod Error: $e");
       rethrow;
@@ -74,6 +87,7 @@ class ApiServer implements Api {
       rethrow;
     }
   }
+
   @override
   Future<dynamic> sendOrderEmail({
     required String to,
@@ -112,4 +126,37 @@ class ApiServer implements Api {
     }
   }
 
+  @override
+  Future<dynamic> createProduct(ProductModel product, List<PlatformFile> imageFiles) async {
+    try {
+      FormData formData = FormData.fromMap({
+        "product_name": product.product_name,
+        "product_price": product.product_price,
+        "product_color": product.product_color,
+        "product_description": product.product_description,
+      });
+
+      for (PlatformFile imageFile in imageFiles) {
+        formData.files.add(MapEntry(
+          "product_image",
+          MultipartFile.fromBytes(
+            imageFile.bytes!,
+            filename: imageFile.name,
+          ),
+        ));
+      }
+
+      final response = await dio.post(
+        '$baseUrl/products',
+        data: formData,
+        options: Options(headers: {"Content-Type": "multipart/form-data"}),
+      );
+
+      print("ApiServer Product created response: ${response.data}");
+      return response.data;
+    } catch (e) {
+      print("API Upload Prod Error: $e");
+      rethrow;
+    }
+  }
 }

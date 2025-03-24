@@ -17,7 +17,8 @@ dependencies:
   flutter_bloc: ^9.0.0
   intl: ^0.20.2
   shared_preferences: ^2.5.1
-  cached_network_image: ^3.3.1
+  file_picker: ^6.1.1
+  animated_notch_bottom_bar: ^1.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -28,5 +29,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - lib/assets/.env
+    - assets/dotenv
 

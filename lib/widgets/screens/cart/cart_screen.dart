@@ -294,7 +294,8 @@ class CartItemListTile extends StatelessWidget {
       height: 80,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: NetworkImage("$baseUrl${itemsInCart.product_image[0]}"),
+          //image: NetworkImage("$baseUrl${itemsInCart.product_image[0]}"),
+          image: NetworkImage("${itemsInCart.product_image[0]}"),
           fit: BoxFit.cover,
         ),
         borderRadius: BorderRadius.circular(8),
