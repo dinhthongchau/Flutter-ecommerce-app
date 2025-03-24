@@ -158,7 +158,8 @@ class TotalCalculator extends StatelessWidget {
         final formatCurrency = NumberFormat.decimalPattern('vi_VN');
         String formattedTotal = formatCurrency.format(state.totalPayment);
 
-        return Row(
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               "Total Payment: ",
@@ -266,7 +267,7 @@ class CartItemListTile extends StatelessWidget {
         final quantity = state.quantities[itemsInCart.product_id] ?? 1;
 
         return Container(
-          height: 150, // Giữ nguyên chiều cao như code gốc
+          height: 180,
           padding: const EdgeInsets.symmetric(
               vertical: 8), // Thêm padding nhẹ để căn đều
           child: Row(

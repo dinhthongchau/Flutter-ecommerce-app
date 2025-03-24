@@ -256,7 +256,7 @@ class _ListProductPageState extends State<ListProductPage> {
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: crossAxisCount,
                             childAspectRatio: switch (screenSize) {
-                              ScreenSize.small => 0.75,
+                              ScreenSize.small => 0.65,
                               ScreenSize.medium => 0.75,
                               ScreenSize.large => 0.75,
                             },
@@ -274,144 +274,9 @@ class _ListProductPageState extends State<ListProductPage> {
                                     arguments: {'cubit_product': cubitProduct});
                               },
                               child: SingleChildScrollView(
-                                child: Card(
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
+                                child: Container(
 
-                                  child: Stack(
-                                    children: [
-                                      Column(
-
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(15),
-                                              topRight: Radius.circular(15),
-                                            ),
-                                            child: Image.network(
-                                              "${product.product_image[0]}",
-                                              width: double.infinity,
-                                              height: 160,
-                                              fit: BoxFit.cover,
-                                              loadingBuilder: (context, child, loadingProgress) {
-                                                if (loadingProgress == null) return child;
-                                                return Center(child: CircularProgressIndicator());
-                                              },
-                                              errorBuilder: (context, error, stackTrace) {
-                                                print("Image Load Error: $error");
-                                                return Icon(Icons.error, color: Colors.red);
-                                              },
-                                            ),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.all(20),
-                                            height: 130,
-                                            child: Column(
-                                              children: [
-                                                Text(
-                                                  "${product.product_name} ",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                  maxLines: 3, // Giới hạn 2 dòng
-                                                  overflow: TextOverflow.ellipsis, // Cắt bớt nếu quá dài
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                SizedBox(height: 10),
-
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      Positioned(
-                                        right: 0,
-                                        bottom: 10,
-                                        left: 0,
-                                        child: Center(
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [Colors.deepOrange, Colors.orange], // Gradient từ đỏ đến đỏ nhạt
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              ),
-                                              borderRadius: BorderRadius.circular(5), // Bo góc
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black26,
-                                                  blurRadius: 4,
-                                                  offset: Offset(2, 2), // Đổ bóng nhẹ
-                                                ),
-                                              ],
-                                            ),
-                                            child: Text(
-                                              "${NumberFormat('#,###', 'vi').format(product.product_price)} đ",
-                                              style: TextStyle(color: Colors.white
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: 5,
-                                        left: 5,
-                                        child: Opacity(
-                                          opacity: 0.7,
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [Colors.green, Colors.greenAccent], // Gradient từ đỏ đến đỏ nhạt
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              ),
-                                              borderRadius: BorderRadius.circular(5), // Bo góc
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black26,
-                                                  blurRadius: 4,
-                                                  offset: Offset(2, 2), // Đổ bóng nhẹ
-                                                ),
-                                              ],
-                                            ),
-                                            child: Text(
-                                              "2nd",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      BlocBuilder<CartCubit, CartState>(
-                                        builder: (context, state) {
-                                          return Positioned(
-                                        bottom: 5, // Cách bottom 10px
-                                        right: 5,  // Cách right 10px
-                                        child: FloatingActionButton(
-                                          mini: true, // Kích thước nhỏ hơn nếu muốn
-                                          onPressed: () {
-                                            // Xử lý sự kiện thêm vào giỏ hàng tại đây
-                                            context.read<CartCubit>().addToCart(context, product, {product.product_id: 1});
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(noticeSnackbar("Added to cart", false));
-                                          },
-                                          backgroundColor: Colors.deepOrange,
-                                          child: Icon(Icons.add, color: Colors.white,), // Màu nền của nút
-                                        ),
-                                      );
-  },
-),
-
-                                    ],
-                                  ),
+                                  child: CardOfProducts(product: product),
                                 ),
                               ),
                             );
@@ -449,6 +314,158 @@ class _ListProductPageState extends State<ListProductPage> {
           foregroundColor: selectedCategory ==category ? Colors.white : Colors.white,
         ),
         child: Text(label),
+      ),
+    );
+  }
+}
+
+class CardOfProducts extends StatelessWidget {
+  const CardOfProducts({
+    super.key,
+    required this.product,
+  });
+
+  final ProductModel product;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+
+      child: Stack(
+        children: [
+          Column(
+
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15),
+                ),
+                child: Image.network(
+                  "${product.product_image[0]}",
+                  width: double.infinity,
+                  height: 160,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(child: CircularProgressIndicator());
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    print("Image Load Error: $error");
+                    return Icon(Icons.error, color: Colors.red);
+                  },
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(20),
+                height: 130,
+                child: Column(
+                  children: [
+                    Text(
+                      "${product.product_name} ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                      maxLines: 3, // Giới hạn 2 dòng
+                      overflow: TextOverflow.ellipsis, // Cắt bớt nếu quá dài
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 10),
+
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          Positioned(
+            right: 30,
+            bottom: 15,
+            left: 0,
+            child: Center(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.deepOrange, Colors.orange], // Gradient từ đỏ đến đỏ nhạt
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(5), // Bo góc
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 4,
+                      offset: Offset(2, 2), // Đổ bóng nhẹ
+                    ),
+                  ],
+                ),
+                child: Text(
+                  "${NumberFormat('#,###', 'vi').format(product.product_price)} đ",
+                  style: TextStyle(color: Colors.white
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 5,
+            left: 5,
+            child: Opacity(
+              opacity: 0.7,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.green, Colors.greenAccent], // Gradient từ đỏ đến đỏ nhạt
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(5), // Bo góc
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 4,
+                      offset: Offset(2, 2), // Đổ bóng nhẹ
+                    ),
+                  ],
+                ),
+                child: Text(
+                  "2nd",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          BlocBuilder<CartCubit, CartState>(
+            builder: (context, state) {
+              return Positioned(
+            bottom: 5, // Cách bottom 10px
+            right: 5,  // Cách right 10px
+            child: FloatingActionButton(
+              mini: true, // Kích thước nhỏ hơn nếu muốn
+              onPressed: () {
+                // Xử lý sự kiện thêm vào giỏ hàng tại đây
+                context.read<CartCubit>().addToCart(context, product, {product.product_id: 1});
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(noticeSnackbar("Added to cart", false));
+              },
+              backgroundColor: Colors.deepOrange,
+              child: Icon(Icons.add, color: Colors.white,), // Màu nền của nút
+            ),
+          );
+      },
+    ),
+
+        ],
       ),
     );
   }
