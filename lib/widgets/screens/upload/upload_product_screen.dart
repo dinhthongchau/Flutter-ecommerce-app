@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/widgets/common_widgets/bottom_navigation_bar.dart';
 import 'package:project_one/widgets/common_widgets/common_styles.dart';
+import 'package:project_one/widgets/screens/list_products/list_products_screen.dart';
 import 'package:project_one/widgets/screens/upload/upload_product_cubit.dart';
 
 import '../../common_widgets/custom_gradient_appbar.dart';
@@ -74,7 +75,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                 SnackBar(content: Text(state.message!)),
               );
               if (state is ProductUploadSuccess) {
-                Navigator.pop(context);
+                Navigator.of(context).pushNamed(ListProductsScreen.route);
               }
             }
           },

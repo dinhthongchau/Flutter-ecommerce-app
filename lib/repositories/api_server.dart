@@ -64,29 +64,7 @@ class ApiServer implements Api {
     }
   }
 
-  @override
-  Future<dynamic> createOrder(OrderModel order) async {
-    try {
-      final String url = '$baseUrl/orders';
-      FormData formData = FormData.fromMap({
-        "customer_id": order.customerId,
-        "order_total": order.orderTotal,
-        "order_payment_method": order.orderPaymentMethod,
-        "order_status": order.orderStatus,
-        "order_note": order.orderNote
-      });
-      Response response = await dio.post(url,
-          data: formData,
-          options: Options(headers: {
-            'accept': 'application/json',
-            'Content-Type': 'multipart/form-data'
-          }));
-      return response.data;
-    } catch (e) {
-      print("API Create Order Error: ${e.toString()}");
-      rethrow;
-    }
-  }
+
 
   @override
   Future<dynamic> sendOrderEmail({
