@@ -73,7 +73,7 @@ class _DetailScreenState extends State<DetailScreen> {
             child: Container(
 
               margin: screenSize == ScreenSize.small
-                  ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+                  ? EdgeInsets.symmetric(horizontal: 0)  //Phone
                   : screenSize == ScreenSize.medium
                   ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
                   : EdgeInsets.symmetric(horizontal: 400),  // Desktop
@@ -234,7 +234,7 @@ class BottomNavigationBar extends StatelessWidget {
 
     return Container(
       margin: screenSize == ScreenSize.small
-          ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+          ? EdgeInsets.symmetric(horizontal: 0)  //Phone
           : screenSize == ScreenSize.medium
           ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
           : EdgeInsets.symmetric(horizontal: 400),  // Desktop

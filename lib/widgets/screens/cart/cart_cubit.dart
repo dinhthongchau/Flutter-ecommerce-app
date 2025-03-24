@@ -100,6 +100,7 @@ class CartCubit extends Cubit<CartState> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(noticeSnackbar("Error adding to cart", true));
+
     }
   }
 
