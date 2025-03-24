@@ -7,6 +7,7 @@ import 'package:project_one/models/location_model.dart';
 import 'package:project_one/services/location_service.dart';
 import 'package:project_one/widgets/screens/customer/customer_cubit.dart';
 import '../../../common/code/random.dart';
+import '../../common_widgets/notice_snackbar.dart';
 
 class CreateCustomerScreen extends StatefulWidget {
   static const String route = "CreateCustomerScreen";
@@ -77,9 +78,10 @@ class _BodyState extends State<Body> {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error loading provinces: $e")),
-      );
+
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(noticeSnackbar("Error loading provinces", true));
     }
   }
 
@@ -210,9 +212,8 @@ class _BodyState extends State<Body> {
                         selectedProvince == null ||
                         selectedDistrict == null ||
                         selectedWard == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Vui lòng nhập đầy đủ thông tin")),
-                      );
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(noticeSnackbar("Please nhập đầy đủ thông tin ", true));
                       return; // Dừng lại nếu chưa nhập đủ
                     }
                     int randomId = generateRandomId();

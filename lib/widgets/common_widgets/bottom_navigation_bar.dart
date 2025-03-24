@@ -61,7 +61,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
               inActiveItem: Icon(Icons.upload_outlined, color: Colors.white),
               activeItem: Icon(Icons.upload, color: Colors.white), // Màu khi được chọn
               itemLabelWidget: Text(
-                'Tải lên',
+                'Upload',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,

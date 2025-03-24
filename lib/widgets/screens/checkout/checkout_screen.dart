@@ -13,6 +13,7 @@ import '../../../common/enum/load_status.dart';
 import '../../../common/enum/screen_size.dart';
 import '../../../main_cubit.dart';
 import '../../common_widgets/bold_text.dart';
+import '../../common_widgets/notice_snackbar.dart';
 import '../customer/create_customer_screen.dart';
 
 //checkout_screen.dart
@@ -76,18 +77,11 @@ class Body extends StatelessWidget {
     return BlocListener<CheckoutCubit, CheckoutState>(
       listener: (context, state) {
         if (state.loadStatus == LoadStatus.Done) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Đặt hàng thành công! Email xác nhận đã được gửi.")),
-          );
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            ListProductsScreen.route,
-                (route) => false,
-          );
+          _showSuccessOrderDialog(context);
+
         } else if (state.loadStatus == LoadStatus.Error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Đặt hàng thất bại! Vui lòng thử lại.")),
-          );
+          ScaffoldMessenger.of(context)
+              .showSnackBar(noticeSnackbar("Order failed ! Please try again", true));
         }
       },
       child: BlocBuilder<CustomerCubit, CustomerState>(
@@ -100,7 +94,7 @@ class Body extends StatelessWidget {
             builder: (context, cartState) {
               return Container(
                 margin: screenSize == ScreenSize.small
-                    ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+                    ? EdgeInsets.symmetric(horizontal: 0)  //Phone
                     : screenSize == ScreenSize.medium
                     ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
                     : EdgeInsets.symmetric(horizontal: 400),  // Desktop
@@ -123,9 +117,9 @@ class Body extends StatelessWidget {
                         ),
                         onPressed: () {
                           if (customer == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Vui lòng tạo khách hàng trước!")),
-                            );
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(noticeSnackbar("Please tạo khách hàng trước! ", true));
                             return;
                           }
                           context.read<CheckoutCubit>().placeOrder(
@@ -159,6 +153,54 @@ class Body extends StatelessWidget {
       ),
     );
   }
+}
+
+void _showSuccessOrderDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Colors.white,
+      title: Column(
+        children: [
+          const Icon(Icons.check_circle, color: Colors.green, size: 48),
+          const SizedBox(height: 8),
+          Text(
+            "Order Successful! ",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+      content: Text(
+        "A confirmation email has been sent to your email and the admin's email. . ",
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.black54),
+      ),
+      actions: [
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                ListProductsScreen.route,
+                    (route) => false,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepOrange,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text("OK",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class PaymentMethodContainer extends StatelessWidget {
@@ -395,7 +437,7 @@ class CustomerContainer extends StatelessWidget {
                             context.read<CustomerCubit>().removeCustomer();
                           },
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepOrange),
+                              backgroundColor: Colors.red),
                           child: const Text("Remove",
                               style: TextStyle(color: Colors.white)),
                         ),

@@ -7,6 +7,7 @@ import 'package:project_one/widgets/screens/list_products/list_products_screen.d
 import 'package:project_one/widgets/screens/upload/upload_product_cubit.dart';
 
 import '../../common_widgets/custom_gradient_appbar.dart';
+import '../../common_widgets/notice_snackbar.dart';
 
 class UploadProductScreen extends StatefulWidget {
   static const String route = "UploadProductScreen";
@@ -43,9 +44,8 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
       _formKey.currentState!.save();
 
       if (_imageFiles.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Please select at least one image")),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(noticeSnackbar("Please select at least one image ", true));
         return;
       }
 
@@ -71,9 +71,9 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
         child: BlocConsumer<ProductUploadCubit, ProductUploadState>(
           listener: (context, state) {
             if (state.message != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message!)),
-              );
+
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(noticeSnackbar(state.message!, false));
               if (state is ProductUploadSuccess) {
                 Navigator.of(context).pushNamed(ListProductsScreen.route);
               }

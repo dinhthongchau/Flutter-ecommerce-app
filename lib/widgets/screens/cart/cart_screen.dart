@@ -6,6 +6,7 @@ import 'package:project_one/models/product_model.dart';
 import '../../../common/code/calculateScreenSize.dart';
 import '../../../common/enum/screen_size.dart';
 import '../../common_widgets/common_styles.dart';
+import '../../common_widgets/notice_snackbar.dart';
 import '../checkout/checkout_screen.dart';
 import 'cart_cubit.dart';
 
@@ -88,7 +89,7 @@ class ListItemsInCart extends StatelessWidget {
     String? baseUrl = dotenv.env['API_BASE_URL'];
     return Container(
       margin: screenSize == ScreenSize.small
-          ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+          ? EdgeInsets.symmetric(horizontal: 20)  //Phone
           : screenSize == ScreenSize.medium
           ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
           : EdgeInsets.symmetric(horizontal: 400),  // Desktop
@@ -120,7 +121,7 @@ class BottomNavigationBar extends StatelessWidget {
     ScreenSize screenSize = calculateScreenSize(width);
     return Container(
       margin: screenSize == ScreenSize.small
-          ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+          ? EdgeInsets.symmetric(horizontal: 20)  //Phone
           : screenSize == ScreenSize.medium
           ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
           : EdgeInsets.symmetric(horizontal: 400),  // Desktop
@@ -222,6 +223,8 @@ class CheckOutButton extends StatelessWidget {
         return ElevatedButton(
             onPressed: () {
               if (state.selectedProducts.isEmpty) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(noticeSnackbar("Please chọn sản phẩm ", true));
                 return;
               }
               Navigator.of(context).pushNamed(CheckoutScreen.route, arguments: {
