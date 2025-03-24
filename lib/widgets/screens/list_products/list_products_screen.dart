@@ -174,111 +174,139 @@ class _ListProductPageState extends State<ListProductPage> {
           filteredProducts = sortedProducts;
         }
 
-        return Column(
-          children: [
-            if (!widget.isSearching)
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              // Phần danh mục (category buttons)
+              if (!widget.isSearching)
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildCategoryButton("All", null),
+                      _buildCategoryButton("Iphone ", "Iphone"),
+                      _buildCategoryButton("Samsung", "Samsung"),
+                      _buildCategoryButton("Macbook", "Macbook"),
+                    ],
+                  ),
+                ),
+              // Phần Image.network
+
               Container(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                //color: Colors.grey[200],
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildCategoryButton("All", null),
-                    _buildCategoryButton("Iphone ", "Iphone"),
-                    _buildCategoryButton("Samsung", "Samsung"),
-                    _buildCategoryButton("Macbook", "Macbook"),
-                  ],
+
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                child: ClipRRect(
+
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.network(
+                    "https://theme.hstatic.net/200000571041/1001034712/14/right_banner_2.jpg?v=599",
+                    fit: BoxFit.cover,
+                    height: 200,
+                    width: double.infinity,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(child: CircularProgressIndicator());
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      print("Image Load Error: $error");
+                      return Icon(Icons.error, color: Colors.red);
+                    },
+                  ),
                 ),
               ),
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final screenSize = calculateScreenSize(constraints.maxWidth);
-                  final crossAxisCount = switch (screenSize) {
-                    ScreenSize.small => 2,
-                    ScreenSize.medium => 3,
-                    ScreenSize.large => 4,
-                  };
+              // Phần GridView cho danh sách sản phẩm
+              Container(
+                height: MediaQuery.of(context).size.height, // Chiều cao cố định cho GridView
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final screenSize = calculateScreenSize(constraints.maxWidth);
+                    final crossAxisCount = switch (screenSize) {
+                      ScreenSize.small => 2,
+                      ScreenSize.medium => 3,
+                      ScreenSize.large => 4,
+                    };
 
-                  return Center(
-                    child: Container(
-                      constraints: BoxConstraints(maxWidth: 1200),
-                      margin: switch (screenSize) {
-                        ScreenSize.small => EdgeInsets.symmetric(horizontal: 20),
-                        ScreenSize.medium => EdgeInsets.symmetric(horizontal: 50),
-                        ScreenSize.large => EdgeInsets.symmetric(horizontal: 100),
-                      },
-                      child: GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          childAspectRatio: switch (screenSize) {
-                            ScreenSize.small => 0.75,
-                            ScreenSize.medium => 0.75,
-                            ScreenSize.large => 1.2,
-                          },
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
-                        itemCount: filteredProducts.length,
-                        itemBuilder: (context, index) {
-                          final product = filteredProducts[index];
-                          return GestureDetector(
-                            onTap: () {
-                              // Tìm index của sản phẩm trong danh sách gốc
-                              int originalIndex = state.product.indexOf(product);
-                              cubitProduct.setSelectedIndex(originalIndex);
-                              Navigator.of(context).pushNamed(DetailScreen.route,
-                                  arguments: {'cubit_product': cubitProduct});
+                    return Center(
+                      child: Container(
+                        constraints: BoxConstraints(maxWidth: 1200),
+                        margin: switch (screenSize) {
+                          ScreenSize.small => EdgeInsets.symmetric(horizontal: 20),
+                          ScreenSize.medium => EdgeInsets.symmetric(horizontal: 50),
+                          ScreenSize.large => EdgeInsets.symmetric(horizontal: 100),
+                        },
+                        child: GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(), // Hỗ trợ cuộn trong SingleChildScrollView
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            childAspectRatio: switch (screenSize) {
+                              ScreenSize.small => 0.75,
+                              ScreenSize.medium => 0.75,
+                              ScreenSize.large => 1.2,
                             },
-                            child: Card(
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                          ),
+                          itemCount: filteredProducts.length,
+                          itemBuilder: (context, index) {
+                            final product = filteredProducts[index];
+                            return GestureDetector(
+                              onTap: () {
+                                int originalIndex = state.product.indexOf(product);
+                                cubitProduct.setSelectedIndex(originalIndex);
+                                Navigator.of(context).pushNamed(DetailScreen.route,
+                                    arguments: {'cubit_product': cubitProduct});
+                              },
                               child: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.network(
-                                      "${product.product_image[0]}",
-                                      fit: BoxFit.contain,
-                                      height: 150,
-                                      width: double.infinity,
-                                      loadingBuilder: (context, child, loadingProgress) {
-                                        if (loadingProgress == null) return child;
-                                        return Center(child: CircularProgressIndicator());
-                                      },
-                                      errorBuilder: (context, error, stackTrace) {
-                                        print("Image Load Error: $error");
-                                        return Icon(Icons.error, color: Colors.red);
-                                      },
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.all(20),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            "${product.product_name} ",
-                                            style: TextStyle(fontWeight: FontWeight.bold),
-                                          ),
-                                          SizedBox(height: 4),
-                                          Text(
-                                            "${NumberFormat('#,###', 'vi').format(product.product_price)} đ",
-                                            style: TextStyle(color: Colors.orange),
-                                          ),
-                                        ],
+                                child: Card(
+
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.network(
+                                        "${product.product_image[0]}",
+                                        fit: BoxFit.contain,
+                                        height: 150,
+                                        width: double.infinity,
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if (loadingProgress == null) return child;
+                                          return Center(child: CircularProgressIndicator());
+                                        },
+                                        errorBuilder: (context, error, stackTrace) {
+                                          print("Image Load Error: $error");
+                                          return Icon(Icons.error, color: Colors.red);
+                                        },
                                       ),
-                                    ),
-                                  ],
+                                      Container(
+                                        padding: EdgeInsets.all(20),
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              "${product.product_name} ",
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              "${NumberFormat('#,###', 'vi').format(product.product_price)} đ",
+                                              style: TextStyle(color: Colors.orange),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-
-          ],
+            ],
+          ),
         );
       },
     );
