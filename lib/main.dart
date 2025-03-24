@@ -46,7 +46,7 @@ class Provider extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => CustomerCubit(context.read<ApiServer>())..loadCustomer(),
+            create: (context) => CustomerCubit()..loadCustomer(),
           ),
           BlocProvider(
             create: (context) => CartCubit()..loadCart(),

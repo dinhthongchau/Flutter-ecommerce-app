@@ -41,7 +41,7 @@ Route<dynamic> mainRoute(RouteSettings settings) {
               ),
               BlocProvider(
                   create: (context) =>
-                  CustomerCubit(context.read<ApiServer>())..loadCustomer()),
+                  CustomerCubit()..loadCustomer()),
               BlocProvider(
                   create: (context) => CheckoutCubit(context.read<ApiServer>())),
             ],
