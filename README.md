@@ -1,71 +1,56 @@
-# E-Commerce App
-This is a Flutter application that provides a responsive e-commerce platform. Users can browse products, view details, manage their cart, and complete purchases with a seamless checkout process. The app is deployed and accessible at [dinhthongchau.github.io](https://dinhthongchau.github.io).
+## Simple E-commerce App  
 
-## Screenshot
+This is a simple e-commerce app built with Flutter, using an API developed with Node.js, Express, and MySQL. It is deployed on Google Cloud for product management, including viewing and uploading products.  
+It lets you browse products, add them to a cart, and complete purchases. 
+It works on phones and the web, using BLoC for state management.  
+##Screenshots
+![image](https://github.com/user-attachments/assets/4d845244-e0d3-48c0-86a2-34c71baf8af8)
+
+## Features  
+- Browse products with search and filters  
+- View product details  
+- Add items to your cart  
+- Buy products at checkout  
+- Upload new products  
+- Switch between light and dark mode  
+
+## Prerequisites  
+- Install Flutter from [flutter.dev](https://flutter.dev)  
+- Create a `.env` file in the root folder (use `.env.example` as a template)  
+
+## Setup  
+1. Clone this project  
+2. Run `flutter pub get` to install dependencies  
+3. Add `API_BASE_URL` to your `.env` file (point it to your server)  
+
+## Running the App  
+- **For phone**: Connect your device and run `flutter run`  
+- **For web**: Run `flutter run -d chrome`  
+
+## Project Structure  
+- `lib/main.dart`: App starting point  
+- `lib/models/`: Data files (e.g., Customer, Product)  
+- `lib/repositories/`: Server data handling  
+- `lib/widgets/`: Reusable UI components and screens  
+- `lib/services/`: Tools like storage and location  
+- `lib/common/`: Shared utilities and enums  
+
+**Note**:  
+- BLoC manages state. Cubits are in feature folders or `lib/`.  
+- Navigation uses named routes in `lib/routes.dart`.  
+
+## Building for Web  
+1. Run `flutter build web`  
+2. Find files in `build/web`  
+3. Deploy them to a web server  
+
+##More images dark mode
+![image](https://github.com/user-attachments/assets/ede30a9e-8224-48ed-b003-d531df3be30b)
+
+##Medium Screen
+![image](https://github.com/user-attachments/assets/9e6cce7c-acd6-4b34-b1d8-14261cf2f81b)
+
+##Large Screen
+![image](https://github.com/user-attachments/assets/d3478f20-010e-47dc-84d7-38b682d21917)
 
 
-## Features
-- **Product Listing**: Browse a grid of products with responsive layouts for mobile, tablet, and desktop.
-- **Product Details**: View detailed information, including images, descriptions, and pricing.
-- **Cart Management**: Add items to the cart, adjust quantities, and remove products.
-- **Checkout Process**: Complete purchases with customer information and payment options.
-- **Responsive Design**: Adapts seamlessly to different screen sizes (small, medium, large).
-- **Theme Switching**: Toggle between light and dark modes via settings.
-- **Local Storage**: Uses `shared_preferences` to persist cart data locally.
-- **API Integration**: Fetches product data and handles customer/order creation via a custom API.
-
-## Dependencies
-- **flutter**: The core framework for building cross-platform apps.
-- **flutter_bloc**: State management for handling app logic and UI updates.
-- **flutter_dotenv**: Loads environment variables (e.g., API base URL) from a `.env` file.
-- **dio**: HTTP client for making API requests.
-- **json_annotation**: Simplifies JSON serialization/deserialization for models.
-- **shared_preferences**: Stores cart and customer data locally.
-- **intl**: Formats currency and numbers (e.g., Vietnamese đồng).
-- **provider**: Dependency injection for repositories and services.
-
-## Development Setup
-### Prerequisites
-Ensure you have Flutter and Dart installed on your machine. Follow the official installation guide at [Flutter Get Started](https://flutter.dev/docs/get-started/install).
-
-### Steps
-1. **Clone or Download the Project**: 
-   - Clone the repository: `git clone https://github.com/dinhthongchau/your-repo-name.git`
-   - Or download the source files from GitHub.
-2. **Install Dependencies**: Navigate to the project directory and run:
-flutter pub get
-ư
-3. **Set Up Environment Variables**: Create a `.env` file in the `assets` folder with:
-API_BASE_URL=https://your-api-base-url.com/
-API_BASE_URL_API_V1=https://your-api-base-url.com/api/v1/
-
-]
-Update these URLs to match your backend API.
-4. **Run the App**: Execute the following command in the terminal:
-flutter run
-ư
-For web deployment, use:
-flutter run -d chrome
-
-
-## Usage
-The app launches on the product listing screen (`ListProductsScreen`), serving as the main entry point. Users can:
-- Browse products in a responsive grid layout.
-- Tap a product to view details and add it to the cart.
-- Manage their cart, select items, and proceed to checkout.
-- Enter customer information and finalize orders.
-- Switch themes (light/dark) via the settings menu.
-
-## Contributing
-Contributions are welcome! If you have suggestions or improvements, please:
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/your-feature`).
-3. Commit your changes (`git commit -m "Add your feature"`).
-4. Push to the branch (`git push origin feature/your-feature`).
-5. Open a pull request.
-
-## License
-This project is licensed under the MIT License. Check the [LICENSE](LICENSE) file for details.
-
-## Author
-Đinh Thông Châu ([dinhthongchau](https://github.com/dinhthongchau))
