@@ -15,7 +15,6 @@ It works on phones and the web, using BLoC for state management.
 - Switch between light and dark mode  
 
 ## Prerequisites  
-- Install Flutter from [flutter.dev](https://flutter.dev)  
 - Create a `.env` file in the root folder (use `.env.example` as a template)  
 
 ## Setup  
