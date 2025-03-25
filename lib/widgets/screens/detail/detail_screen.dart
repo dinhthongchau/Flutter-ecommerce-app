@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 
@@ -204,14 +205,15 @@ class _DetailScreenState extends State<DetailScreen> {
             });
           },
           itemBuilder: (context, index) {
-            return Container(
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage(
-                          //"$baseUrl${product.product_image[index]}"),
-                          "${product.product_image[index]}"),
-                      fit: BoxFit.contain)),
-            );
+            // return Container(
+            //   decoration: BoxDecoration(
+            //       image: DecorationImage(
+            //           image: NetworkImage(
+            //               //"$baseUrl${product.product_image[index]}"),
+            //               "${product.product_image[index]}"),
+            //           fit: BoxFit.contain)),
+            // );
+            return PhotoView(imageProvider: NetworkImage("${product.product_image[index]}"));
           },
         ),
         Positioned(
