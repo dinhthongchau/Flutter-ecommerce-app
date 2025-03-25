@@ -3,6 +3,8 @@
 This is a simple e-commerce app built with Flutter, using an API developed with Node.js, Express, and MySQL. It is deployed on Google Cloud for product management, including viewing and uploading products.  
 It lets you browse products, add them to a cart, and complete purchases. 
 It works on phones and the web, using BLoC for state management.  
+## Website Responsive
+You can try it on: https://dinhthongchau.github.io/
 ## Screenshots
 ![image](https://github.com/user-attachments/assets/4d845244-e0d3-48c0-86a2-34c71baf8af8)
 
