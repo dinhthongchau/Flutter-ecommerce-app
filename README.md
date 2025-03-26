@@ -18,16 +18,7 @@ You can try it on: https://dinhthongchau.github.io/
 - Switch between light and dark mode  
 
 ## Prerequisites  
-- Create a `.env` file in the root folder (use `.env.example` as a template)  
-
-## Setup  
-1. Clone this project  
-2. Run `flutter pub get` to install dependencies  
-3. Add `API_BASE_URL` to your `.env` file (point it to your server)  
-
-## Running the App  
-- **For phone**: Connect your device and run `flutter run`  
-- **For web**: Run `flutter run -d chrome`  
+- Create a `.env` file in the root folder (use `.env.example` as a template)
 
 ## Project Structure  
 - `lib/main.dart`: App starting point  
@@ -39,12 +30,7 @@ You can try it on: https://dinhthongchau.github.io/
 
 **Note**:  
 - BLoC manages state. Cubits are in feature folders or `lib/`.  
-- Navigation uses named routes in `lib/routes.dart`.  
-
-## Building for Web  
-1. Run `flutter build web`  
-2. Find files in `build/web`  
-3. Deploy them to a web server  
+- Navigation uses named routes in `lib/routes.dart`.   
 
 ## More images dark mode
 ![image](https://github.com/user-attachments/assets/ede30a9e-8224-48ed-b003-d531df3be30b)
