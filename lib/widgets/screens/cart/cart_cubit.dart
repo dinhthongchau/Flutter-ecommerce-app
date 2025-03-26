@@ -94,13 +94,11 @@ class CartCubit extends Cubit<CartState> {
       await _storage.saveList(
           'cart', cartItems.map((e) => jsonEncode(e)).toList());
       await loadCart();
-
     } catch (e) {
       print('Add to cart error: $e');
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(noticeSnackbar("Error adding to cart", true));
-
     }
   }
 

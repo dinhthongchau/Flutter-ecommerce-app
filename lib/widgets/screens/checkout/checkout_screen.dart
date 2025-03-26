@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,10 +10,10 @@ import 'package:project_one/widgets/screens/list_products/list_products_screen.d
 import '../../../common/code/calculateScreenSize.dart';
 import '../../../common/enum/load_status.dart';
 import '../../../common/enum/screen_size.dart';
-import '../../../main_cubit.dart';
 import '../../common_widgets/bold_text.dart';
 import '../../common_widgets/notice_snackbar.dart';
 import '../customer/create_customer_screen.dart';
+import '../settings/main_cubit.dart';
 
 //checkout_screen.dart
 class CheckoutScreen extends StatefulWidget {
@@ -39,10 +38,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
     context.read<MainCubit>().setTheme(true);
-
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -78,10 +74,9 @@ class Body extends StatelessWidget {
       listener: (context, state) {
         if (state.loadStatus == LoadStatus.Done) {
           _showSuccessOrderDialog(context);
-
         } else if (state.loadStatus == LoadStatus.Error) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(noticeSnackbar("Order failed ! Please try again", true));
+          ScaffoldMessenger.of(context).showSnackBar(
+              noticeSnackbar("Order failed ! Please try again", true));
         }
       },
       child: BlocBuilder<CustomerCubit, CustomerState>(
@@ -89,15 +84,16 @@ class Body extends StatelessWidget {
           if (state.loadStatus == LoadStatus.Loading) {
             return const Center(child: CircularProgressIndicator());
           }
-          final customer = state.customer.isNotEmpty ? state.customer.first : null;
+          final customer =
+              state.customer.isNotEmpty ? state.customer.first : null;
           return BlocBuilder<CartCubit, CartState>(
             builder: (context, cartState) {
               return Container(
                 margin: screenSize == ScreenSize.small
-                    ? EdgeInsets.symmetric(horizontal: 0)  //Phone
+                    ? EdgeInsets.symmetric(horizontal: 0) //Phone
                     : screenSize == ScreenSize.medium
-                    ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
-                    : EdgeInsets.symmetric(horizontal: 400),
+                        ? EdgeInsets.symmetric(horizontal: 100) // Tablet
+                        : EdgeInsets.symmetric(horizontal: 400),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
@@ -117,29 +113,35 @@ class Body extends StatelessWidget {
                         ),
                         onPressed: () {
                           if (customer == null) {
-
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(noticeSnackbar("Please tạo khách hàng trước! ", true));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                noticeSnackbar(
+                                    "Please tạo khách hàng trước! ", true));
                             return;
                           }
                           context.read<CheckoutCubit>().placeOrder(
-                            context: context,
-                            customer: customer,
-                            selectedProducts: cartState.selectedProducts,
-                            selectedQuantities: cartState.selectedQuantities,
-                            totalPayment: cartState.totalPayment.toDouble(),
-                            paymentMethod: context.read<CheckoutCubit>().state.selectedMethod,
-                            note: _noteController.text,
-                          );
+                                context: context,
+                                customer: customer,
+                                selectedProducts: cartState.selectedProducts,
+                                selectedQuantities:
+                                    cartState.selectedQuantities,
+                                totalPayment: cartState.totalPayment.toDouble(),
+                                paymentMethod: context
+                                    .read<CheckoutCubit>()
+                                    .state
+                                    .selectedMethod,
+                                note: _noteController.text,
+                              );
                         },
                         child: BlocBuilder<CheckoutCubit, CheckoutState>(
                           builder: (context, checkoutState) {
-                            return checkoutState.loadStatus == LoadStatus.Loading
-                                ? const CircularProgressIndicator(color: Colors.white)
+                            return checkoutState.loadStatus ==
+                                    LoadStatus.Loading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
                                 : const Text(
-                              'Order Now',
-                              style: TextStyle(color: Colors.white),
-                            );
+                                    'Order Now',
+                                    style: TextStyle(color: Colors.white),
+                                  );
                           },
                         ),
                       ),
@@ -185,7 +187,7 @@ void _showSuccessOrderDialog(BuildContext context) {
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 ListProductsScreen.route,
-                    (route) => false,
+                (route) => false,
               );
             },
             style: ElevatedButton.styleFrom(
@@ -194,8 +196,8 @@ void _showSuccessOrderDialog(BuildContext context) {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text("OK",
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            child:
+                const Text("OK", style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ),
       ],
@@ -339,12 +341,15 @@ class ProductOrderContainer extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(product.product_name,maxLines: 3,softWrap: true,),
-                            
+                                Text(
+                                  product.product_name,
+                                  maxLines: 3,
+                                  softWrap: true,
+                                ),
                                 Text(
                                   product.product_color,
-                                  style:
-                                      TextStyle(color: Colors.grey, fontSize: 12),
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
                                 ),
                                 Row(
                                   mainAxisAlignment:
@@ -505,11 +510,7 @@ class DetailPaymentContainer extends StatelessWidget {
                   ],
                 ),
                 Row(
-                  children: [
-                    Text("Ship cost: "),
-                    Spacer(),
-                    Text("0")
-                  ],
+                  children: [Text("Ship cost: "), Spacer(), Text("0")],
                 ),
                 Row(
                   children: [

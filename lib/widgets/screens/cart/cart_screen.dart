@@ -61,7 +61,6 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
         if (state.cartItems.isEmpty) {
@@ -89,10 +88,10 @@ class ListItemsInCart extends StatelessWidget {
     String? baseUrl = dotenv.env['API_BASE_URL_NoApi_NoV1'];
     return Container(
       margin: screenSize == ScreenSize.small
-          ? EdgeInsets.symmetric(horizontal: 0)  // Điện thoại
+          ? EdgeInsets.symmetric(horizontal: 0) // Điện thoại
           : screenSize == ScreenSize.medium
-          ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
-          : EdgeInsets.symmetric(horizontal: 400),  // Desktop
+              ? EdgeInsets.symmetric(horizontal: 100) // Tablet
+              : EdgeInsets.symmetric(horizontal: 400), // Desktop
       child: SizedBox(
         child: ListView.builder(
           itemCount: state.cartItems.length,
@@ -232,7 +231,7 @@ class CheckOutButton extends StatelessWidget {
                 backgroundColor: Colors.deepOrange,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8))),
-            child:  Text(
+            child: Text(
               "Buy now (${context.read<CartCubit>().state.selectedProducts.length})",
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -317,7 +316,7 @@ class CartItemListTile extends StatelessWidget {
             color: Colors.white54,
             child: Padding(
               padding: const EdgeInsets.all(5),
-              child:  Text(itemsInCart.product_color),
+              child: Text(itemsInCart.product_color),
             ),
           ),
           Text(

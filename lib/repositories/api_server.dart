@@ -4,7 +4,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project_one/models/customer_model.dart';
 import 'package:project_one/models/product_model.dart';
 import 'package:dio/dio.dart';
-import '../models/order_model.dart';
 import 'api.dart';
 import 'log.dart';
 
@@ -64,8 +63,6 @@ class ApiServer implements Api {
     }
   }
 
-
-
   @override
   Future<dynamic> sendOrderEmail({
     required String to,
@@ -105,7 +102,8 @@ class ApiServer implements Api {
   }
 
   @override
-  Future<dynamic> createProduct(ProductModel product, List<PlatformFile> imageFiles) async {
+  Future<dynamic> createProduct(
+      ProductModel product, List<PlatformFile> imageFiles) async {
     try {
       FormData formData = FormData.fromMap({
         "product_name": product.product_name,

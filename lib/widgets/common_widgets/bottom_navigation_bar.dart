@@ -23,7 +23,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
     return BlocBuilder<BottomNavigationCubit, int>(
       builder: (context, currentPageIndex) {
         // Tạo controller cho AnimatedNotchBottomBar, đồng bộ với Cubit
-        final NotchBottomBarController controller = NotchBottomBarController(index: currentPageIndex);
+        final NotchBottomBarController controller =
+            NotchBottomBarController(index: currentPageIndex);
         // Sửa: Sử dụng calculateScreenSize để xác định kích thước màn hình
         final double screenWidth = MediaQuery.of(context).size.width;
         final ScreenSize screenSize = calculateScreenSize(screenWidth);
@@ -34,7 +35,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
           ScreenSize.large => screenWidth, // Giới hạn 500px cho web
         };
         return AnimatedNotchBottomBar(
-
           notchBottomBarController: controller,
           color: Colors.deepOrange,
           showLabel: true,
@@ -49,30 +49,29 @@ class CustomBottomNavigationBar extends StatelessWidget {
           durationInMilliSeconds: 300,
           itemLabelStyle: const TextStyle(fontSize: 10),
           elevation: 1,
-
-
           bottomBarItems: const [
             BottomBarItem(
               inActiveItem: Icon(Icons.home_outlined, color: Colors.white),
-              activeItem: Icon(Icons.home, color: Colors.white), // Màu khi được chọn
-
+              activeItem:
+                  Icon(Icons.home, color: Colors.white), // Màu khi được chọn
             ),
             BottomBarItem(
               inActiveItem: Icon(Icons.upload_outlined, color: Colors.white),
-              activeItem: Icon(Icons.upload, color: Colors.white), // Màu khi được chọn
+              activeItem:
+                  Icon(Icons.upload, color: Colors.white), // Màu khi được chọn
               itemLabelWidget: Text(
                 'Upload',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color:Colors.white, // Màu khi chọn: vàng, không chọn: trắng
+                  color: Colors.white, // Màu khi chọn: vàng, không chọn: trắng
                 ),
               ),
-
             ),
             BottomBarItem(
               inActiveItem: Icon(Icons.settings_outlined, color: Colors.white),
-              activeItem: Icon(Icons.settings, color: Colors.white), // Màu khi được chọn
+              activeItem: Icon(Icons.settings,
+                  color: Colors.white), // Màu khi được chọn
             ),
           ],
           onTap: (int index) {

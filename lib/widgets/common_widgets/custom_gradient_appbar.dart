@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CustomGradientAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomGradientAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final String title;
   final List<Color> gradientColors;
 
@@ -27,10 +28,12 @@ class CustomGradientAppBar extends StatelessWidget implements PreferredSizeWidge
             alignment: Alignment.center,
             child: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
-          backgroundColor: Colors.transparent, // Nền trong suốt để thấy gradient
+          backgroundColor:
+              Colors.transparent, // Nền trong suốt để thấy gradient
           elevation: 0,
         ),
       ),

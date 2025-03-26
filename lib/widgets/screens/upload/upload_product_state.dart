@@ -16,10 +16,12 @@ class ProductUploadLoading extends ProductUploadState {
 
 class ProductUploadSuccess extends ProductUploadState {
   final Map<String, dynamic> response;
-  ProductUploadSuccess(this.response) : super(message: "Product uploaded successfully!");
+  ProductUploadSuccess(this.response)
+      : super(message: "Product uploaded successfully!");
 }
 
 class ProductUploadFailure extends ProductUploadState {
   final String error;
-  ProductUploadFailure(this.error) : super(message: "Failed to upload product: $error");
+  ProductUploadFailure(this.error)
+      : super(message: "Failed to upload product: $error");
 }

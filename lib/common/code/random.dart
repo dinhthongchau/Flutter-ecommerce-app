@@ -15,5 +15,3 @@ int generateRandomId() {
   // Kết hợp lại thành số nguyên
   return int.parse(datePart + randomPart);
 }
-
-

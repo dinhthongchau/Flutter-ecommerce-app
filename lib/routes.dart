@@ -5,7 +5,6 @@ import 'package:project_one/widgets/screens/checkout/checkout_cubit.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
 import 'package:project_one/widgets/screens/settings/settings_screen.dart';
 import 'package:project_one/widgets/screens/upload/upload_product_screen.dart';
-import 'repositories/api.dart';
 import 'repositories/api_server.dart'; // Add this import
 import 'widgets/screens/customer/create_customer_screen.dart';
 import 'widgets/screens/customer/customer_cubit.dart';
@@ -23,7 +22,7 @@ Route<dynamic> mainRoute(RouteSettings settings) {
           return ListProductsScreen();
         case DetailScreen.route:
           var cubitProduct = (settings.arguments
-          as Map<String, dynamic>)['cubit_product'] as ListProductsCubit;
+              as Map<String, dynamic>)['cubit_product'] as ListProductsCubit;
           return BlocProvider.value(
             value: cubitProduct,
             child: DetailScreen(),
@@ -40,10 +39,10 @@ Route<dynamic> mainRoute(RouteSettings settings) {
                       args['selectedQuantities'], args['totalPayment']),
               ),
               BlocProvider(
-                  create: (context) =>
-                  CustomerCubit()..loadCustomer()),
+                  create: (context) => CustomerCubit()..loadCustomer()),
               BlocProvider(
-                  create: (context) => CheckoutCubit(context.read<ApiServer>())),
+                  create: (context) =>
+                      CheckoutCubit(context.read<ApiServer>())),
             ],
             child: CheckoutScreen(),
           );

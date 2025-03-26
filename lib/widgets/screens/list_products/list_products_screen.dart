@@ -10,7 +10,6 @@ import '../../../repositories/api_server.dart';
 import '../../common_widgets/bottom_navigation_bar.dart';
 import '../../common_widgets/cart_button.dart';
 import '../../common_widgets/notice_snackbar.dart';
-import '../settings/settings_screen.dart';
 import 'list_products_cubit.dart';
 import 'package:intl/intl.dart';
 
@@ -22,7 +21,8 @@ class ListProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ListProductsCubit(context.read<ApiServer>())..loadData(),
+      create: (context) =>
+          ListProductsCubit(context.read<ApiServer>())..loadData(),
       child: Page(),
     );
   }
@@ -95,16 +95,20 @@ class _PageState extends State<Page> {
                 ),
                 suffixIcon: isSearching
                     ? IconButton(
-                  icon: Icon(Icons.clear, color: Colors.white, size: 28), // Tăng kích thước biểu tượng
-                  onPressed: () {
-                    setState(() {
-                      searchQuery = '';
-                      isSearching = false;
-                      _searchController.clear();
-                    });
-                  },
-                )
-                    : Icon(Icons.search, color: Colors.white, size: 28), // Tăng kích thước biểu tượng
+                        icon: Icon(Icons.clear,
+                            color: Colors.white,
+                            size: 28), // Tăng kích thước biểu tượng
+                        onPressed: () {
+                          setState(() {
+                            searchQuery = '';
+                            isSearching = false;
+                            _searchController.clear();
+                          });
+                        },
+                      )
+                    : Icon(Icons.search,
+                        color: Colors.white,
+                        size: 28), // Tăng kích thước biểu tượng
               ),
             ),
             actions: [
@@ -116,8 +120,8 @@ class _PageState extends State<Page> {
       body: BlocConsumer<ListProductsCubit, ListProductsState>(
         listener: (context, state) {
           if (state.loadStatus == LoadStatus.Error) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(noticeSnackbar("error from API, can not loading. Contact admin to fix", true));
+            ScaffoldMessenger.of(context).showSnackBar(noticeSnackbar(
+                "error from API, can not loading. Contact admin to fix", true));
           }
         },
         builder: (context, state) {
@@ -127,7 +131,6 @@ class _PageState extends State<Page> {
     );
   }
 }
-
 
 class Body extends StatelessWidget {
   final String searchQuery;
@@ -144,7 +147,8 @@ class Body extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-        return ListProductPage(searchQuery: searchQuery, isSearching: isSearching);
+        return ListProductPage(
+            searchQuery: searchQuery, isSearching: isSearching);
       },
     );
   }
@@ -154,7 +158,8 @@ class ListProductPage extends StatefulWidget {
   final String searchQuery;
   final bool isSearching;
 
-  const ListProductPage({super.key, required this.searchQuery, required this.isSearching});
+  const ListProductPage(
+      {super.key, required this.searchQuery, required this.isSearching});
 
   @override
   State<ListProductPage> createState() => _ListProductPageState();
@@ -206,36 +211,40 @@ class _ListProductPageState extends State<ListProductPage> {
                 ),
               // Phần Image.network
 
-              !(selectedCategory == "Macbook" || selectedCategory == "Iphone" || selectedCategory == "Samsung")
+              !(selectedCategory == "Macbook" ||
+                      selectedCategory == "Iphone" ||
+                      selectedCategory == "Samsung")
                   ? Container(
-
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                child: ClipRRect(
-
-                  borderRadius: BorderRadius.circular(24),
-                  child: Image.network(
-                    "https://theme.hstatic.net/200000571041/1001034712/14/right_banner_2.jpg?v=599",
-                    fit: BoxFit.cover,
-                    height: 200,
-                    width: double.infinity,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(child: CircularProgressIndicator());
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      print("Image Load Error: $error");
-                      return Icon(Icons.error, color: Colors.red);
-                    },
-                  ),
-                ),
-              ):Container(),
-              SizedBox(height: 20,),
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.network(
+                          "https://theme.hstatic.net/200000571041/1001034712/14/right_banner_2.jpg?v=599",
+                          fit: BoxFit.cover,
+                          height: 200,
+                          width: double.infinity,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(child: CircularProgressIndicator());
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            print("Image Load Error: $error");
+                            return Icon(Icons.error, color: Colors.red);
+                          },
+                        ),
+                      ),
+                    )
+                  : Container(),
+              SizedBox(
+                height: 20,
+              ),
               // Phần GridView cho danh sách sản phẩm
               Container(
                 //height: MediaQuery.of(context).size.height, // Chiều cao cố định cho GridView
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final screenSize = calculateScreenSize(constraints.maxWidth);
+                    final screenSize =
+                        calculateScreenSize(constraints.maxWidth);
                     final crossAxisCount = switch (screenSize) {
                       ScreenSize.small => 2,
                       ScreenSize.medium => 3,
@@ -246,14 +255,19 @@ class _ListProductPageState extends State<ListProductPage> {
                       child: Container(
                         constraints: BoxConstraints(maxWidth: 1200),
                         margin: switch (screenSize) {
-                          ScreenSize.small => EdgeInsets.symmetric(horizontal: 20),
-                          ScreenSize.medium => EdgeInsets.symmetric(horizontal: 50),
-                          ScreenSize.large => EdgeInsets.symmetric(horizontal: 100),
+                          ScreenSize.small =>
+                            EdgeInsets.symmetric(horizontal: 20),
+                          ScreenSize.medium =>
+                            EdgeInsets.symmetric(horizontal: 50),
+                          ScreenSize.large =>
+                            EdgeInsets.symmetric(horizontal: 100),
                         },
                         child: GridView.builder(
                           shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(), // Hỗ trợ cuộn trong SingleChildScrollView
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          physics:
+                              const NeverScrollableScrollPhysics(), // Hỗ trợ cuộn trong SingleChildScrollView
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: crossAxisCount,
                             childAspectRatio: switch (screenSize) {
                               ScreenSize.small => 0.65,
@@ -268,14 +282,15 @@ class _ListProductPageState extends State<ListProductPage> {
                             final product = filteredProducts[index];
                             return GestureDetector(
                               onTap: () {
-                                int originalIndex = state.product.indexOf(product);
+                                int originalIndex =
+                                    state.product.indexOf(product);
                                 cubitProduct.setSelectedIndex(originalIndex);
-                                Navigator.of(context).pushNamed(DetailScreen.route,
+                                Navigator.of(context).pushNamed(
+                                    DetailScreen.route,
                                     arguments: {'cubit_product': cubitProduct});
                               },
                               child: SingleChildScrollView(
                                 child: Container(
-
                                   child: CardOfProducts(product: product),
                                 ),
                               ),
@@ -306,12 +321,14 @@ class _ListProductPageState extends State<ListProductPage> {
           });
         },
         style: ElevatedButton.styleFrom(
-          shape:RoundedRectangleBorder(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
-          ) ,
+          ),
           elevation: 5,
-          backgroundColor: selectedCategory == category ? Colors.deepOrange : Colors.orange,
-          foregroundColor: selectedCategory ==category ? Colors.white : Colors.white,
+          backgroundColor:
+              selectedCategory == category ? Colors.deepOrange : Colors.orange,
+          foregroundColor:
+              selectedCategory == category ? Colors.white : Colors.white,
         ),
         child: Text(label),
       ),
@@ -334,11 +351,9 @@ class CardOfProducts extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
-
       child: Stack(
         children: [
           Column(
-
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ClipRRect(
@@ -374,13 +389,11 @@ class CardOfProducts extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 10),
-
                   ],
                 ),
               ),
             ],
           ),
-
           Positioned(
             right: 30,
             bottom: 15,
@@ -390,7 +403,10 @@ class CardOfProducts extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.deepOrange, Colors.orange], // Gradient từ đỏ đến đỏ nhạt
+                    colors: [
+                      Colors.deepOrange,
+                      Colors.orange
+                    ], // Gradient từ đỏ đến đỏ nhạt
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -405,8 +421,7 @@ class CardOfProducts extends StatelessWidget {
                 ),
                 child: Text(
                   "${NumberFormat('#,###', 'vi').format(product.product_price)} đ",
-                  style: TextStyle(color: Colors.white
-                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -420,7 +435,10 @@ class CardOfProducts extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.green, Colors.greenAccent], // Gradient từ đỏ đến đỏ nhạt
+                    colors: [
+                      Colors.green,
+                      Colors.greenAccent
+                    ], // Gradient từ đỏ đến đỏ nhạt
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -444,27 +462,30 @@ class CardOfProducts extends StatelessWidget {
               ),
             ),
           ),
-
           BlocBuilder<CartCubit, CartState>(
             builder: (context, state) {
               return Positioned(
-            bottom: 5, // Cách bottom 10px
-            right: 5,  // Cách right 10px
-            child: FloatingActionButton(
-              mini: true, // Kích thước nhỏ hơn nếu muốn
-              onPressed: () {
-                // Xử lý sự kiện thêm vào giỏ hàng tại đây
-                context.read<CartCubit>().addToCart(context, product, {product.product_id: 1});
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(noticeSnackbar("Added to cart", false));
-              },
-              backgroundColor: Colors.deepOrange,
-              child: Icon(Icons.add, color: Colors.white,), // Màu nền của nút
-            ),
-          );
-      },
-    ),
-
+                bottom: 5, // Cách bottom 10px
+                right: 5, // Cách right 10px
+                child: FloatingActionButton(
+                  mini: true, // Kích thước nhỏ hơn nếu muốn
+                  onPressed: () {
+                    // Xử lý sự kiện thêm vào giỏ hàng tại đây
+                    context
+                        .read<CartCubit>()
+                        .addToCart(context, product, {product.product_id: 1});
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(noticeSnackbar("Added to cart", false));
+                  },
+                  backgroundColor: Colors.deepOrange,
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ), // Màu nền của nút
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

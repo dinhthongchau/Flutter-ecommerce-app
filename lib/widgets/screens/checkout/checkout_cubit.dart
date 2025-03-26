@@ -29,16 +29,18 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       // Chuẩn bị nội dung chi tiết sản phẩm cho email
       final orderDetails = selectedProducts
           .map((product) =>
-      "${product.product_name} (Màu: ${product.product_color}) - SL: ${selectedQuantities[product.product_id] ?? 1} - ${product.product_price} đ")
+              "${product.product_name} (Màu: ${product.product_color}) - SL: ${selectedQuantities[product.product_id] ?? 1} - ${product.product_price} đ")
           .join('<br>');
 
-      final orderNote = '${selectedProducts.map((product) => "${product.product_name} (${product.product_color}) x ${selectedQuantities[product.product_id] ?? 1}").join('\n')}\nGhi chú: $note';
+      final orderNote =
+          '${selectedProducts.map((product) => "${product.product_name} (${product.product_color}) x ${selectedQuantities[product.product_id] ?? 1}").join('\n')}\nGhi chú: $note';
 
       // 1. Gửi email cho khách hàng
       await _api.sendOrderEmail(
         to: customer.customerEmail,
         subject: 'Xác nhận đơn hàng từ cửa hàng',
-        text: 'Cảm ơn bạn đã đặt hàng!\nTổng tiền: $totalPayment đ\nChi tiết:\n$orderNote',
+        text:
+            'Cảm ơn bạn đã đặt hàng!\nTổng tiền: $totalPayment đ\nChi tiết:\n$orderNote',
         html: '''
         <h2>Xác nhận đơn hàng</h2>
         <p>Cảm ơn ${customer.customerName} đã đặt hàng tại cửa hàng chúng tôi!</p>
@@ -52,7 +54,8 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       print("Email sent to customer: ${customer.customerEmail}");
 
       // 2. Gửi email cho admin
-      final adminEmail = dotenv.env['EMAIL_ADMIN_RECEIVE_ORDER'] ?? 'admin@example.com';
+      final adminEmail =
+          dotenv.env['EMAIL_ADMIN_RECEIVE_ORDER'] ?? 'admin@example.com';
       await _api.sendOrderEmail(
         to: adminEmail,
         subject: 'Đơn hàng mới từ ${customer.customerName}',

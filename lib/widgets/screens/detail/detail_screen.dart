@@ -1,7 +1,3 @@
-
-
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,7 +8,6 @@ import 'package:project_one/widgets/screens/cart/cart_cubit.dart';
 
 import 'package:project_one/widgets/screens/checkout/checkout_screen.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_cubit.dart';
-
 
 import '../../../common/code/calculateScreenSize.dart';
 import '../../../common/enum/screen_size.dart';
@@ -50,7 +45,6 @@ class _DetailScreenState extends State<DetailScreen> {
         var product = state.product[state.selectedItem];
         //print("Image detail is $baseUrl${product.product_image[2]}");
         return Scaffold(
-
           bottomNavigationBar: BottomNavigationBar(),
           appBar: AppBar(
             iconTheme: IconThemeData(color: Colors.white),
@@ -58,7 +52,11 @@ class _DetailScreenState extends State<DetailScreen> {
             title: Row(
               children: [
                 Spacer(),
-                const Text("Detail Screen",style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                const Text(
+                  "Detail Screen",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
                 Spacer(),
                 CartButton(),
               ],
@@ -72,12 +70,11 @@ class _DetailScreenState extends State<DetailScreen> {
           ),
           body: SingleChildScrollView(
             child: Container(
-
               margin: screenSize == ScreenSize.small
-                  ? EdgeInsets.symmetric(horizontal: 0)  //Phone
+                  ? EdgeInsets.symmetric(horizontal: 0) //Phone
                   : screenSize == ScreenSize.medium
-                  ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
-                  : EdgeInsets.symmetric(horizontal: 400),  // Desktop
+                      ? EdgeInsets.symmetric(horizontal: 100) // Tablet
+                      : EdgeInsets.symmetric(horizontal: 400), // Desktop
               child: Column(
                 children: [
                   _buildSizedBoxForImages(product, baseUrl),
@@ -94,49 +91,52 @@ class _DetailScreenState extends State<DetailScreen> {
                                 curve: Curves.easeInOut); //hieu ung click
                           },
                           child: Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: _currentIndex == index
-                                    ? Colors.deepOrange
-                                    : Colors.transparent,
-                                width: 2,
-                              ),
-                            ),
-                            child:
-                            // kIsWeb ?
-                            // //check if is web
-
-                            Image.network(
-                              //"$baseUrl${product.product_image[index]}",
-                              "${product.product_image[index]}",
                               width: 80,
                               height: 80,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(child: CircularProgressIndicator());
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                //print("Error loading $baseUrl${product.product_image[index]}: $error");
-                                print("Error loading ${product.product_image[index]}: $error");
-                                return Icon(Icons.error);
-                              },
-                            )
-                            //     : CachedNetworkImage(
-                            //   imageUrl: "$baseUrl${product.product_image[index]}",
-                            //   width: 80,
-                            //   height: 80,
-                            //   fit: BoxFit.cover,
-                            //   placeholder: (context, url) =>
-                            //       Center(child: CircularProgressIndicator()),
-                            //   errorWidget: (context, url, error) {
-                            //     print("Error loading $url: $error");
-                            //     return Icon(Icons.error);
-                            //   },
-                            // ),
-                          ),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: _currentIndex == index
+                                      ? Colors.deepOrange
+                                      : Colors.transparent,
+                                  width: 2,
+                                ),
+                              ),
+                              child:
+                                  // kIsWeb ?
+                                  // //check if is web
+
+                                  Image.network(
+                                //"$baseUrl${product.product_image[index]}",
+                                "${product.product_image[index]}",
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  //print("Error loading $baseUrl${product.product_image[index]}: $error");
+                                  print(
+                                      "Error loading ${product.product_image[index]}: $error");
+                                  return Icon(Icons.error);
+                                },
+                              )
+                              //     : CachedNetworkImage(
+                              //   imageUrl: "$baseUrl${product.product_image[index]}",
+                              //   width: 80,
+                              //   height: 80,
+                              //   fit: BoxFit.cover,
+                              //   placeholder: (context, url) =>
+                              //       Center(child: CircularProgressIndicator()),
+                              //   errorWidget: (context, url, error) {
+                              //     print("Error loading $url: $error");
+                              //     return Icon(Icons.error);
+                              //   },
+                              // ),
+                              ),
                         );
                       },
                     ),
@@ -149,7 +149,8 @@ class _DetailScreenState extends State<DetailScreen> {
                       children: [
                         Text(
                           "đ${NumberFormat('#,###', 'vi').format(product.product_price)} ",
-                          style: TextStyle(color: Colors.redAccent, fontSize: 25),
+                          style:
+                              TextStyle(color: Colors.redAccent, fontSize: 25),
                         ),
                         Text(
                           product.product_name,
@@ -190,9 +191,11 @@ class _DetailScreenState extends State<DetailScreen> {
     double width = MediaQuery.of(context).size.width;
     ScreenSize screenSize = calculateScreenSize(width);
 
-    double imageHeight = screenSize == ScreenSize.small ? 300
-        : screenSize == ScreenSize.medium ? 400
-        : 500; // Desktop
+    double imageHeight = screenSize == ScreenSize.small
+        ? 300
+        : screenSize == ScreenSize.medium
+            ? 400
+            : 500; // Desktop
     return SizedBox(
       height: imageHeight,
       child: Stack(children: [
@@ -213,13 +216,14 @@ class _DetailScreenState extends State<DetailScreen> {
             //               "${product.product_image[index]}"),
             //           fit: BoxFit.contain)),
             // );
-            return PhotoView(imageProvider: NetworkImage("${product.product_image[index]}"));
+            return PhotoView(
+                imageProvider: NetworkImage("${product.product_image[index]}"));
           },
         ),
         Positioned(
           bottom: 20,
           right: 10,
-          child:  Text("$numberCurrentIndex/${product.product_image.length}"),
+          child: Text("$numberCurrentIndex/${product.product_image.length}"),
         ),
       ]),
     );
@@ -236,10 +240,10 @@ class BottomNavigationBar extends StatelessWidget {
 
     return Container(
       margin: screenSize == ScreenSize.small
-          ? EdgeInsets.symmetric(horizontal: 0)  //Phone
+          ? EdgeInsets.symmetric(horizontal: 0) //Phone
           : screenSize == ScreenSize.medium
-          ? EdgeInsets.symmetric(horizontal: 100)  // Tablet
-          : EdgeInsets.symmetric(horizontal: 400),  // Desktop
+              ? EdgeInsets.symmetric(horizontal: 100) // Tablet
+              : EdgeInsets.symmetric(horizontal: 400), // Desktop
 
       child: Row(
         children: [
@@ -260,7 +264,6 @@ class BottomNavigationBar extends StatelessWidget {
     );
   }
 }
-
 
 class BuyNowButton extends StatelessWidget {
   const BuyNowButton({

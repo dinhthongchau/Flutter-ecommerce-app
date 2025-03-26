@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/widgets/common_widgets/common_styles.dart';
-
-import '../../../main_cubit.dart';
 import '../../common_widgets/bottom_navigation_bar.dart';
 import '../../common_widgets/custom_gradient_appbar.dart';
+import 'main_cubit.dart';
 
 class SettingsScreen extends StatelessWidget {
   static const String route = "SettingsScreen";
@@ -25,7 +24,8 @@ class SettingsScreen extends StatelessWidget {
         margin: EdgeInsets.all(30),
         child: Row(
           children: [
-            Flexible(flex: 5, child:  CommonStyles.boldTextWidget("Light mode ")),
+            Flexible(
+                flex: 5, child: CommonStyles.boldTextWidget("Light mode ")),
             BlocBuilder<MainCubit, MainState>(
               builder: (context, state) {
                 var isLightTheme = state.isLightTheme;

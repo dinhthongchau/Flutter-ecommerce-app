@@ -2,7 +2,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_one/widgets/common_widgets/bottom_navigation_bar.dart';
-import 'package:project_one/widgets/common_widgets/common_styles.dart';
 import 'package:project_one/widgets/screens/list_products/list_products_screen.dart';
 import 'package:project_one/widgets/screens/upload/upload_product_cubit.dart';
 
@@ -44,8 +43,8 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
       _formKey.currentState!.save();
 
       if (_imageFiles.isEmpty) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(noticeSnackbar("Please select at least one image ", true));
+        ScaffoldMessenger.of(context).showSnackBar(
+            noticeSnackbar("Please select at least one image ", true));
         return;
       }
 
@@ -71,7 +70,6 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
         child: BlocConsumer<ProductUploadCubit, ProductUploadState>(
           listener: (context, state) {
             if (state.message != null) {
-
               ScaffoldMessenger.of(context)
                   .showSnackBar(noticeSnackbar(state.message!, false));
               if (state is ProductUploadSuccess) {
@@ -111,7 +109,8 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value!.isEmpty) return 'Required';
-                        if (int.tryParse(value) == null) return 'Must be a valid number';
+                        if (int.tryParse(value) == null)
+                          return 'Must be a valid number';
                         return null;
                       },
                       onSaved: (value) {
@@ -151,7 +150,8 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepOrange,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 24),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -176,11 +176,13 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       width: double.infinity, // Full width
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1), // Màu nền nhẹ để nổi bật
+                        color: Colors.green
+                            .withOpacity(0.1), // Màu nền nhẹ để nổi bật
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ElevatedButton(
-                        onPressed: state is ProductUploadLoading ? null : _submit,
+                        onPressed:
+                            state is ProductUploadLoading ? null : _submit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           foregroundColor: Colors.white,
@@ -192,21 +194,25 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                         ),
                         child: state is ProductUploadLoading
                             ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(color: Colors.white),
-                        )
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                    color: Colors.white),
+                              )
                             : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text(
-                              'Upload',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(Icons.upload, color: Colors.white, size: 24),
-                          ],
-                        ),
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Text(
+                                    'Upload',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Icon(Icons.upload,
+                                      color: Colors.white, size: 24),
+                                ],
+                              ),
                       ),
                     ),
                     const SizedBox(height: 16), // Khoảng trống cuối

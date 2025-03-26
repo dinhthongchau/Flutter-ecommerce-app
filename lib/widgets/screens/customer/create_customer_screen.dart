@@ -79,7 +79,6 @@ class _BodyState extends State<Body> {
         isLoading = false;
       });
 
-
       ScaffoldMessenger.of(context)
           .showSnackBar(noticeSnackbar("Error loading provinces", true));
     }
@@ -102,14 +101,22 @@ class _BodyState extends State<Body> {
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'Name'),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 TextField(
                   controller: _emailController,
                   cursorColor: Colors.red,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Email (I will send to email)',
-                    labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+                    labelStyle: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red),
                     hintText: 'Nhập email chính xác để nhận thông tin đơn hàng',
                     hintStyle: TextStyle(color: Colors.grey),
                     prefixIcon: Icon(Icons.email, color: Colors.red),
@@ -119,12 +126,14 @@ class _BodyState extends State<Body> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.redAccent, width: 2.5),
+                      borderSide:
+                          BorderSide(color: Colors.redAccent, width: 2.5),
                     ),
                   ),
                 ),
-                SizedBox(height: 20,),
-
+                SizedBox(
+                  height: 20,
+                ),
 
                 TextField(
                   controller: _phoneController,
@@ -139,7 +148,7 @@ class _BodyState extends State<Body> {
                   items: provinces.map((province) {
                     return DropdownMenuItem<Province>(
                       value: province,
-                      child:  Text(province.name),
+                      child: Text(province.name),
                     );
                   }).toList(),
                   onChanged: (Province? value) {
@@ -159,7 +168,7 @@ class _BodyState extends State<Body> {
                   items: selectedProvince?.districts.map((district) {
                         return DropdownMenuItem<District>(
                           value: district,
-                          child:  Text(district.name),
+                          child: Text(district.name),
                         );
                       }).toList() ??
                       [],
@@ -179,7 +188,7 @@ class _BodyState extends State<Body> {
                   items: selectedDistrict?.wards.map((ward) {
                         return DropdownMenuItem<Ward>(
                           value: ward,
-                          child:  Text(ward.name),
+                          child: Text(ward.name),
                         );
                       }).toList() ??
                       [],
@@ -203,7 +212,6 @@ class _BodyState extends State<Body> {
                       backgroundColor: Colors.deepOrange,
                       foregroundColor: Colors.white),
                   onPressed: () async {
-
                     // Kiểm tra nếu có trường nào chưa nhập
                     if (_nameController.text.isEmpty ||
                         _emailController.text.isEmpty ||
@@ -212,8 +220,8 @@ class _BodyState extends State<Body> {
                         selectedProvince == null ||
                         selectedDistrict == null ||
                         selectedWard == null) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(noticeSnackbar("Please nhập đầy đủ thông tin ", true));
+                      ScaffoldMessenger.of(context).showSnackBar(noticeSnackbar(
+                          "Please nhập đầy đủ thông tin ", true));
                       return; // Dừng lại nếu chưa nhập đủ
                     }
                     int randomId = generateRandomId();

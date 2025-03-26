@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 
-import 'repositories/log.dart';
+import '../../../repositories/log.dart';
 
 part 'main_state.dart';
 

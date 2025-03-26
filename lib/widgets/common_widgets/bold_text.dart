@@ -15,8 +15,8 @@ class CustomBoldText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: style ??
-          TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      style:
+          style ?? TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
     );
   }
 }
